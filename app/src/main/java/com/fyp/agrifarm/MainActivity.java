@@ -1,10 +1,14 @@
 package com.fyp.agrifarm;
 
+import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -25,12 +29,19 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.fyp.agrifarm.News.DownloadNews;
+import com.fyp.agrifarm.News.NewsEntity;
+import com.fyp.agrifarm.News.NewsViewModel;
 import com.fyp.agrifarm.utils.FirebaseUtils;
 import com.fyp.agrifarm.utils.PicassoUtils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -43,16 +54,26 @@ public class MainActivity extends AppCompatActivity
     public static final String TAG = "MainActivity";
     private static HomeFragment homeFragment = null;
     private static WeatherFragment weatherFragment = null;
+    private NewsViewModel newsViewModel;
+    private static MainActivity mainActivityobj;
+    private static Context appContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mainActivityobj=this;
+        appContext = getApplicationContext();
+        if (new NewsViewModel((Application) MainActivity.getAppContext()).getAllNotes()!=null){
+            new NewsViewModel((Application)MainActivity.getAppContext()).deleteAllNotes();
+        }
+        new DownloadNews().execute();
 
 
 
-        FrameLayout progressLayout = findViewById(R.id.progress_overlay);
-        progressLayout.setVisibility(View.VISIBLE);
+
+//        FrameLayout progressLayout = findViewById(R.id.progress_overlay);
+//        progressLayout.setVisibility(View.VISIBLE);
 
         FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = fm.findFragmentByTag(HomeFragment.TAG);
@@ -68,10 +89,6 @@ public class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        /* TODO: @Ehtisham also make sure while ProgressDialog is shown during sign in, this drawer should not be draggble from left
-         * You have to disable it when you show progress and enable is when progress is dismissed
-         */
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -90,16 +107,21 @@ public class MainActivity extends AppCompatActivity
         TextView tvUserOccupation = headerView.findViewById(R.id.tvDrawerOccupation);
         ImageView uProfilePhoto = headerView.findViewById(R.id.ivDrawerProfile);
 
-        FirebaseUtils.fetchCurrentUserFromFirebase(user -> {
-            tvUserFullName.setText(user.getFullname());
-            tvUserOccupation.setText(user.getOccupation());
-//            uAge.setText(userAge);
-//            uLocation.setText(userLocation);
-            // TODO: The image is returned with a bit margin in left, TO FIX, ScaleType: CenterCrop clips the image instead
-            PicassoUtils.loadCropAndSetImage(user.getPhotoUri(), uProfilePhoto, getResources());
-            progressLayout.setVisibility(View.GONE);
-        });
+        // Turned off for debugging purpose
+//        FirebaseUtils.fetchCurrentUserFromFirebase(user -> {
+//            tvUserFullName.setText(user.getFullname());
+//            tvUserOccupation.setText(user.getOccupation());
+////            uAge.setText(userAge);
+////            uLocation.setText(userLocation);
+//            // TODO: The image is returned with a bit margin in left, TO FIX, ScaleType: CenterCrop clips the image instead
+//            PicassoUtils.loadCropAndSetImage(user.getPhotoUri(), uProfilePhoto, getResources());
+//            progressLayout.setVisibility(View.GONE);
+//        });
     }
+    public static MainActivity getactivity(){
+        return mainActivityobj;
+    }
+    public static Context getAppContext() { return appContext; }
 
     @Override
     public void onBackPressed() {

@@ -13,6 +13,18 @@ public class News {
         this.title = title;
         this.thumbnail = thumbnail;
     }
+    public Bitmap bitmapimage;
+
+    public Bitmap getBitmapimage() {
+        return bitmapimage;
+    }
+
+    public void setBitmapimage(Bitmap bitmapimage) {
+        this.bitmapimage = bitmapimage;
+    }
+
+    public News() {
+    }
 
     public String getUrl() {
         return url;

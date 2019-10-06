@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import javax.annotation.Nullable;
+
 public class PicassoUtils {
 
     private class SaveTask extends AsyncTask<Void, Void, Void> {
@@ -94,12 +96,7 @@ public class PicassoUtils {
         Picasso.get().load(file).into(targetImageView, new Callback() {
             @Override
             public void onSuccess() {
-                Bitmap bitmap = ((BitmapDrawable) targetImageView.getDrawable()).getBitmap();
-                RoundedBitmapDrawable roundedBitmap = RoundedBitmapDrawableFactory
-                        .create(resources, bitmap);
-                roundedBitmap.setCircular(true);
-                roundedBitmap.setCornerRadius(bitmap.getWidth() / 2.0f);
-                targetImageView.setImageDrawable(roundedBitmap);
+                changeToCircularImage(targetImageView, resources);
             }
 
             @Override
@@ -113,12 +110,7 @@ public class PicassoUtils {
         Picasso.get().load(uri).into(targetImageView, new Callback() {
             @Override
             public void onSuccess() {
-                Bitmap bitmap = ((BitmapDrawable) targetImageView.getDrawable()).getBitmap();
-                RoundedBitmapDrawable roundedBitmap = RoundedBitmapDrawableFactory
-                        .create(resources, bitmap);
-                roundedBitmap.setCircular(true);
-                roundedBitmap.setCornerRadius(bitmap.getWidth() / 2.0f);
-                targetImageView.setImageDrawable(roundedBitmap);
+                changeToCircularImage(targetImageView, resources);
             }
 
             @Override
@@ -126,6 +118,15 @@ public class PicassoUtils {
                 targetImageView.setImageResource(R.drawable.profile_default_user);
             }
         });
+    }
+
+    public static void changeToCircularImage(ImageView targetImageView, Resources resources){
+        Bitmap bitmap = ((BitmapDrawable) targetImageView.getDrawable()).getBitmap();
+        RoundedBitmapDrawable roundedBitmap = RoundedBitmapDrawableFactory
+                .create(resources, bitmap);
+        roundedBitmap.setCircular(true);
+        roundedBitmap.setCornerRadius(bitmap.getWidth());
+        targetImageView.setImageDrawable(roundedBitmap);
     }
 
 }
