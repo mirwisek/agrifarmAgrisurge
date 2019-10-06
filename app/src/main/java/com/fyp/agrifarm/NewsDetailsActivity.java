@@ -3,33 +3,67 @@ package com.fyp.agrifarm;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.net.URL;
 import java.time.LocalDateTime;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class NewsDetailsActivity extends AppCompatActivity {
     ImageView ivnews;
     TextView title,date,desc;
+    @BindView(R.id.newsImageContainer)
+    RelativeLayout imageContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_details);
+
+        ButterKnife.bind(this);
+
         Intent intent=getIntent();
-        ivnews=findViewById(R.id.ivNewsDetail);
+
         title=findViewById(R.id.tvNewsTitleDetail);
         date=findViewById(R.id.tvNewsDate);
         desc=findViewById(R.id.tvNewsDesp);
+
         LocalDateTime dateTime = null;
-        Picasso.get().load(intent.getExtras().get("image").toString()).into(ivnews);
+        Picasso.get().load(intent.getExtras().get("image").toString())
+//                .centerCrop()
+//                .resize(imageContainer.getMeasuredWidth(), imageContainer.getMeasuredHeight())
+                .into(new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                Log.i("NONE", "onBitmapLoaded: " + imageContainer.getMeasuredWidthAndState());
+                imageContainer.setBackground(new BitmapDrawable(getResources(), bitmap));
+            }
+
+            @Override
+            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+            }
+        });
         Log.i("newsdetailtitle", intent.getExtras().get("title").toString());
         title.setText(intent.getExtras().get("title").toString());
         date.setText(intent.getExtras().get("date").toString());

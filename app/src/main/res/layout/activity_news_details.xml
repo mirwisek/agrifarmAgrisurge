@@ -1,46 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NewsDetailsActivity"
-    android:orientation="vertical">
-    <FrameLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".NewsDetailsActivity">
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp">
+        android:layout_height="200dp"
+        android:id="@+id/newsImageContainer"
+        android:background="@drawable/news_detail_title_bg">
+
         <ImageView
-            android:id="@+id/ivNewsDetail"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
-            android:src="@drawable/beta"/>
-        <TextView
-            android:id="@+id/tvNewsTitleDetail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="125dp"
-            android:layout_marginStart="15dp"
-            android:text="Title"
-            android:textColor="#ffff"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            />
+            android:src="@drawable/news_detail_title_bg"/>
+
         <TextView
             android:id="@+id/tvNewsDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="180dp"
             android:text="Date"
+            android:paddingBottom="10dp"
+            android:paddingLeft="10dp"
+            android:layout_alignParentBottom="true"
             android:textColor="#ffff"
             android:textSize="14sp"/>
-    </FrameLayout>
+
+
+        <TextView
+            android:id="@+id/tvNewsTitleDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Title"
+            android:paddingLeft="10dp"
+            android:paddingBottom="5dp"
+            android:textColor="#ffff"
+            android:layout_above="@id/tvNewsDate"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
     <ScrollView
         android:id="@+id/SCROLLER_ID"
-        android:layout_width="fill_parent"
-        android:layout_height="300dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:scrollbars="vertical"
+        android:layout_below="@id/newsImageContainer"
         android:padding="5dp"
         android:fillViewport="true">
         <TextView
@@ -52,63 +61,80 @@
             android:textSize="16sp"/>
     </ScrollView>
 
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="-10dp"
+        app:cardCornerRadius="10dp"
+        android:layout_alignParentBottom="true"
         android:orientation="vertical">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="8dp"
-            android:text="Featured News"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"/>
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:layout_marginLeft="4dp"
-            android:paddingRight="10dp"
-            android:paddingLeft="25dp"
-            android:layout_marginTop="1dp">
+            android:orientation="vertical"
+            android:background="@color/fui_transparent"
+            android:layout_marginBottom="10dp">
 
-            <Button
-                android:layout_width="75dp"
-                android:layout_height="30dp"
-                android:background="@drawable/btn_rounded_corner"
-                android:text="#GDP"
-                android:layout_marginRight="3dp"
-                android:textColor="@color/colorWhite"
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="17dp"
+                android:layout_marginTop="10dp"
+                android:text="Featured News"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"/>
 
-                />
-            <Button
-                android:layout_width="75dp"
-                android:layout_height="30dp"
-                android:background="@drawable/btn_rounded_corner"
-                android:text="#GDP"
-                android:textColor="@color/colorWhite"
-                android:layout_marginRight="3dp"/>
-            <Button
-                android:layout_width="75dp"
-                android:layout_height="30dp"
-                android:background="@drawable/btn_rounded_corner"
-                android:text="#GDP"
-                android:layout_marginRight="3dp"
-                android:textColor="@color/colorWhite"/>
-            <Button
-                android:layout_width="75dp"
-                android:layout_height="30dp"
-                android:background="@drawable/btn_rounded_corner"
-                android:text="#GDP"
-                android:layout_marginRight="3dp"
-                android:textColor="@color/colorWhite"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="12dp">
 
+
+                <Button
+                    android:layout_width="75dp"
+                    android:layout_height="25dp"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/btn_rounded_corner"
+                    android:text="#GDP"
+                    android:layout_marginRight="3dp"
+                    android:textColor="@color/colorWhite"
+
+                    />
+                <Button
+                    android:layout_width="75dp"
+                    android:layout_height="25dp"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/btn_rounded_corner"
+                    android:text="#GDP"
+                    android:textColor="@color/colorWhite"
+                    android:layout_marginRight="3dp"/>
+                <Button
+                    android:layout_width="75dp"
+                    android:layout_height="25dp"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/btn_rounded_corner"
+                    android:text="#GDP"
+                    android:layout_marginRight="3dp"
+                    android:textColor="@color/colorWhite"/>
+                <Button
+                    android:layout_width="75dp"
+                    android:layout_height="25dp"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/btn_rounded_corner"
+                    android:text="#GDP"
+                    android:layout_marginRight="3dp"
+                    android:textColor="@color/colorWhite"/>
+
+
+            </LinearLayout>
 
         </LinearLayout>
 
-    </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
 
-</LinearLayout>
+</RelativeLayout>
