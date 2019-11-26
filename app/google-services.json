@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "978533906176-e8joo716ms81tkk5qmn9u3ahg4hclo0e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fyp.agrifarm",
+            "certificate_hash": "d150aeb4e67ec58a8f2f960372cd3d5e2b8f72c7"
+          }
+        },
+        {
           "client_id": "978533906176-avkj0r74id6hddstdpifpqr2n7emflin.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

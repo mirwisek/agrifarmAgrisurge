@@ -5,12 +5,14 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
@@ -24,14 +26,16 @@ import com.fyp.agrifarm.beans.DummyUser;
 import com.fyp.agrifarm.beans.News;
 import com.fyp.agrifarm.beans.YouTubeVideo;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import java.security.acl.NotOwnerException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class HomeFragment extends Fragment implements NewsRecyclerAdapter.OnNewsClinkListener {
+public class HomeFragment extends Fragment implements NewsRecyclerAdapter.OnNewsClinkListener  {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -43,6 +47,7 @@ public class HomeFragment extends Fragment implements NewsRecyclerAdapter.OnNews
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference userRef = db.collection("users");
     private FirestoreUserRecyclerAdapter adapter;
+    private VideoRecyclerAdapter videoRecyclerAdapter;
 
 
     // TODO: Rename and change types of parameters
@@ -105,6 +110,16 @@ public class HomeFragment extends Fragment implements NewsRecyclerAdapter.OnNews
 //        users.add(new DummyUser("Farmer", R.drawable.sixx));
 //
 //        usersAdapter.changeDataSource(users);
+        adapter.setOnItemClickListener(new FirestoreUserRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void OnItemClick(DocumentSnapshot documentSnapshot, int position) {
+                DummyUser dummyUser = documentSnapshot.toObject(DummyUser.class);
+                Intent intent = new Intent(getContext(), UserInformationActivity.class);
+                intent.putExtra("username",dummyUser.getFullname());
+                intent.putExtra("userphoto",dummyUser.getPhotoUri());
+                startActivityForResult(intent,20);
+            }
+        });
 
 
         noteViewModel = ViewModelProviders.of(getActivity()).get(NewsViewModel.class);
@@ -117,6 +132,12 @@ public class HomeFragment extends Fragment implements NewsRecyclerAdapter.OnNews
 
                 ));
         rvVideo.setAdapter(videoRecyclerAdapter);
+        videoRecyclerAdapter.setOnItemClickListener(new VideoRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onVideoClicked(View v, String videoUrl) {
+                Toast.makeText(getContext(), "HELOOOO", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         NewsRecyclerAdapter newsRecyclerAdapter =
                 new NewsRecyclerAdapter(getContext(),this);

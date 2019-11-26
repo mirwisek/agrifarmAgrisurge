@@ -1,24 +1,28 @@
 package com.fyp.agrifarm;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.fyp.agrifarm.beans.DummyUser;
 import com.fyp.agrifarm.utils.PicassoUtils;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 public class FirestoreUserRecyclerAdapter extends FirestoreRecyclerAdapter<DummyUser, FirestoreUserRecyclerAdapter.FirestoreUserRecyclerHolder> {
-
+    private OnItemClickListener listener;
     private Context context;
     public FirestoreUserRecyclerAdapter(@NonNull FirestoreRecyclerOptions<DummyUser> options , Context context ) {
         super(options);
@@ -46,6 +50,7 @@ public class FirestoreUserRecyclerAdapter extends FirestoreRecyclerAdapter<Dummy
 
     }
 
+
     @NonNull
     @Override
     public FirestoreUserRecyclerHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -54,7 +59,7 @@ public class FirestoreUserRecyclerAdapter extends FirestoreRecyclerAdapter<Dummy
 
     }
 
-    class FirestoreUserRecyclerHolder extends ViewHolder {
+    class FirestoreUserRecyclerHolder extends RecyclerView.ViewHolder {
         TextView username;
         ImageView userimage;
 
@@ -62,8 +67,32 @@ public class FirestoreUserRecyclerAdapter extends FirestoreRecyclerAdapter<Dummy
             super(itemView);
             username = itemView.findViewById(R.id.tvUserName);
             userimage = itemView.findViewById(R.id.ivUserPhoto);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Context context = view.getContext();
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION && listener != null)
+                    {
+                        listener.OnItemClick(getSnapshots().getSnapshot(position),position);
+                    }
+//                    Intent intent = new Intent(context, UserInformationActivity.class);
+//                    context.startActivity(intent);
+
+
+                }
+            });
         }
 
 
+    }
+
+    public interface OnItemClickListener {
+
+        void OnItemClick(DocumentSnapshot documentSnapshot , int position);
+    }
+    public void setOnItemClickListener(OnItemClickListener listener)
+    {
+        this.listener = listener;
     }
 }

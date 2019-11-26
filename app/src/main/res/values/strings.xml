@@ -21,4 +21,7 @@
     <string name="facebook_application_id" translatable="false">1113488918840348</string>
     <string name="facebook_login_protocol_scheme" translatable="false">fb1113488918840348</string>
     <string name="nav_header_desc">Navigation header</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

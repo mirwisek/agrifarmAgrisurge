@@ -1,11 +1,13 @@
 package com.fyp.agrifarm;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,7 +21,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter {
     private List<YouTubeVideo> videoList;
 
     private VideoRecyclerAdapter.OnItemClickListener mListener;
-
+    private OnItemClickListener listener ;
     public VideoRecyclerAdapter(Context context, List<YouTubeVideo> videoList){
         this.context = context;
         this.videoList = videoList;
@@ -61,7 +63,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter {
         return videoList.size();
     }
 
-    private class VideoListViewHolder extends RecyclerView.ViewHolder {
+     class VideoListViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvVideoTitle;
         ImageView ivVideoThumb;
@@ -70,11 +72,26 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter {
             super(view);
             tvVideoTitle = view.findViewById(R.id.tvVideoTitle);
             ivVideoThumb = view.findViewById(R.id.ivVideoThumb);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                     int position = getAdapterPosition();
+                     if(position!= RecyclerView.NO_POSITION && listener != null)
+                     {
+                         Log.i("video","hahaha HOOO GAYAAYYAAYAA");
+
+                     }
+
+                }
+            });
         }
     }
 
     public interface OnItemClickListener {
         void onVideoClicked(View v, String videoUrl);
+    }
+    public void setOnItemClickListener(OnItemClickListener listener){
+        this.listener = listener;
     }
 
 //    public void changeDataSource(List<Transaction> list){
