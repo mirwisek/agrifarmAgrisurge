@@ -212,13 +212,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onVideoClicked(View v, final String videoUrl) {
         // TODO: Refactor YOUTUBE FRAGMENT: AndroidX
-//        YoutubeFragment youtubeFragment = YoutubeFragment.newInstance(videoUrl, "b");
-//
-//        getSupportFragmentManager()
-//                .beginTransaction()
-//                .replace(R.id.fragmentHolder, youtubeFragment, YoutubeFragment.TAG)
-//                .addToBackStack(HomeFragment.TAG)
-//                .commit();
+        YoutubeFragment youtubeFragment = YoutubeFragment.newInstance(videoUrl, "b");
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentHolder, youtubeFragment, YoutubeFragment.TAG)
+                .addToBackStack(HomeFragment.TAG)
+                .commit();
     }
 
     @Override

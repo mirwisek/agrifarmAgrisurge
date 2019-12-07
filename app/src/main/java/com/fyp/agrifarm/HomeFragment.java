@@ -111,9 +111,9 @@ public class HomeFragment extends Fragment implements NewsRecyclerAdapter.OnNews
 
         VideoRecyclerAdapter videoRecyclerAdapter =
                 new VideoRecyclerAdapter(getContext(), Arrays.asList(
-                        new YouTubeVideo("FNn5DB1Zen4", "This is the first video", betaBitmap),
-                        new YouTubeVideo("xk7QOqwiZS8", "Second video", betaBitmap),
-                        new YouTubeVideo("xk7QOqwiZS8", "Second video", betaBitmap)
+                        new YouTubeVideo("cL9tjS9B8kI", "This is the first video", betaBitmap),
+                        new YouTubeVideo("cL9tjS9B8kI", "Second video", betaBitmap),
+                        new YouTubeVideo("cL9tjS9B8kI", "Second video", betaBitmap)
 
                 ));
         rvVideo.setAdapter(videoRecyclerAdapter);

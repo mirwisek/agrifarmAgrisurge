@@ -70,6 +70,7 @@ dependencies {
     // Api for Image Cropping
     // https://github.com/ArthurHub/Android-Image-Cropper
     api 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

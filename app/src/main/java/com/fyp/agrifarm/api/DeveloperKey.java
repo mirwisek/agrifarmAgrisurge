@@ -9,4 +9,6 @@ public class DeveloperKey {
 
     public static final String DEVELOPER_KEY = "AIzaSyAeJwF2aJlAGFUDyELfxnjV2FTA8lsTWFE";
 
+    public static final String YOUTUBE_KEY="AIzaSyBZ0eiSHnkOmfMHkkyaGYW3SFR4qivSh_A";
+
 }
