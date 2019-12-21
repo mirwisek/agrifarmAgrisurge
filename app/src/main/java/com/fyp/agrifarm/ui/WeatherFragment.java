@@ -1,4 +1,4 @@
-package com.fyp.agrifarm;
+package com.fyp.agrifarm.ui;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -10,6 +10,9 @@ import android.widget.LinearLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.fyp.agrifarm.R;
+import com.fyp.agrifarm.ui.custom.WeatherDailyRecyclerAdapter;
+import com.fyp.agrifarm.ui.custom.WeatherHourlyRecyclerAdapter;
 import com.fyp.agrifarm.beans.WeatherDailyForecast;
 import com.fyp.agrifarm.beans.WeatherHourlyForecast;
 

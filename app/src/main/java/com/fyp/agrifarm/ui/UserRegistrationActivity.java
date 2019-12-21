@@ -1,12 +1,8 @@
-package com.fyp.agrifarm;
+package com.fyp.agrifarm.ui;
 
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -16,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.fyp.agrifarm.R;
 import com.fyp.agrifarm.beans.User;
 import com.fyp.agrifarm.utils.FirebaseUtils;
 import com.firebase.ui.auth.AuthUI;
@@ -28,8 +25,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 

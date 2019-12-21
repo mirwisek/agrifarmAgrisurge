@@ -1,4 +1,4 @@
-package com.fyp.agrifarm;
+package com.fyp.agrifarm.ui.custom;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.fyp.agrifarm.R;
 import com.fyp.agrifarm.beans.DummyUser;
 import com.fyp.agrifarm.utils.PicassoUtils;
 import com.squareup.picasso.Callback;

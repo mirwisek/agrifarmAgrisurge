@@ -1,4 +1,4 @@
-package com.fyp.agrifarm;
+package com.fyp.agrifarm.ui;
 
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.fyp.agrifarm.R;
 
 import java.util.Locale;
 

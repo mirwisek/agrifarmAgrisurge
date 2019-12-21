@@ -1,4 +1,4 @@
-package com.fyp.agrifarm;
+package com.fyp.agrifarm.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.fyp.agrifarm.R;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 

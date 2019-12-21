@@ -7,7 +7,7 @@ import android.util.Log;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.fyp.agrifarm.MainActivity;
+import com.fyp.agrifarm.ui.MainActivity;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

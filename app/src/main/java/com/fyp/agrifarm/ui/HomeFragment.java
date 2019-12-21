@@ -1,11 +1,10 @@
-package com.fyp.agrifarm;
+package com.fyp.agrifarm.ui;
 
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,16 +17,18 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.fyp.agrifarm.ui.custom.FirestoreUserRecyclerAdapter;
 import com.fyp.agrifarm.News.NewsEntity;
 import com.fyp.agrifarm.News.NewsViewModel;
+import com.fyp.agrifarm.ui.custom.NewsRecyclerAdapter;
+import com.fyp.agrifarm.R;
+import com.fyp.agrifarm.ui.custom.VideoRecyclerAdapter;
 import com.fyp.agrifarm.beans.DummyUser;
-import com.fyp.agrifarm.beans.News;
 import com.fyp.agrifarm.beans.YouTubeVideo;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -174,7 +175,7 @@ public class HomeFragment extends Fragment implements NewsRecyclerAdapter.OnNews
 
     @Override
     public void OnNewsClick(int position) {
-        Intent intent=new Intent(getActivity(),NewsDetailsActivity.class);
+        Intent intent=new Intent(getActivity(), NewsDetailsActivity.class);
         intent.putExtra("title",listNewsLive.getValue().get(position).getTitle());
         intent.putExtra("Desc",listNewsLive.getValue().get(position).getDescription());
         intent.putExtra("image",listNewsLive.getValue().get(position).getUrl());

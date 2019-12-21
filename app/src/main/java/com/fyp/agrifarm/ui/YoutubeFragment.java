@@ -1,6 +1,5 @@
-package com.fyp.agrifarm;//package com.fyp.agriculture;
+package com.fyp.agrifarm.ui;//package com.fyp.agriculture;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,10 +11,12 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 //import com.firebase.login.api.DeveloperKey;
+import com.fyp.agrifarm.R;
 import com.fyp.agrifarm.api.DeveloperKey;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
+import com.google.api.services.youtube.YouTubeRequestInitializer;
 
 // TODO: 2. Refactor YOUTUBE FRAGMENT: AndroidX
 public class YoutubeFragment extends Fragment {
@@ -33,7 +34,7 @@ public class YoutubeFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static YoutubeFragment newInstance(final String videoUrl, String param2) {
+    static YoutubeFragment newInstance(final String videoUrl, String param2) {
         final YoutubeFragment fragment = new YoutubeFragment();
         Bundle args = new Bundle();
         args.putString(ARG_VIDEO_URL, videoUrl);
@@ -62,33 +63,33 @@ public class YoutubeFragment extends Fragment {
 //        YoutubeFragment youtubeFragment = YoutubeFragment.newInstance(videoUrl,"none");
 //
         getChildFragmentManager().beginTransaction().replace(R.id.fragmentYoutube, youFragment).commit();
-//
-//        youFragment.initialize(DeveloperKey.YOUTUBE_KEY, new YouTubePlayer.OnInitializedListener() {
-//            @Override
-//            public void onInitializationFailure(YouTubePlayer.Provider provider,
-//                                                YouTubeInitializationResult youTubeInitializationResult) {
-//                Toast.makeText(getContext(), "Couldn't load video!", Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void onInitializationSuccess(YouTubePlayer.Provider provider,
-//                                                YouTubePlayer youTubePlayer, boolean wasRestored) {
-//                if (!wasRestored) {
-//                    //I assume the below String value is your video id
-//                    Toast.makeText(getContext(), "Video : " + videoUrl, Toast.LENGTH_SHORT).show();
-//                    youTubePlayer.cueVideo(videoUrl);
-//                    youTubePlayer.play();
-//
-//                    youTubePlayer.setOnFullscreenListener(new YouTubePlayer.OnFullscreenListener() {
-////                        @Override
-//                        public void onFullscreen(boolean b) {
-//                            Log.i(TAG, "Fullscreen Changed");
-//                        }
-//                    });
-//
-//                }
-//            }
-//        });
+
+        youFragment.initialize(DeveloperKey.YOUTUBE_KEY, new YouTubePlayer.OnInitializedListener() {
+            @Override
+            public void onInitializationFailure(YouTubePlayer.Provider provider,
+                                                YouTubeInitializationResult youTubeInitializationResult) {
+                Toast.makeText(getContext(), "Couldn't load video!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onInitializationSuccess(YouTubePlayer.Provider provider,
+                                                YouTubePlayer youTubePlayer, boolean wasRestored) {
+                if (!wasRestored) {
+                    //I assume the below String value is your video id
+                    Toast.makeText(getContext(), "Video : " + videoUrl, Toast.LENGTH_SHORT).show();
+                    youTubePlayer.cueVideo(videoUrl);
+                    youTubePlayer.play();
+
+                    youTubePlayer.setOnFullscreenListener(new YouTubePlayer.OnFullscreenListener() {
+//                        @Override
+                        public void onFullscreen(boolean b) {
+                            Log.i(TAG, "Fullscreen Changed");
+                        }
+                    });
+
+                }
+            }
+        });
 
         return parent;
     }

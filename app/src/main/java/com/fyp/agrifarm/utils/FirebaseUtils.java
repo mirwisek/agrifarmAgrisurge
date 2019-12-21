@@ -2,10 +2,8 @@ package com.fyp.agrifarm.utils;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.Log;
@@ -13,16 +11,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.graphics.drawable.RoundedBitmapDrawable;
-import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
-import com.fyp.agrifarm.R;
 import com.fyp.agrifarm.UserDataFetchListener;
 import com.fyp.agrifarm.UserDataUploadListener;
-import com.fyp.agrifarm.UserRegistrationActivity;
 import com.fyp.agrifarm.beans.User;
 import com.fyp.agrifarm.UserSignOutListener;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -34,9 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.PicassoProvider;
 import com.squareup.picasso.Target;
 
 import java.io.ByteArrayOutputStream;

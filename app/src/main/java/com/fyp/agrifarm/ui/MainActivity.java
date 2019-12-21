@@ -1,26 +1,18 @@
-package com.fyp.agrifarm;
+package com.fyp.agrifarm.ui;
 
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -30,20 +22,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.fyp.agrifarm.News.DownloadNews;
-import com.fyp.agrifarm.News.NewsEntity;
 import com.fyp.agrifarm.News.NewsViewModel;
+import com.fyp.agrifarm.R;
+import com.fyp.agrifarm.ui.custom.VideoRecyclerAdapter;
 import com.fyp.agrifarm.utils.FirebaseUtils;
-import com.fyp.agrifarm.utils.PicassoUtils;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
-
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -68,9 +51,6 @@ public class MainActivity extends AppCompatActivity
             new NewsViewModel((Application)MainActivity.getAppContext()).deleteAllNotes();
         }
         new DownloadNews().execute();
-
-
-
 
 //        FrameLayout progressLayout = findViewById(R.id.progress_overlay);
 //        progressLayout.setVisibility(View.VISIBLE);

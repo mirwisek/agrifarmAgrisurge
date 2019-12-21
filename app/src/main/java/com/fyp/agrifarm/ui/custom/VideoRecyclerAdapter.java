@@ -1,4 +1,4 @@
-package com.fyp.agrifarm;
+package com.fyp.agrifarm.ui.custom;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.fyp.agrifarm.R;
 import com.fyp.agrifarm.beans.YouTubeVideo;
 
 import java.util.List;
