@@ -132,43 +132,6 @@
 //     * @param data Intent (containing result data) returned by incoming
 //     *     activity result.
 //     */
-//    @Override
-//    protected void onActivityResult(
-//            int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        switch(requestCode) {
-//            case REQUEST_GOOGLE_PLAY_SERVICES:
-//                if (resultCode != RESULT_OK) {
-//                    mOutputText.setText(
-//                            "This app requires Google Play Services. Please install " +
-//                                    "Google Play Services on your device and relaunch this app.");
-//                } else {
-//                    getResultsFromApi();
-//                }
-//                break;
-//            case REQUEST_ACCOUNT_PICKER:
-//                if (resultCode == RESULT_OK && data != null &&
-//                        data.getExtras() != null) {
-//                    String accountName =
-//                            data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-//                    if (accountName != null) {
-//                        SharedPreferences settings =
-//                                getPreferences(Context.MODE_PRIVATE);
-//                        SharedPreferences.Editor editor = settings.edit();
-//                        editor.putString(PREF_ACCOUNT_NAME, accountName);
-//                        editor.apply();
-//                        mCredential.setSelectedAccountName(accountName);
-//                        getResultsFromApi();
-//                    }
-//                }
-//                break;
-//            case REQUEST_AUTHORIZATION:
-//                if (resultCode == RESULT_OK) {
-//                    getResultsFromApi();
-//                }
-//                break;
-//        }
-//    }
 //
 //    /**
 //     * Respond to requests for permissions at runtime for API 23 and above.
@@ -211,60 +174,8 @@
 //        // Do nothing.
 //    }
 //
-//    /**
-//     * Checks whether the device currently has a network connection.
-//     * @return true if the device has a network connection, false otherwise.
-//     */
-//    private boolean isDeviceOnline() {
-//        ConnectivityManager connMgr =
-//                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-//        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-//        return (networkInfo != null && networkInfo.isConnected());
-//    }
-//
-//    /**
-//     * Check that Google Play services APK is installed and up to date.
-//     * @return true if Google Play Services is available and up to
-//     *     date on this device; false otherwise.
-//     */
-//    private boolean isGooglePlayServicesAvailable() {
-//        GoogleApiAvailability apiAvailability =
-//                GoogleApiAvailability.getInstance();
-//        final int connectionStatusCode =
-//                apiAvailability.isGooglePlayServicesAvailable(this);
-//        return connectionStatusCode == ConnectionResult.SUCCESS;
-//    }
-//
-//    /**
-//     * Attempt to resolve a missing, out-of-date, invalid or disabled Google
-//     * Play Services installation via a user dialog, if possible.
-//     */
-//    private void acquireGooglePlayServices() {
-//        GoogleApiAvailability apiAvailability =
-//                GoogleApiAvailability.getInstance();
-//        final int connectionStatusCode =
-//                apiAvailability.isGooglePlayServicesAvailable(this);
-//        if (apiAvailability.isUserResolvableError(connectionStatusCode)) {
-//            showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
-//        }
-//    }
 //
 //
-//    /**
-//     * Display an error dialog showing that Google Play Services is missing
-//     * or out of date.
-//     * @param connectionStatusCode code describing the presence (or lack of)
-//     *     Google Play Services on this device.
-//     */
-//    void showGooglePlayServicesAvailabilityErrorDialog(
-//            final int connectionStatusCode) {
-//        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-//        Dialog dialog = apiAvailability.getErrorDialog(
-//                MainActivity.this,
-//                connectionStatusCode,
-//                REQUEST_GOOGLE_PLAY_SERVICES);
-//        dialog.show();
-//    }
 //
 //    /**
 //     * An asynchronous task that handles the YouTube Data API call.

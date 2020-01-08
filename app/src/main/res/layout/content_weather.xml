@@ -1,49 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingLeft="20dp"
-    android:paddingRight="20dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <ImageView
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_gravity="center"
-        android:layout_marginBottom="-20dp"
-        android:src="@drawable/ic_plant" />
-
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_rel"
         android:layout_width="match_parent"
         android:layout_height="230dp"
-        android:layout_gravity="center"
+        android:layout_marginTop="25dp"
         android:background="@drawable/bg_weather_main"
         android:paddingLeft="20dp"
-        android:paddingTop="20dp">
+        android:paddingTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/ivWeatherIcon"
             android:layout_width="100dp"
-            android:layout_height="80dp"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="10dp"
+            android:layout_height="75dp"
+            android:layout_marginTop="8dp"
             android:layout_marginRight="20dp"
-            android:layout_marginBottom="-15dp"
-            android:src="@drawable/ic_w_partly_cloudy" />
+            android:src="@drawable/ic_w_partly_cloudy"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/ivWeatherIcon"
-            android:layout_alignParentRight="true"
             android:layout_marginRight="20dp"
             android:text="Partly Cloudy"
             android:textAllCaps="true"
             android:textColor="@color/colorWhite"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivWeatherIcon" />
 
         <TextView
             android:id="@+id/tvWeatherTemp"
@@ -51,50 +48,60 @@
             android:layout_height="wrap_content"
             android:text="22&#xb0;"
             android:textColor="@color/colorWhite"
-            android:textSize="50sp" />
+            android:textSize="50sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tvWeatherDay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tvWeatherTemp"
             android:text="Today"
             android:textColor="@color/colorWhite"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvWeatherTemp" />
 
         <TextView
             android:id="@+id/tvWeatherWind"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tvWeatherDay"
             android:text="Wind 6km/h"
             android:textColor="@color/colorWhite"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvWeatherDay" />
 
         <TextView
             android:id="@+id/tvWeatherHumidity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tvWeatherWind"
             android:drawableLeft="@drawable/ic_drop_resized"
-            android:drawablePadding="3dp"
+            android:drawablePadding="8dp"
             android:text="30%"
             android:textColor="@color/colorWhite"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvWeatherWind" />
 
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:layout_marginTop="-25dp"
+        android:layout_height="170dp"
         android:background="@drawable/bg_hourly_forecast"
-        android:orientation="vertical"
-        android:paddingLeft="20dp"
+        android:paddingLeft="12dp"
         android:paddingTop="20dp"
-        android:paddingRight="20dp">
+        android:paddingRight="18dp"
+        android:paddingBottom="10dp"
+        app:layout_constraintEnd_toEndOf="@+id/layout_rel"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/layout_rel"
+        app:layout_constraintTop_toTopOf="@+id/guideline7">
 
         <TextView
+            android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="2dp"
@@ -103,30 +110,70 @@
             android:textAllCaps="true"
             android:textColor="@color/colorHourlyForecast"
             android:textSize="15sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/rvHourlyForecast"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_conversion_absoluteHeight="32dp"
+            tools:layout_conversion_absoluteWidth="134dp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvHourlyForecast"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            android:padding="3dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView2"
+            tools:layout_conversion_absoluteHeight="19dp"
+            tools:layout_conversion_absoluteWidth="331dp" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="32dp"
+        android:src="@drawable/ic_plant"
+        app:layout_constraintBottom_toTopOf="@+id/layout_rel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardView2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:cardCornerRadius="25dp">
+        android:layout_height="0dp"
+        android:layout_marginBottom="5dp"
+        app:cardCornerRadius="25dp"
+        app:cardUseCompatPadding="true"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvDailyForecast"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:padding="5dp"/>
 
     </androidx.cardview.widget.CardView>
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="215dp" />
 
-</LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
