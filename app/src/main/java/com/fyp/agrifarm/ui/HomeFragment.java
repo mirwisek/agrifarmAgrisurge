@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,21 +19,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.fyp.agrifarm.ui.custom.FirestoreUserRecyclerAdapter;
-import com.fyp.agrifarm.News.NewsEntity;
-import com.fyp.agrifarm.News.NewsViewModel;
+import com.fyp.agrifarm.repo.NewsEntity;
+import com.fyp.agrifarm.repo.NewsViewModel;
 import com.fyp.agrifarm.ui.custom.NewsRecyclerAdapter;
 import com.fyp.agrifarm.R;
 import com.fyp.agrifarm.ui.custom.VideoRecyclerAdapter;
 import com.fyp.agrifarm.beans.DummyUser;
-import com.fyp.agrifarm.beans.YouTubeVideo;
+import com.fyp.agrifarm.beans.ShortVideo;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
-import java.util.Arrays;
 import java.util.List;
 
-public class HomeFragment extends Fragment implements NewsRecyclerAdapter.OnNewsClinkListener {
+public class HomeFragment extends Fragment implements
+        NewsRecyclerAdapter.OnNewsClinkListener {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -41,6 +42,8 @@ public class HomeFragment extends Fragment implements NewsRecyclerAdapter.OnNews
     List<NewsEntity> newsList;
     LiveData<List<NewsEntity>> listNewsLive;
     RecyclerView rvNews;
+    private VideoRecyclerAdapter videoRecyclerAdapter;
+
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference userRef = db.collection("users");
     private FirestoreUserRecyclerAdapter adapter;
@@ -108,15 +111,10 @@ public class HomeFragment extends Fragment implements NewsRecyclerAdapter.OnNews
 //        usersAdapter.changeDataSource(users);
 
 
-        noteViewModel = ViewModelProviders.of(getActivity()).get(NewsViewModel.class);
+        noteViewModel = ViewModelProviders.of(this).get(NewsViewModel.class);
 
-        VideoRecyclerAdapter videoRecyclerAdapter =
-                new VideoRecyclerAdapter(getContext(), Arrays.asList(
-                        new YouTubeVideo("cL9tjS9B8kI", "This is the first video", betaBitmap),
-                        new YouTubeVideo("cL9tjS9B8kI", "Second video", betaBitmap),
-                        new YouTubeVideo("cL9tjS9B8kI", "Second video", betaBitmap)
-
-                ));
+        videoRecyclerAdapter =
+                new VideoRecyclerAdapter(getContext(), null);
         rvVideo.setAdapter(videoRecyclerAdapter);
 
         NewsRecyclerAdapter newsRecyclerAdapter =
@@ -130,12 +128,7 @@ public class HomeFragment extends Fragment implements NewsRecyclerAdapter.OnNews
             newsRecyclerAdapter.changeDataSource(list);
         });
         TextView tvWeatherForecast = parent.findViewById(R.id.tvWeatherForecast);
-        tvWeatherForecast.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onForecastClick(v);
-            }
-        });
+        tvWeatherForecast.setOnClickListener(v -> mListener.onForecastClick(v));
 
 
         return parent;
@@ -152,7 +145,6 @@ public class HomeFragment extends Fragment implements NewsRecyclerAdapter.OnNews
     public void onStop() {
         super.onStop();
         adapter.stopListening();
-
     }
 
 
@@ -181,6 +173,20 @@ public class HomeFragment extends Fragment implements NewsRecyclerAdapter.OnNews
         intent.putExtra("image",listNewsLive.getValue().get(position).getUrl());
         intent.putExtra("date",listNewsLive.getValue().get(position).getDate());
         startActivity(intent);
+    }
+
+//    @Override
+//    public void onCancelled(Exception error) {
+//        if (error != null) {
+//            Toast.makeText(getContext(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+//        } else {
+//            Toast.makeText(getContext(), "Request cancelled", Toast.LENGTH_SHORT).show();
+//        }
+//    }
+
+    public void updateAdapter(List<ShortVideo> videoList) {
+        Log.i("NEW LIST", "updateList: " + videoList.size());
+        videoRecyclerAdapter.updateList(videoList);
     }
 
     public interface OnFragmentInteractionListener {

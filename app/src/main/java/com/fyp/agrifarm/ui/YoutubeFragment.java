@@ -10,13 +10,13 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
-//import com.firebase.login.api.DeveloperKey;
 import com.fyp.agrifarm.R;
 import com.fyp.agrifarm.api.DeveloperKey;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
-import com.google.api.services.youtube.YouTubeRequestInitializer;
+
+//import com.firebase.login.api.DeveloperKey;
 
 // TODO: 2. Refactor YOUTUBE FRAGMENT: AndroidX
 public class YoutubeFragment extends Fragment {

@@ -1,6 +1,7 @@
 package com.fyp.agrifarm.ui.custom;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,18 +11,20 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fyp.agrifarm.R;
-import com.fyp.agrifarm.beans.YouTubeVideo;
+import com.fyp.agrifarm.beans.ShortVideo;
+import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class VideoRecyclerAdapter extends RecyclerView.Adapter {
 
     private Context context;
-    private List<YouTubeVideo> videoList;
+    private List<ShortVideo> videoList;
 
     private VideoRecyclerAdapter.OnItemClickListener mListener;
 
-    public VideoRecyclerAdapter(Context context, List<YouTubeVideo> videoList){
+    public VideoRecyclerAdapter(Context context, List<ShortVideo> videoList){
         this.context = context;
         this.videoList = videoList;
         if (context instanceof VideoRecyclerAdapter.OnItemClickListener) {
@@ -37,39 +40,41 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter {
         View view = LayoutInflater.from(context)
                 .inflate(R.layout.rv_item_video, viewGroup, false);
 
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onVideoClicked(v, videoList.get(i).getId());
-            }
-        });
+        view.setOnClickListener(v -> mListener.onVideoClicked(v, videoList.get(i).getId()));
 
         return new VideoListViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
-        YouTubeVideo record = videoList.get(i);
+        ShortVideo video = videoList.get(i);
 
         VideoListViewHolder holder = (VideoListViewHolder) viewHolder;
 
-        holder.tvVideoTitle.setText(record.getTitle());
-        holder.ivVideoThumb.setImageBitmap(record.getThumbnail());
+        holder.tvVideoTitle.setText(video.getTitle());
+        holder.tvDuration.setText(video.getDuration());
+        holder.tvChannelTitle.setText(video.getChannelTitle());
+        Picasso.get().load(video.getThumbnail()).into(holder.ivVideoThumb);
+//        holder.ivVideoThumb.setImageBitmap(video.getThumbnail());
     }
 
     @Override
     public int getItemCount() {
+        if(videoList == null)
+            return 0;
         return videoList.size();
     }
 
     private class VideoListViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tvVideoTitle;
+        TextView tvVideoTitle, tvDuration, tvChannelTitle;
         ImageView ivVideoThumb;
 
         public VideoListViewHolder(View view) {
             super(view);
             tvVideoTitle = view.findViewById(R.id.tvVideoTitle);
+            tvDuration = view.findViewById(R.id.tvVideoDuration);
+            tvChannelTitle = view.findViewById(R.id.tvChannelTitle);
             ivVideoThumb = view.findViewById(R.id.ivVideoThumb);
         }
     }
@@ -78,10 +83,9 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter {
         void onVideoClicked(View v, String videoUrl);
     }
 
-//    public void changeDataSource(List<Transaction> list){
-//        videoList.clear();
-//        videoList.addAll(list);
-//        notifyDataSetChanged();
-//    }
+    public void updateList(List<ShortVideo> list){
+        videoList = new ArrayList<>(list);
+        notifyDataSetChanged();
+    }
 }
 

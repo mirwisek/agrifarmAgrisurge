@@ -1,7 +1,6 @@
 package com.fyp.agrifarm.ui.custom;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,9 +9,8 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.fyp.agrifarm.News.NewsEntity;
+import com.fyp.agrifarm.repo.NewsEntity;
 import com.fyp.agrifarm.R;
-import com.fyp.agrifarm.beans.News;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;

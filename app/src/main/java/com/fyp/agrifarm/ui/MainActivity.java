@@ -11,14 +11,12 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,33 +30,26 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.fyp.agrifarm.News.DownloadNews;
-import com.fyp.agrifarm.News.NewsViewModel;
+import com.fyp.agrifarm.repo.DownloadNews;
+import com.fyp.agrifarm.repo.NewsViewModel;
 import com.fyp.agrifarm.R;
+import com.fyp.agrifarm.YoutubeMakeRequest;
+import com.fyp.agrifarm.beans.ShortVideo;
 import com.fyp.agrifarm.ui.custom.VideoRecyclerAdapter;
 import com.fyp.agrifarm.utils.FirebaseUtils;
+import com.fyp.agrifarm.utils.PicassoUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.material.navigation.NavigationView;
-import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.youtube.YouTubeScopes;
-import com.google.api.services.youtube.model.Channel;
-import com.google.api.services.youtube.model.ChannelListResponse;
-import com.google.firebase.auth.GoogleAuthCredential;
-import com.google.firebase.auth.GoogleAuthProvider;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -78,8 +69,6 @@ public class MainActivity extends AppCompatActivity
     private static final String[] SCOPES = { YouTubeScopes.YOUTUBE_READONLY };
 
     GoogleAccountCredential mCredential;
-    private TextView mOutputText;
-    private Button mCallApiButton;
     ProgressDialog mProgress;
 
     public static final String TAG = "MainActivity";
@@ -88,11 +77,13 @@ public class MainActivity extends AppCompatActivity
     private NewsViewModel newsViewModel;
     private static MainActivity mainActivityobj;
     private static Context appContext;
+    private FrameLayout progressLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         mainActivityobj=this;
         appContext = getApplicationContext();
         if (new NewsViewModel((Application) MainActivity.getAppContext()).getAllNotes()!=null){
@@ -100,20 +91,10 @@ public class MainActivity extends AppCompatActivity
         }
         new DownloadNews().execute();
 
-//        FrameLayout progressLayout = findViewById(R.id.progress_overlay);
-//        progressLayout.setVisibility(View.VISIBLE);
+        progressLayout = findViewById(R.id.progress_overlay);
+        progressLayout.setVisibility(View.VISIBLE);
 
-        FragmentManager fm = getSupportFragmentManager();
-        Fragment fragment = fm.findFragmentByTag(HomeFragment.TAG);
-        if (fragment == null) {
-            if (homeFragment == null)
-                homeFragment = HomeFragment.newInstance("a", "b");
-            fragment = homeFragment;
-            fm.beginTransaction()
-                    .disallowAddToBackStack()
-                    .replace(R.id.fragmentHolder, fragment, HomeFragment.TAG)
-                    .commit();
-        }
+
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -136,19 +117,22 @@ public class MainActivity extends AppCompatActivity
         ImageView uProfilePhoto = headerView.findViewById(R.id.ivDrawerProfile);
 
         // Turned off for debugging purpose
-//        FirebaseUtils.fetchCurrentUserFromFirebase(user -> {
-//            tvUserFullName.setText(user.getFullname());
-//            tvUserOccupation.setText(user.getOccupation());
-////            uAge.setText(userAge);
-////            uLocation.setText(userLocation);
-//            // TODO: The image is returned with a bit margin in left, TO FIX, ScaleType: CenterCrop clips the image instead
-//            PicassoUtils.loadCropAndSetImage(user.getPhotoUri(), uProfilePhoto, getResources());
-//            progressLayout.setVisibility(View.GONE);
-//        });
+        FirebaseUtils.fetchCurrentUserFromFirebase(user -> {
+            tvUserFullName.setText(user.getFullname());
+            tvUserOccupation.setText(user.getOccupation());
+//            uAge.setText(userAge);
+//            uLocation.setText(userLocation);
+            // TODO: The image is returned with a bit margin in left, TO FIX, ScaleType: CenterCrop clips the image instead
+            PicassoUtils.loadCropAndSetImage(user.getPhotoUri(), uProfilePhoto, getResources());
+            progressLayout.setVisibility(View.GONE);
+            getResultsFromApi();
+        });
 
         mCredential = GoogleAccountCredential.usingOAuth2(
                 this, Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
+
+
     }
     //  TODO: Remove the following 2 methods causing memory leaks
     public static MainActivity getactivity(){
@@ -162,16 +146,55 @@ public class MainActivity extends AppCompatActivity
         } else if (mCredential.getSelectedAccountName() == null) {
             chooseAccount();
         } else if (!isDeviceOnline()) {
-            mOutputText.setText("No network connection available.");
+            Toast.makeText(getApplicationContext(), "No network connection available", Toast.LENGTH_SHORT).show();
         } else {
-            new MakeRequestTask(mCredential).execute();
+
+            new YoutubeMakeRequest.MakeRequestTask(
+                    getApplicationContext(), progressLayout, mCredential,
+                    new YoutubeMakeRequest.MakeRequestTask.ResponseListener() {
+                        @Override
+                        public void onCancelled(Exception mLastError) {
+                            if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
+                                showGooglePlayServicesAvailabilityErrorDialog(
+                                        ((GooglePlayServicesAvailabilityIOException) mLastError)
+                                                .getConnectionStatusCode());
+                            } else if (mLastError instanceof UserRecoverableAuthIOException) {
+                                startActivityForResult(
+                                        ((UserRecoverableAuthIOException) mLastError).getIntent(),
+                                        MainActivity.REQUEST_AUTHORIZATION);
+                            } else {
+                                Log.e(TAG, "getResultsFromApi: " + mLastError.getMessage() );
+                                Toast.makeText(getApplicationContext(), "The following error occurred:\n"
+                                        + mLastError.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onVideosFetched(List<ShortVideo> videoList) {
+                            // Load HomeFragment upon fetching videos
+                            FragmentManager fm = getSupportFragmentManager();
+                            Fragment fragment = fm.findFragmentByTag(HomeFragment.TAG);
+                            if (fragment == null) {
+                                if (homeFragment == null)
+                                    homeFragment = new HomeFragment();
+                                fragment = homeFragment;
+                                fm.beginTransaction()
+                                        .disallowAddToBackStack()
+                                        .replace(R.id.fragmentHolder, fragment, HomeFragment.TAG)
+                                        .runOnCommit(() -> homeFragment.updateAdapter(videoList))
+                                        .commit();
+
+                            }
+                        }
+                    }
+            ).execute();
         }
     }
 
     private boolean isDeviceOnline() {
         ConnectivityManager connMgr =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        NetworkInfo networkInfo = Objects.requireNonNull(connMgr).getActiveNetworkInfo();
         return (networkInfo != null && networkInfo.isConnected());
     }
 
@@ -245,9 +268,8 @@ public class MainActivity extends AppCompatActivity
         switch(requestCode) {
             case REQUEST_GOOGLE_PLAY_SERVICES:
                 if (resultCode != RESULT_OK) {
-                    mOutputText.setText(
-                            "This app requires Google Play Services. Please install " +
-                                    "Google Play Services on your device and relaunch this app.");
+                    Toast.makeText(getApplicationContext(), "This app requires Google Play Services. Please install " +
+                            "Google Play Services on your device and relaunch this app.", Toast.LENGTH_LONG).show();
                 } else {
                     getResultsFromApi();
                 }
@@ -390,95 +412,4 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    /**
-     * An asynchronous task that handles the YouTube Data API call.
-     * Placing the API calls in their own task ensures the UI stays responsive.
-     */
-    private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
-        private com.google.api.services.youtube.YouTube mService = null;
-        private Exception mLastError = null;
-
-        MakeRequestTask(GoogleAccountCredential credential) {
-            HttpTransport transport = AndroidHttp.newCompatibleTransport();
-            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-            mService = new com.google.api.services.youtube.YouTube.Builder(
-                    transport, jsonFactory, credential)
-                    .setApplicationName("YouTube Data API Android Quickstart")
-                    .build();
-        }
-
-        /**
-         * Background task to call YouTube Data API.
-         * @param params no parameters needed for this task.
-         */
-        @Override
-        protected List<String> doInBackground(Void... params) {
-            try {
-                return getDataFromApi();
-            } catch (Exception e) {
-                mLastError = e;
-                cancel(true);
-                return null;
-            }
-        }
-
-        /**
-         * Fetch information about the "GoogleDevelopers" YouTube channel.
-         * @return List of Strings containing information about the channel.
-         * @throws IOException
-         */
-        private List<String> getDataFromApi() throws IOException {
-            // Get a list of up to 10 files.
-            List<String> channelInfo = new ArrayList<String>();
-            ChannelListResponse result = mService.channels().list("snippet,contentDetails,statistics")
-                    .setForUsername("GoogleDevelopers")
-                    .execute();
-            List<Channel> channels = result.getItems();
-            if (channels != null) {
-                Channel channel = channels.get(0);
-                channelInfo.add("This channel's ID is " + channel.getId() + ". " +
-                        "Its title is '" + channel.getSnippet().getTitle() + ", " +
-                        "and it has " + channel.getStatistics().getViewCount() + " views.");
-            }
-            return channelInfo;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            mOutputText.setText("");
-            mProgress.show();
-        }
-
-        @Override
-        protected void onPostExecute(List<String> output) {
-            mProgress.hide();
-            if (output == null || output.size() == 0) {
-                mOutputText.setText("No results returned.");
-            } else {
-                output.add(0, "Data retrieved using the YouTube Data API:");
-                mOutputText.setText(TextUtils.join("\n", output));
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mProgress.hide();
-            if (mLastError != null) {
-                if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
-                    showGooglePlayServicesAvailabilityErrorDialog(
-                            ((GooglePlayServicesAvailabilityIOException) mLastError)
-                                    .getConnectionStatusCode());
-                } else if (mLastError instanceof UserRecoverableAuthIOException) {
-                    startActivityForResult(
-                            ((UserRecoverableAuthIOException) mLastError).getIntent(),
-                            MainActivity.REQUEST_AUTHORIZATION);
-                } else {
-                    mOutputText.setText("The following error occurred:\n"
-                            + mLastError.getMessage());
-                }
-            } else {
-                mOutputText.setText("Request cancelled.");
-            }
-        }
-    }
 }

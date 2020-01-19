@@ -1,4 +1,4 @@
-package com.fyp.agrifarm.News;
+package com.fyp.agrifarm.repo;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
