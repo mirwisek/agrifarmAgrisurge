@@ -12,9 +12,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fyp.agrifarm.utils.PicassoUtils;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -27,6 +32,9 @@ public class UserInformationActivity extends AppCompatActivity {
     ImageView userimage;
     TextView textView;
     Button userfollowbutton;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseAuth auth;
+    String name;
 
 
     @Override
@@ -38,9 +46,17 @@ public class UserInformationActivity extends AppCompatActivity {
         userIntrestsViewPagerAdapter = new UserIntrestsViewPagerAdapter (getSupportFragmentManager());
         viewPager.setAdapter(userIntrestsViewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setClipToOutline(true);
         userimage = findViewById(R.id.userimage);
         textView = findViewById(R.id.username);
         userfollowbutton = findViewById(R.id.userfollowbutton);
+        auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+
+        if (user!=null)
+        {
+            name = user.getDisplayName();
+        }
 
         //Users Image
         Intent intent = getIntent();
@@ -60,10 +76,11 @@ public class UserInformationActivity extends AppCompatActivity {
 
         //Follow Button
 
+
         userfollowbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Toast.makeText(UserInformationActivity.this, ""+textView+"has been added to your followers", Toast.LENGTH_SHORT).show();
             }
         });
     }

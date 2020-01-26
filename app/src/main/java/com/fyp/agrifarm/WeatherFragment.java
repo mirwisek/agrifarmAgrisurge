@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -51,10 +52,10 @@ public class WeatherFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        LinearLayout parent = (LinearLayout) inflater.inflate(R.layout.content_weather, container,
+        ConstraintLayout parent = (ConstraintLayout) inflater.inflate(R.layout.content_weather, container,
                 false);
 
-        parent.findViewById(R.id.layout_rel).setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+//        parent.findViewById(R.id.layout_rel).setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
 
         RecyclerView rvHourlyForecast = parent.findViewById(R.id.rvHourlyForecast);
         WeatherHourlyRecyclerAdapter hourlyRecyclerAdapter =
@@ -73,12 +74,12 @@ public class WeatherFragment extends Fragment {
         RecyclerView rvDailyForecast = parent.findViewById(R.id.rvDailyForecast);
         WeatherDailyRecyclerAdapter dailyRecyclerAdapter =
                 new WeatherDailyRecyclerAdapter(getContext(), Arrays.asList(
-                        new WeatherDailyForecast("SUNDAY", "19", "SUNNY"),
-                        new WeatherDailyForecast("MONDAY", "19", "SUNNY"),
-                        new WeatherDailyForecast("TUESDAY", "19", "SUNNY"),
-                        new WeatherDailyForecast("WEDNESDAY", "19", "SUNNY"),
-                        new WeatherDailyForecast("THURSDAY", "19", "SUNNY"),
-                        new WeatherDailyForecast("FRIDAY", "19", "SUNNY")
+                        new WeatherDailyForecast("Sunday", "19", "Sunny"),
+                        new WeatherDailyForecast("Monday", "19", "Sunny"),
+                        new WeatherDailyForecast("Tuesday", "19", "Sunny"),
+                        new WeatherDailyForecast("Wednesday", "19", "Sunny"),
+                        new WeatherDailyForecast("Thursday", "19", "Sunny"),
+                        new WeatherDailyForecast("Friday", "19", "Sunny")
                 ));
         rvDailyForecast.setAdapter(dailyRecyclerAdapter);
 
