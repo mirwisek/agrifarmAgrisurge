@@ -29,12 +29,14 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.fyp.agrifarm.repo.DownloadNews;
 import com.fyp.agrifarm.repo.NewsViewModel;
 import com.fyp.agrifarm.R;
 import com.fyp.agrifarm.YoutubeMakeRequest;
 import com.fyp.agrifarm.beans.ShortVideo;
+import com.fyp.agrifarm.repo.VideoSharedViewModel;
 import com.fyp.agrifarm.ui.custom.VideoRecyclerAdapter;
 import com.fyp.agrifarm.utils.FirebaseUtils;
 import com.fyp.agrifarm.utils.PicassoUtils;
@@ -59,7 +61,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView.OnNavigationItemSelectedListener,
         HomeFragment.OnFragmentInteractionListener,
         WeatherFragment.OnFragmentInteractionListener,
-        VideoRecyclerAdapter.OnItemClickListener {
+        VideoRecyclerAdapter.OnItemClickListener{
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
@@ -78,6 +80,7 @@ public class MainActivity extends AppCompatActivity
     private static MainActivity mainActivityobj;
     private static Context appContext;
     private FrameLayout progressLayout;
+    private VideoSharedViewModel videoViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,8 +96,6 @@ public class MainActivity extends AppCompatActivity
 
         progressLayout = findViewById(R.id.progress_overlay);
         progressLayout.setVisibility(View.VISIBLE);
-
-
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -128,6 +129,21 @@ public class MainActivity extends AppCompatActivity
             getResultsFromApi();
         });
 
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment fragment = fm.findFragmentByTag(HomeFragment.TAG);
+        if (fragment == null) {
+            if (homeFragment == null)
+                homeFragment = new HomeFragment();
+            fragment = homeFragment;
+            fm.beginTransaction()
+                    .disallowAddToBackStack()
+                    .replace(R.id.fragmentHolder, fragment, HomeFragment.TAG)
+                    .commit();
+        }
+
+        videoViewModel = ViewModelProviders.of(this)
+                        .get(VideoSharedViewModel.class);
+
         mCredential = GoogleAccountCredential.usingOAuth2(
                 this, Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
@@ -148,7 +164,6 @@ public class MainActivity extends AppCompatActivity
         } else if (!isDeviceOnline()) {
             Toast.makeText(getApplicationContext(), "No network connection available", Toast.LENGTH_SHORT).show();
         } else {
-
             new YoutubeMakeRequest.MakeRequestTask(
                     getApplicationContext(), progressLayout, mCredential,
                     new YoutubeMakeRequest.MakeRequestTask.ResponseListener() {
@@ -163,7 +178,6 @@ public class MainActivity extends AppCompatActivity
                                         ((UserRecoverableAuthIOException) mLastError).getIntent(),
                                         MainActivity.REQUEST_AUTHORIZATION);
                             } else {
-                                Log.e(TAG, "getResultsFromApi: " + mLastError.getMessage() );
                                 Toast.makeText(getApplicationContext(), "The following error occurred:\n"
                                         + mLastError.getMessage(), Toast.LENGTH_SHORT).show();
                             }
@@ -171,20 +185,10 @@ public class MainActivity extends AppCompatActivity
 
                         @Override
                         public void onVideosFetched(List<ShortVideo> videoList) {
-                            // Load HomeFragment upon fetching videos
-                            FragmentManager fm = getSupportFragmentManager();
-                            Fragment fragment = fm.findFragmentByTag(HomeFragment.TAG);
-                            if (fragment == null) {
-                                if (homeFragment == null)
-                                    homeFragment = new HomeFragment();
-                                fragment = homeFragment;
-                                fm.beginTransaction()
-                                        .disallowAddToBackStack()
-                                        .replace(R.id.fragmentHolder, fragment, HomeFragment.TAG)
-                                        .runOnCommit(() -> homeFragment.updateAdapter(videoList))
-                                        .commit();
+                            // Cache into the database for ROOM
 
-                            }
+                            ShortVideo[] videoArr= videoList.toArray(new ShortVideo[0]);
+                            videoViewModel.insert(videoArr);
                         }
                     }
             ).execute();
@@ -375,24 +379,12 @@ public class MainActivity extends AppCompatActivity
         Fragment fragment = fm.findFragmentByTag(WeatherFragment.TAG);
         if (fragment == null) {
             if (weatherFragment == null)
-                weatherFragment = WeatherFragment.newInstance("a", "b");
+                weatherFragment = new WeatherFragment();
             fragment = weatherFragment;
         }
 
         fm.beginTransaction()
                 .replace(R.id.fragmentHolder, fragment, WeatherFragment.TAG)
-                .addToBackStack(HomeFragment.TAG)
-                .commit();
-    }
-
-    @Override
-    public void onVideoClicked(View v, final String videoUrl) {
-        // TODO: Refactor YOUTUBE FRAGMENT: AndroidX
-        YoutubeFragment youtubeFragment = YoutubeFragment.newInstance(videoUrl, "b");
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragmentHolder, youtubeFragment, YoutubeFragment.TAG)
                 .addToBackStack(HomeFragment.TAG)
                 .commit();
     }
@@ -404,12 +396,21 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-
+        // Do nothing
     }
 
     @Override
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-
+        // Do nothing
     }
 
+    @Override
+    public void onVideoClicked(ShortVideo video) {
+        videoViewModel.selectVideo(video);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentHolder, new YoutubeFragment(), YoutubeFragment.TAG)
+                .addToBackStack(HomeFragment.TAG)
+                .commit();
+    }
 }

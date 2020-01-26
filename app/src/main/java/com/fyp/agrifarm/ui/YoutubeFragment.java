@@ -5,28 +5,33 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.fyp.agrifarm.R;
 import com.fyp.agrifarm.api.DeveloperKey;
+import com.fyp.agrifarm.repo.VideoSharedViewModel;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
-//import com.firebase.login.api.DeveloperKey;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 // TODO: 2. Refactor YOUTUBE FRAGMENT: AndroidX
 public class YoutubeFragment extends Fragment {
 
-    private static final String ARG_VIDEO_URL = "vidUrl";
-    private static final String ARG_PARAM2 = "param2";
     public static final String TAG = "YoutubeFragment";
+    private VideoSharedViewModel videoViewModel;
 
-    private String videoUrl;
-    private String mParam2;
+    @BindView(R.id.tvPlayerVideoTitle) TextView tvTitle;
+    @BindView(R.id.tvPlayerVideoPublishDate) TextView tvPublishDate;
+    @BindView(R.id.tvPlayerVideoPublisher) TextView tvPublisher;
+    @BindView(R.id.tvPlayerVideoTags) TextView tvTags;
 
 //    private OnFragmentInteractionListener mListener;
 
@@ -34,65 +39,59 @@ public class YoutubeFragment extends Fragment {
         // Required empty public constructor
     }
 
-    static YoutubeFragment newInstance(final String videoUrl, String param2) {
-        final YoutubeFragment fragment = new YoutubeFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_VIDEO_URL, videoUrl);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            videoUrl = getArguments().getString(ARG_VIDEO_URL);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        LinearLayout parent = (LinearLayout) inflater.inflate(R.layout.content_youtube, container,
+        ConstraintLayout parent = (ConstraintLayout) inflater.inflate(R.layout.content_youtube, container,
                 false);
+
+        ButterKnife.bind(this, parent);
 
         YouTubePlayerSupportFragment youFragment = YouTubePlayerSupportFragment.newInstance();
 //        YoutubeFragment youtubeFragment = YoutubeFragment.newInstance(videoUrl,"none");
 //
-        getChildFragmentManager().beginTransaction().replace(R.id.fragmentYoutube, youFragment).commit();
+        getChildFragmentManager().beginTransaction()
+                .replace(R.id.fragmentYoutube, youFragment)
+                .commit();
 
-        youFragment.initialize(DeveloperKey.YOUTUBE_KEY, new YouTubePlayer.OnInitializedListener() {
-            @Override
-            public void onInitializationFailure(YouTubePlayer.Provider provider,
-                                                YouTubeInitializationResult youTubeInitializationResult) {
-                Toast.makeText(getContext(), "Couldn't load video!", Toast.LENGTH_SHORT).show();
-            }
+        videoViewModel =
+                ViewModelProviders.of(getActivity()).get(VideoSharedViewModel.class);
+        videoViewModel.getSelectedVideo().observe(getViewLifecycleOwner(), video -> {
 
-            @Override
-            public void onInitializationSuccess(YouTubePlayer.Provider provider,
-                                                YouTubePlayer youTubePlayer, boolean wasRestored) {
-                if (!wasRestored) {
-                    //I assume the below String value is your video id
-                    Toast.makeText(getContext(), "Video : " + videoUrl, Toast.LENGTH_SHORT).show();
-                    youTubePlayer.cueVideo(videoUrl);
-                    youTubePlayer.play();
+            tvTitle.setText(video.getTitle());
+            tvPublisher.setText(video.getChannelTitle());
+            tvPublishDate.setText("Published: " + video.getPublishedDateString());
+//            Log.i(TAG, "onCreateView: " + video.getPublishedDate() == null ? "NO" : video.getPublishedDate().toString());
 
-                    youTubePlayer.setOnFullscreenListener(new YouTubePlayer.OnFullscreenListener() {
-//                        @Override
-                        public void onFullscreen(boolean b) {
-                            Log.i(TAG, "Fullscreen Changed");
-                        }
-                    });
-
+            youFragment.initialize(DeveloperKey.YOUTUBE_KEY, new YouTubePlayer.OnInitializedListener() {
+                @Override
+                public void onInitializationFailure(YouTubePlayer.Provider provider,
+                                                    YouTubeInitializationResult youTubeInitializationResult) {
+                    Toast.makeText(getContext(), "Couldn't load video!", Toast.LENGTH_SHORT).show();
                 }
-            }
+
+                @Override
+                public void onInitializationSuccess(YouTubePlayer.Provider provider,
+                                                    YouTubePlayer youTubePlayer, boolean wasRestored) {
+                    if (!wasRestored) {
+                        youTubePlayer.loadVideo(video.getId());
+
+                        youTubePlayer.setOnFullscreenListener(new YouTubePlayer.OnFullscreenListener() {
+                            //                        @Override
+                            public void onFullscreen(boolean b) {
+                                Log.i(TAG, "Fullscreen Changed");
+                            }
+                        });
+
+                    }
+                }
+            });
+
         });
 
         return parent;
     }
+
 
 //    @Override
 //    public void onAttach(Context context) {

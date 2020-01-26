@@ -12,12 +12,14 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.fyp.agrifarm.repo.VideoSharedViewModel;
 import com.fyp.agrifarm.ui.custom.FirestoreUserRecyclerAdapter;
 import com.fyp.agrifarm.repo.NewsEntity;
 import com.fyp.agrifarm.repo.NewsViewModel;
@@ -33,16 +35,17 @@ import com.google.firebase.firestore.Query;
 import java.util.List;
 
 public class HomeFragment extends Fragment implements
-        NewsRecyclerAdapter.OnNewsClinkListener {
+        NewsRecyclerAdapter.OnNewsClinkListener{
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     public static final String TAG = "HomeFragment";
-    private NewsViewModel noteViewModel;
-    List<NewsEntity> newsList;
     LiveData<List<NewsEntity>> listNewsLive;
     RecyclerView rvNews;
+    private VideoSharedViewModel videoViewModel;
+    private NewsViewModel newsViewModel;
     private VideoRecyclerAdapter videoRecyclerAdapter;
+    private NewsRecyclerAdapter newsRecyclerAdapter;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference userRef = db.collection("users");
@@ -97,39 +100,18 @@ public class HomeFragment extends Fragment implements
         rvUsers.setHasFixedSize(true);
 //      rvUsers.setLayoutManager(new LinearLayoutManager(this.getContext()));
         rvUsers.setAdapter(adapter);
-//        UsersRecyclerAdapter usersAdapter = new UsersRecyclerAdapter(getContext());
-//        rvUsers.setAdapter(usersAdapter);
-//
-//        ArrayList<DummyUser> users = new ArrayList<>();
-//        users.add(new DummyUser("Andrew", R.drawable.one));
-//        users.add(new DummyUser("John Gibberson", R.drawable.twoo));
-//        users.add(new DummyUser("Akona Mattata", R.drawable.three));
-//        users.add(new DummyUser("Philip J. St.", R.drawable.four));
-//        users.add(new DummyUser("Frankenstein", R.drawable.five));
-//        users.add(new DummyUser("Farmer", R.drawable.sixx));
-//
-//        usersAdapter.changeDataSource(users);
 
 
-        noteViewModel = ViewModelProviders.of(this).get(NewsViewModel.class);
+        newsRecyclerAdapter =
+                new NewsRecyclerAdapter(getContext(),this);
+        rvNews.setAdapter(newsRecyclerAdapter);
 
         videoRecyclerAdapter =
                 new VideoRecyclerAdapter(getContext(), null);
         rvVideo.setAdapter(videoRecyclerAdapter);
 
-        NewsRecyclerAdapter newsRecyclerAdapter =
-                new NewsRecyclerAdapter(getContext(),this);
-        rvNews.setAdapter(newsRecyclerAdapter);
-
-        listNewsLive = noteViewModel.getAllNotes();
-        // I've used method reference here, that is:
-        // newsRecyclerAdapter will call changeDataSource and pass List<NewsEntity> to is
-        listNewsLive.observe(this, (List<NewsEntity> list) -> {
-            newsRecyclerAdapter.changeDataSource(list);
-        });
         TextView tvWeatherForecast = parent.findViewById(R.id.tvWeatherForecast);
         tvWeatherForecast.setOnClickListener(v -> mListener.onForecastClick(v));
-
 
         return parent;
     }
@@ -147,6 +129,24 @@ public class HomeFragment extends Fragment implements
         adapter.stopListening();
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        // Performing this task here when UI creation is completed
+        newsViewModel =
+                ViewModelProviders.of(getActivity()).get(NewsViewModel.class);
+
+        videoViewModel =
+                ViewModelProviders.of(getActivity()).get(VideoSharedViewModel.class);
+
+        newsViewModel.getAllNotes().observe(getViewLifecycleOwner(),
+                newsRecyclerAdapter::changeDataSource);
+
+        // getViewLifecycleOwner will limit life cycle of the ViewModel to View
+        videoViewModel.getAllVideos().observe(getViewLifecycleOwner(), videoList -> {
+            videoRecyclerAdapter.updateList(videoList);
+        });
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -173,20 +173,6 @@ public class HomeFragment extends Fragment implements
         intent.putExtra("image",listNewsLive.getValue().get(position).getUrl());
         intent.putExtra("date",listNewsLive.getValue().get(position).getDate());
         startActivity(intent);
-    }
-
-//    @Override
-//    public void onCancelled(Exception error) {
-//        if (error != null) {
-//            Toast.makeText(getContext(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-//        } else {
-//            Toast.makeText(getContext(), "Request cancelled", Toast.LENGTH_SHORT).show();
-//        }
-//    }
-
-    public void updateAdapter(List<ShortVideo> videoList) {
-        Log.i("NEW LIST", "updateList: " + videoList.size());
-        videoRecyclerAdapter.updateList(videoList);
     }
 
     public interface OnFragmentInteractionListener {

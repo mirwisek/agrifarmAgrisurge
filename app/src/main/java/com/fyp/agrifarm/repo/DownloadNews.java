@@ -1,8 +1,14 @@
 package com.fyp.agrifarm.repo;
 
+import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
@@ -15,9 +21,17 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class DownloadNews extends AsyncTask<Void, Void, Void> {
+
     String imagelink="";
+//    NewsViewModel viewModel;
+
+    // TODO: Rectify Severe Leakage by Modifying Async Task DownloadNews
+//    public DownloadNews(AppCompatActivity activity){
+//        viewModel = new ViewModelProvider(activity).get(NewsViewModel.class);
+//    }
+
     protected Void doInBackground(Void... voids) {
-        String[] links=new String[] {
+        String[] links = new String[] {
                 "http://blog.agcocorp.com/category/agco/feed/",
                 "http://www.mediterraneadeagroquimicos.cat/wordpress_2/feed/",
                 "http://sustainableagriculture.net/blog/feed/",
@@ -72,8 +86,9 @@ public class DownloadNews extends AsyncTask<Void, Void, Void> {
                         }
                     }
 
+
                     NewsViewModel ViewModel = new NewsViewModel((Application) MainActivity.getAppContext());
-                    ViewModel.insert(new NewsEntity(title, description, imagelink,publishdate));
+                    ViewModel.insert(new NewsEntity(title, description, imagelink, publishdate));
                     imagelink="";
                 }
             }, error -> {

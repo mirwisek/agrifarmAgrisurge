@@ -40,8 +40,6 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter {
         View view = LayoutInflater.from(context)
                 .inflate(R.layout.rv_item_video, viewGroup, false);
 
-        view.setOnClickListener(v -> mListener.onVideoClicked(v, videoList.get(i).getId()));
-
         return new VideoListViewHolder(view);
     }
 
@@ -50,6 +48,8 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter {
         ShortVideo video = videoList.get(i);
 
         VideoListViewHolder holder = (VideoListViewHolder) viewHolder;
+
+        holder.itemView.setOnClickListener(v -> mListener.onVideoClicked(videoList.get(i)));
 
         holder.tvVideoTitle.setText(video.getTitle());
         holder.tvDuration.setText(video.getDuration());
@@ -80,7 +80,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter {
     }
 
     public interface OnItemClickListener {
-        void onVideoClicked(View v, String videoUrl);
+        void onVideoClicked(ShortVideo video);
     }
 
     public void updateList(List<ShortVideo> list){

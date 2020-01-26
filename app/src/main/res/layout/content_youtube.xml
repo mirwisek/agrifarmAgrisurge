@@ -1,22 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout3"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".ui.HomeFragment">
 
     <FrameLayout
         android:id="@+id/fragmentYoutube"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="300dp"
-        android:layout_marginBottom="10dp"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
     <TextView
-        android:id="@+id/tvYoutubeVideoTitle"
-        android:layout_width="match_parent"
+        android:id="@+id/tvPlayerVideoTags"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:padding="10dp"/>
+        android:text="#TagNumberOne, #TagNumberTwo"
+        android:textStyle="italic"
+        android:paddingTop="10dp"
+        android:paddingBottom="5dp"
+        android:textColor="@color/com_facebook_blue"
+        app:layout_constraintStart_toStartOf="@+id/startGuide"
+        app:layout_constraintEnd_toStartOf="@id/endGuide"
+        app:layout_constraintTop_toBottomOf="@+id/fragmentYoutube" />
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/tvPlayerVideoTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorBlack"
+        android:text="AgriFarm - Template video place holder"
+        android:paddingBottom="10dp"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@id/endGuide"
+        app:layout_constraintStart_toStartOf="@+id/startGuide"
+        app:layout_constraintTop_toBottomOf="@+id/tvPlayerVideoTags" />
+
+
+    <TextView
+        android:id="@+id/tvPlayerVideoViews"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="38,231 Views"
+        app:layout_constraintStart_toStartOf="@+id/startGuide"
+        app:layout_constraintEnd_toStartOf="@id/tvPlayerVideoLikes"
+        app:layout_constraintTop_toBottomOf="@+id/tvPlayerVideoTitle" />
+
+    <TextView
+        android:id="@+id/tvPlayerVideoPublishDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Published: 12/11/2019"
+        app:layout_constraintStart_toStartOf="@+id/startGuide"
+        app:layout_constraintEnd_toEndOf="@id/tvPlayerVideoViews"
+        app:layout_constraintTop_toBottomOf="@+id/tvPlayerVideoViews" />
+
+
+    <TextView
+        android:id="@+id/tvPlayerVideoPublisher"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:text="David Macrooee"
+        android:textColor="@color/colorBlack"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/tvPlayerVideoPublishDate"
+        app:layout_constraintEnd_toEndOf="@id/tvPlayerVideoViews"
+        app:layout_constraintStart_toStartOf="@+id/startGuide" />
+
+    <TextView
+        android:id="@+id/tvPlayerVideoLikes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:drawableTop="@drawable/ic_thumb_up"
+        android:paddingLeft="30dp"
+        android:paddingTop="10dp"
+        android:paddingRight="15dp"
+        android:paddingBottom="10dp"
+        android:text="3.4K"
+        app:layout_constraintEnd_toStartOf="@+id/tvPlayerVideoDislikes"
+        app:layout_constraintTop_toTopOf="@id/tvPlayerVideoViews" />
+
+    <TextView
+        android:id="@+id/tvPlayerVideoDislikes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:drawableTop="@drawable/ic_thumb_down"
+        android:paddingLeft="15dp"
+        android:paddingTop="10dp"
+        android:paddingRight="30dp"
+        android:paddingBottom="10dp"
+        android:text="3.4K"
+        app:layout_constraintEnd_toStartOf="@+id/endGuide"
+        app:layout_constraintTop_toTopOf="@id/tvPlayerVideoLikes"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/startGuide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="10dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/endGuide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="10dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,18 +6,19 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
+import com.fyp.agrifarm.beans.ShortVideo;
+
 import java.util.List;
 
 @Dao
-public interface NewsDoa {
+public interface VideoDao {
 
-    // If primary keys clash occurs, replace with latest data
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(NewsEntity note);
+    void insert(ShortVideo video);
 
-    @Query("DELETE FROM note_table")
-    void deleteAllNotes();
+    @Query("DELETE FROM " + ShortVideo.TABLE_NAME)
+    void deleteAll();
 
-    @Query("SELECT * FROM note_table ")
-    LiveData<List<NewsEntity>> getAllNotes();
+    @Query("SELECT * FROM " + ShortVideo.TABLE_NAME)
+    LiveData<List<ShortVideo>> getAllVideos();
 }

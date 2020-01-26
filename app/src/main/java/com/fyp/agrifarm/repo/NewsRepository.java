@@ -10,10 +10,10 @@ import java.util.List;
 public class NewsRepository {
     private NewsDoa newsDao;
     private LiveData<List<NewsEntity>> allNotes;
-    NewsDatabase database;
+    ViewModelDatabase database;
 
     public NewsRepository(Application application) {
-        database = NewsDatabase.getInstance(application);
+        database = ViewModelDatabase.getInstance(application);
         newsDao = database.newsDoa();
         allNotes = newsDao.getAllNotes();
     }

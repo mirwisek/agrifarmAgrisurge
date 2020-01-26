@@ -1,16 +1,46 @@
 package com.fyp.agrifarm.beans;
 
-import com.google.api.client.util.DateTime;
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
+import com.google.api.client.util.DateTime;
+import com.google.gson.internal.bind.util.ISO8601Utils;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Entity(tableName = ShortVideo.TABLE_NAME)
 public class ShortVideo {
 
-    private String id,title,thumbnail, channelTitle, duration;
+    public static final String TABLE_NAME = "videosTable";
+
+    @PrimaryKey
+    @NonNull
+    @ColumnInfo(name = "id")
+    private String id = "DUMMY_VALUE";
+
+    @ColumnInfo(name = "title")
+    private String title;
+
+    @ColumnInfo(name = "thumbnail")
+    private String thumbnail;
+
+    @ColumnInfo(name = "channelTitle")
+    private String channelTitle;
+
+    @ColumnInfo(name = "duration")
+    private String duration;
+
+    @ColumnInfo(name = "publishedDate")
     private DateTime publishedDate;
 
-    public ShortVideo(String id, String title, DateTime publishedDate, String thumbnail, String channelTitle,
+    public ShortVideo(@NonNull String id, String title, DateTime publishedDate, String thumbnail, String channelTitle,
                       String duration) {
         this.id = id;
         this.title = title;
@@ -20,6 +50,7 @@ public class ShortVideo {
         this.duration = duration;
     }
 
+    @Ignore
     public ShortVideo() {
     }
 
@@ -47,14 +78,6 @@ public class ShortVideo {
         this.thumbnail = thumbnail;
     }
 
-    public DateTime getPublishDate() {
-        return publishedDate;
-    }
-
-    public void setPublishDate(DateTime publishDate) {
-        this.publishedDate = publishDate;
-    }
-
     public String getChannelTitle() {
         return channelTitle;
     }
@@ -73,6 +96,13 @@ public class ShortVideo {
 
     public DateTime getPublishedDate() {
         return publishedDate;
+    }
+
+    public String getPublishedDateString(){
+        SimpleDateFormat outputDateFormat = new SimpleDateFormat("DD, MMM, YYYY", Locale.US);
+        Date d = new Date(publishedDate.getValue());
+
+        return outputDateFormat.format(d);
     }
 
     public void setPublishedDate(DateTime publishedDate) {
