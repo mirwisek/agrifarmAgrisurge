@@ -24,6 +24,7 @@ import com.fyp.agrifarm.News.NewsEntity;
 import com.fyp.agrifarm.News.NewsViewModel;
 import com.fyp.agrifarm.beans.DummyUser;
 import com.fyp.agrifarm.beans.News;
+import com.fyp.agrifarm.beans.User;
 import com.fyp.agrifarm.beans.YouTubeVideo;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -91,13 +92,14 @@ public class HomeFragment extends Fragment implements NewsRecyclerAdapter.OnNews
 
         // Inflating users
         Query query = userRef;
-        FirestoreRecyclerOptions<DummyUser> options = new FirestoreRecyclerOptions.Builder<DummyUser>()
-                .setQuery(userRef,DummyUser.class)
+        FirestoreRecyclerOptions<User> options = new FirestoreRecyclerOptions.Builder<User>()
+                .setQuery(userRef,User.class)
                 .build();
         adapter = new FirestoreUserRecyclerAdapter(options,getContext());
         rvUsers.setHasFixedSize(true);
 //      rvUsers.setLayoutManager(new LinearLayoutManager(this.getContext()));
         rvUsers.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
 //        UsersRecyclerAdapter usersAdapter = new UsersRecyclerAdapter(getContext());
 //        rvUsers.setAdapter(usersAdapter);
 //
@@ -113,10 +115,12 @@ public class HomeFragment extends Fragment implements NewsRecyclerAdapter.OnNews
         adapter.setOnItemClickListener(new FirestoreUserRecyclerAdapter.OnItemClickListener() {
             @Override
             public void OnItemClick(DocumentSnapshot documentSnapshot, int position) {
-                DummyUser dummyUser = documentSnapshot.toObject(DummyUser.class);
+                User User = documentSnapshot.toObject(User.class);
+                String docid  = documentSnapshot.getId();
                 Intent intent = new Intent(getContext(), UserInformationActivity.class);
-                intent.putExtra("username",dummyUser.getFullname());
-                intent.putExtra("userphoto",dummyUser.getPhotoUri());
+                intent.putExtra("username",User.getFullname());
+                intent.putExtra("userphoto",User.getPhotoUri());
+                intent.putExtra("docid",docid);
                 startActivityForResult(intent,20);
             }
         });
