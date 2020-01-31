@@ -31,7 +31,6 @@ public class FollowingFragment extends Fragment {
     private CollectionReference userRef = db.collection("users");
     private String uid;
     private ArrayList<Following> data;
-    String Followingname;
     FollowingRecyclerViewAdapter followingRecyclerViewAdapter;
 
 

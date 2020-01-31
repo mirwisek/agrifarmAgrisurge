@@ -120,6 +120,7 @@ public class HomeFragment extends Fragment implements NewsRecyclerAdapter.OnNews
                 Intent intent = new Intent(getContext(), UserInformationActivity.class);
                 intent.putExtra("username",User.getFullname());
                 intent.putExtra("userphoto",User.getPhotoUri());
+                Log.i("uri",User.getPhotoUri());
                 intent.putExtra("docid",docid);
                 startActivityForResult(intent,20);
             }

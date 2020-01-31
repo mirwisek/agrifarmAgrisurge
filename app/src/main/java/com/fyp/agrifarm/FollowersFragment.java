@@ -41,7 +41,6 @@ public class FollowersFragment extends Fragment {
         FrameLayout parent = (FrameLayout) inflater.inflate(R.layout.fragment_followers, container, false);
         //Inflating Views
         FollowersRecyclerView = parent.findViewById(R.id.FollowersRecyclerView);
-
         FollowersRecyclerView.setAdapter(followersRecyclerViewAdapter);
         FollowersRecyclerView.setHasFixedSize(true);
 
@@ -49,7 +48,6 @@ public class FollowersFragment extends Fragment {
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             DocId = bundle.getString("docid");
-            Log.i("Eroor", DocId);
             Toast.makeText(getContext(), "" + DocId, Toast.LENGTH_SHORT).show();
 
             userRef.document(DocId).collection("follow")
@@ -61,9 +59,9 @@ public class FollowersFragment extends Fragment {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     String uid = document.get("Uid").toString();
                                     String username = document.get("Username").toString();
-                                    Followers holder = new Followers(uid, username);
+                                    String image = document.get("photouri").toString();
+                                    Followers holder = new Followers(uid, username,image);
                                     data.add(holder);
-                                    Toast.makeText(getContext(), "" + data.size(), Toast.LENGTH_SHORT).show();
                                 }
                                 followersRecyclerViewAdapter.notifyDataSetChanged();
 

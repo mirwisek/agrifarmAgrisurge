@@ -2,6 +2,7 @@ package com.fyp.agrifarm;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -34,7 +35,10 @@ public class UserInformationActivity extends AppCompatActivity {
     Bundle bundle;
     String SingedInUserName;
     String SignedInUserUid;
+    String SingedInUserImage;
+
     String CureentUserDocid;
+
 
 
     @Override
@@ -51,7 +55,9 @@ public class UserInformationActivity extends AppCompatActivity {
         if (user != null) {
             SingedInUserName = user.getDisplayName();
             SignedInUserUid = user.getUid();
+            SingedInUserImage = user.getPhotoUrl().toString();
         }
+
         //Users Image
         Intent intent = getIntent();
         CureentUserDocid = intent.getStringExtra("docid");
@@ -70,7 +76,7 @@ public class UserInformationActivity extends AppCompatActivity {
             }
         });
 
-        //Sending DOC ID TO THE FOLLOWERS FRAGMENR
+        //Sending DOC ID TO THE PAGER ADAPTER
 
         bundle = new Bundle();
         bundle.putString("docid", CureentUserDocid);
@@ -83,6 +89,7 @@ public class UserInformationActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setClipToOutline(true);
 
+        //FOLLOW BUTTON
 
         userfollowbutton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,15 +97,15 @@ public class UserInformationActivity extends AppCompatActivity {
                 if (user == null) {
                     // No user is signed in
                 } else {
-                    Toast.makeText(UserInformationActivity.this, "" + CureentUserDocid.toString(), Toast.LENGTH_SHORT).show();
-//                    db.collection("users").document(CureentUserDocid).set(CurrentUserinputdata);
-//                    db.collection("users").document(SignedInUserUid).set(SingedInUserData);
-
+                    //For adding followers
                     Map<String, String> followdata = new HashMap<>();
                     followdata.put("Uid", SignedInUserUid);
                     followdata.put("Username", SingedInUserName);
+                    followdata.put("photouri",SingedInUserImage);
 
                     db.collection("users").document(CureentUserDocid).collection("follow").add(followdata);
+
+                    //For adding Following
 
                     Map<String, String> followingdata = new HashMap<>();
                     followingdata.put("Username", CurrentUserName);

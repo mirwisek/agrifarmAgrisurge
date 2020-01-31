@@ -13,7 +13,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:listitem="@layout/rv_item_followers"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
+        app:spanCount="2"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        android:paddingStart="37dp"
+        >
+
     </androidx.recyclerview.widget.RecyclerView>
 
 </FrameLayout>
