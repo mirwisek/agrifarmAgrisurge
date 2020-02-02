@@ -1,158 +1,254 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<androidx.coordinatorlayout.widget.CoordinatorLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".ui.MainActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.MainActivity"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <ImageView
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_gravity="center"
-        android:layout_marginBottom="-20dp"
-        android:src="@drawable/ic_plant"/>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="140dp"
-        android:layout_gravity="center"
-        android:background="@drawable/ic_weather_widget_shape"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:paddingStart="25dp"
-        android:paddingTop="20dp">
-
-        <ImageView
-            android:id="@+id/ivWeatherIcon"
-            android:layout_width="90dp"
-            android:layout_height="70dp"
-            android:layout_marginEnd="20dp"
-            android:src="@drawable/ic_w_partly_cloudy"
-            android:layout_alignParentEnd="true"/>
-
-        <TextView
-            android:id="@+id/tvWeatherForecast"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Weather Forecast"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="@color/colorWhite"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="8dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:drawableRight="@drawable/ic_arrow_next_resized"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Partly Cloudy"
-            android:textAllCaps="true"
-            android:textColor="@color/colorWhite"
-            android:textSize="12sp"
-            android:layout_marginRight="24dp"
-            android:layout_marginBottom="10dp"
-            android:layout_alignParentRight="true"
-            android:layout_above="@id/tvWeatherForecast"/>
-
-        <TextView
-            android:id="@+id/tvWeatherTemp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="22&#xb0;"
-            android:textColor="@color/colorWhite"
-            android:textStyle="bold"
-            android:textSize="30sp"/>
-
-        <TextView
-            android:id="@+id/tvWeatherDay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Today"
-            android:layout_below="@id/tvWeatherTemp"
-            android:textColor="@color/colorWhite"
-            android:textSize="14sp"/>
-
-        <TextView
-            android:id="@+id/tvWeatherHumidity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="30%"
-            android:layout_below="@id/tvWeatherDay"
-            android:textColor="@color/colorWhite"
-            android:drawableLeft="@drawable/ic_drop_resized"
-            android:drawablePadding="6dp"
-            android:textSize="12sp"/>
-
-    </RelativeLayout>
-
-    <ScrollView
-        android:layout_width="match_parent"
+    <ScrollView android:layout_width="match_parent"
         android:layout_height="match_parent" >
-        <LinearLayout
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <ImageView
+                android:id="@+id/ivHomeLogo"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_plant"
+                app:layout_constraintBottom_toTopOf="@+id/guideHWidgetStart"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/guideHWidgetStart" />
+
+
+            <ImageView
+                android:id="@+id/ivWidgetBg"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:scaleType="fitXY"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:src="@drawable/ic_weather_widget_shape"
+                app:layout_constraintBottom_toTopOf="@+id/guideHWidgetEnd"
+                app:layout_constraintEnd_toStartOf="@id/guideVertEnd"
+                app:layout_constraintStart_toStartOf="@id/guideVertStart"
+                app:layout_constraintTop_toTopOf="@+id/guideHWidgetStart" />
+
+
             <TextView
+                android:id="@+id/tvWeatherTemp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="@id/guideVertStart"
+                app:layout_constraintTop_toTopOf="@id/ivWidgetBg"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="15dp"
+                android:text="22&#xb0;"
+                android:textColor="@color/colorWhite"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+
+            <TextView
+                android:id="@+id/tvWeatherDay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tvWeatherTemp"
+                android:text="Today"
+                android:textColor="@color/colorWhite"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="@+id/tvWeatherTemp"
+                app:layout_constraintTop_toBottomOf="@id/tvWeatherTemp" />
+
+            <TextView
+                android:id="@+id/tvWeatherHumidity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="30%"
+                android:layout_below="@id/tvWeatherDay"
+                android:textColor="@color/colorWhite"
+                android:drawableLeft="@drawable/ic_drop_resized"
+                android:drawablePadding="6dp"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@id/tvWeatherTemp"
+                app:layout_constraintTop_toBottomOf="@id/tvWeatherDay"/>
+
+
+            <ImageView
+                android:id="@+id/ivWeatherIcon"
+                android:layout_width="90dp"
+                android:layout_height="70dp"
+                android:layout_marginEnd="20dp"
+                android:src="@drawable/ic_w_partly_cloudy"
+                app:layout_constraintEnd_toStartOf="@id/guideVertEnd"
+                app:layout_constraintTop_toTopOf="@id/tvWeatherTemp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Partly Cloudy"
+                android:textAllCaps="true"
+                android:textColor="@color/colorWhite"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="@id/ivWeatherIcon"
+                app:layout_constraintStart_toStartOf="@+id/ivWeatherIcon"
+                app:layout_constraintTop_toBottomOf="@id/ivWeatherIcon" />
+
+            <TextView
+                android:id="@+id/tvWeatherForecast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Weather Forecast"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorWhite"
+                android:paddingEnd="10dp"
+                android:paddingBottom="8dp"
+                android:drawableEnd="@drawable/ic_arrow_next_resized"
+                app:layout_constraintEnd_toStartOf="@id/guideVertEnd"
+                app:layout_constraintBottom_toBottomOf="@id/ivWidgetBg"/>
+
+
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideVertStart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="20dp" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideVertEnd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_end="20dp" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideHWidgetStart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_begin="30dp" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideHWidgetEnd"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.22"/>
+
+            <TextView
+                android:id="@+id/tvHintPrices"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Today's market prices"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:textSize="15sp"
+                android:textColor="@color/colorBlack"
+                app:layout_constraintTop_toBottomOf="@id/guideHWidgetEnd"
+                app:layout_constraintStart_toStartOf="@id/guideVertStart"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvPrices"
+                android:layout_width="0dp"
+                android:layout_height="70dp"
+                android:paddingLeft="20dp"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintTop_toBottomOf="@id/tvHintPrices"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <TextView
+                android:id="@+id/tvHintPeople"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="People you may know"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:layout_marginLeft="20dp"
                 android:textSize="15sp"
-                android:textColor="@color/colorBlack"/>
+                android:textColor="@color/colorBlack"
+                app:layout_constraintTop_toBottomOf="@id/rvPrices"
+                app:layout_constraintStart_toStartOf="@id/guideVertStart"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvUsers"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="120dp"
                 android:paddingLeft="20dp"
                 android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintTop_toBottomOf="@id/tvHintPeople"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
             <TextView
+                android:id="@+id/tvHintNews"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="News"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:paddingLeft="20dp"
                 android:textSize="15sp"
-                android:textColor="@color/colorBlack"/>
+                android:textColor="@color/colorBlack"
+                app:layout_constraintTop_toBottomOf="@id/rvUsers"
+                app:layout_constraintStart_toStartOf="@id/guideVertStart"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvNews"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="150dp"
-                android:layout_marginLeft="20dp"
+                android:paddingLeft="20dp"
                 android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
-
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintTop_toBottomOf="@id/tvHintNews"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
             <TextView
+                android:id="@+id/tvHintVideo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Suggested Videos"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:layout_marginLeft="20dp"
                 android:textSize="15sp"
-                android:textColor="@color/colorBlack"/>
+                android:textColor="@color/colorBlack"
+                app:layout_constraintTop_toBottomOf="@id/rvNews"
+                app:layout_constraintStart_toStartOf="@id/guideVertStart"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvVideo"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="140dp"
-                android:layout_marginLeft="20dp"
+                android:paddingLeft="20dp"
                 android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
-        </LinearLayout>
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintTop_toBottomOf="@id/tvHintVideo"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
-</LinearLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabTakeImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_camera"
+        android:clickable="true"
+        android:layout_margin="@dimen/margin_default"
+        app:backgroundTint="@color/colorPrimary"
+        android:layout_gravity="bottom|end"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

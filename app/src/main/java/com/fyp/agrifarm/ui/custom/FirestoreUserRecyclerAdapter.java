@@ -13,15 +13,15 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.fyp.agrifarm.R;
-import com.fyp.agrifarm.beans.DummyUser;
+import com.fyp.agrifarm.beans.FirebaseUser;
 import com.fyp.agrifarm.utils.PicassoUtils;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-public class FirestoreUserRecyclerAdapter extends FirestoreRecyclerAdapter<DummyUser, FirestoreUserRecyclerAdapter.FirestoreUserRecyclerHolder> {
+public class FirestoreUserRecyclerAdapter extends FirestoreRecyclerAdapter<FirebaseUser, FirestoreUserRecyclerAdapter.FirestoreUserRecyclerHolder> {
 
     private Context context;
-    public FirestoreUserRecyclerAdapter(@NonNull FirestoreRecyclerOptions<DummyUser> options , Context context ) {
+    public FirestoreUserRecyclerAdapter(@NonNull FirestoreRecyclerOptions<FirebaseUser> options , Context context ) {
         super(options);
         this.context = context;
 
@@ -29,7 +29,7 @@ public class FirestoreUserRecyclerAdapter extends FirestoreRecyclerAdapter<Dummy
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull FirestoreUserRecyclerHolder holder, int position, @NonNull DummyUser model) {
+    protected void onBindViewHolder(@NonNull FirestoreUserRecyclerHolder holder, int position, @NonNull FirebaseUser model) {
         String image = model.getPhotoUri();
 
         holder.username.setText(model.getFullname());

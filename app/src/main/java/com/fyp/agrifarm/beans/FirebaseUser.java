@@ -1,14 +1,14 @@
 package com.fyp.agrifarm.beans;
 
-public class DummyUser {
+public class FirebaseUser {
     private String fullname;
     private String photoUri;
 
 
-    public DummyUser() {
+    public FirebaseUser() {
     }
 
-    public DummyUser(String fullname, String photoUri) {
+    public FirebaseUser(String fullname, String photoUri) {
         this.fullname = fullname;
         this.photoUri = photoUri;
     }

@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -49,6 +51,8 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecovera
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.youtube.YouTubeScopes;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -74,6 +78,7 @@ public class MainActivity extends AppCompatActivity
     ProgressDialog mProgress;
 
     public static final String TAG = "MainActivity";
+
     private static HomeFragment homeFragment = null;
     private static WeatherFragment weatherFragment = null;
     private NewsViewModel newsViewModel;
@@ -302,7 +307,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -413,4 +417,6 @@ public class MainActivity extends AppCompatActivity
                 .addToBackStack(HomeFragment.TAG)
                 .commit();
     }
+
+
 }

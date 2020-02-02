@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    app:cardCornerRadius="30dp"
+    android:clickable="true"
+    android:layout_marginRight="10dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="5dp"
+    android:layout_width="wrap_content"
+    android:layout_height="50dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" >
+
+        <ImageView
+            android:id="@+id/ivPriceSymbol"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="12dp"
+            android:src="@drawable/sym_brinjal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvPriceLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="RS."
+            android:textSize="8sp"
+            android:layout_marginStart="2dp"
+            app:layout_constraintStart_toEndOf="@id/ivPriceSymbol"
+            app:layout_constraintTop_toTopOf="@id/ivPriceSymbol"/>
+
+        <TextView
+            android:id="@+id/tvPriceValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="67.00"
+            app:layout_constraintStart_toEndOf="@id/tvPriceLabel"
+            app:layout_constraintTop_toTopOf="@id/tvPriceLabel"/>
+
+        <TextView
+            android:id="@+id/tvPriceItemName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Brinjal"
+            app:layout_constraintEnd_toEndOf="@+id/tvPriceValue"
+            app:layout_constraintStart_toStartOf="@id/tvPriceLabel"
+            app:layout_constraintTop_toBottomOf="@id/tvPriceValue" />
+
+
+        <ImageView
+            android:id="@+id/ivPricePace"
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="12dp"
+            android:src="@drawable/ic_arrow_up"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvPriceValue"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
