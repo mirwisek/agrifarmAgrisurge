@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UserInformationActivity">
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="100dp"
+        android:background="@drawable/user_intrest_gradiant_color"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/userimage"
+        android:layout_width="0dp"
+        android:layout_height="88dp"
+        android:elevation="3dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/com_facebook_profile_picture_blank_portrait"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageView2"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <!--    <de.hdodenhof.circleimageview.CircleImageView-->
+    <!--        android:id="@+id/userimage"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintHorizontal_bias="0.5"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent"-->
+    <!--        app:layout_constraintVertical_bias="0.069"-->
+    <!--        android:scaleType="centerInside"-->
+    <!--        android:src="@drawable/com_facebook_profile_picture_blank_portrait"-->
+    <!--        android:elevation="3dp"/>-->
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvuserinfo"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:cardCornerRadius="20dp"
+        app:cardPreventCornerOverlap="true"
+        app:cardUseCompatPadding="true"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintEnd_toEndOf="@+id/userimage"
+        app:layout_constraintStart_toStartOf="@+id/userimage"
+        app:layout_constraintTop_toBottomOf="@+id/guideline3"
+        app:layout_constraintWidth_percent="0.95">
+
+    </androidx.cardview.widget.CardView>
+
+    <!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+    <!--            android:id="@+id/guideline4"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="match_parent"-->
+    <!--            tools:layout_editor_absoluteX="2dp"-->
+    <!--            tools:layout_editor_absoluteY="3dp">-->
+
+
+    <!--            <TextView-->
+    <!--                android:id="@+id/username"-->
+    <!--                android:layout_width="wrap_content"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:layout_gravity="center"-->
+    <!--                android:elevation="3dp"-->
+    <!--                android:gravity="center"-->
+    <!--                android:text="Andy Farmer"-->
+    <!--                android:textSize="18sp"-->
+    <!--                app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--                app:layout_constraintEnd_toEndOf="@+id/textViewlocation"-->
+    <!--                app:layout_constraintHorizontal_bias="1.0"-->
+    <!--                app:layout_constraintStart_toStartOf="@+id/textViewlocation"-->
+    <!--                app:layout_constraintTop_toTopOf="@+id/guideline2"-->
+    <!--                app:layout_constraintVertical_bias="0.134" />-->
+
+    <!--            <TextView-->
+    <!--                android:id="@+id/textViewlocation"-->
+    <!--                android:layout_width="wrap_content"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:drawableLeft="@drawable/icons8_geo_fence_32px"-->
+    <!--                android:drawableTint="#ff0000"-->
+    <!--                android:elevation="3dp"-->
+    <!--                android:gravity="center"-->
+    <!--                android:text="Quetta"-->
+    <!--                android:textSize="17dp"-->
+    <!--                app:layout_constraintBottom_toTopOf="@+id/userfollowbutton"-->
+    <!--                app:layout_constraintEnd_toEndOf="@+id/userfollowbutton"-->
+    <!--                app:layout_constraintStart_toStartOf="@+id/userfollowbutton"-->
+    <!--                app:layout_constraintTop_toBottomOf="@+id/username" />-->
+
+    <!--            <Button-->
+    <!--                android:id="@+id/userfollowbutton"-->
+    <!--                android:layout_width="132dp"-->
+    <!--                android:layout_height="32dp"-->
+    <!--                android:layout_gravity="center_horizontal"-->
+    <!--                android:layout_marginTop="10dp"-->
+    <!--                android:background="@drawable/ic_button"-->
+    <!--                android:text="Connect"-->
+    <!--                android:textColor="#F24D4D"-->
+    <!--                android:textSize="15sp"-->
+    <!--                app:layout_constraintBottom_toTopOf="@+id/usertabs"-->
+    <!--                app:layout_constraintEnd_toEndOf="@+id/usertabs"-->
+    <!--                app:layout_constraintStart_toStartOf="@+id/usertabs"-->
+    <!--                app:layout_constraintTop_toBottomOf="@+id/textViewlocation" />-->
+
+    <!--            <com.google.android.material.tabs.TabLayout-->
+    <!--                android:id="@+id/usertabs"-->
+    <!--                android:layout_width="wrap_content"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:layout_marginStart="7dp"-->
+    <!--                android:layout_marginEnd="7dp"-->
+    <!--                android:elevation="3dp"-->
+    <!--                app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--                app:layout_constraintEnd_toEndOf="parent"-->
+    <!--                app:layout_constraintStart_toStartOf="parent"-->
+    <!--                app:layout_constraintTop_toBottomOf="@+id/userfollowbutton"-->
+    <!--                app:layout_constraintVertical_bias="0.0"-->
+    <!--                app:tabIndicatorColor="#D50000"-->
+    <!--                app:tabIndicatorFullWidth="false"-->
+    <!--                app:tabIndicatorGravity="bottom"-->
+    <!--                app:tabInlineLabel="false" />-->
+
+
+    <!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+
+    <!--    </androidx.cardview.widget.CardView>-->
+
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:elevation="3dp"
+        android:gravity="center"
+        android:text="Andy Farmer"
+        android:textSize="25sp"
+        app:layout_constraintEnd_toEndOf="@+id/textViewlocation"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/textViewlocation"
+        app:layout_constraintTop_toBottomOf="@+id/guideline2" />
+
+    <TextView
+        android:id="@+id/textViewlocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:drawableLeft="@drawable/icons8_geo_fence_32px"
+        android:drawableTint="#ff0000"
+        android:elevation="3dp"
+        android:gravity="center"
+        android:text="Quetta"
+        android:textSize="17dp"
+        app:layout_constraintEnd_toEndOf="@+id/userfollowbutton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/userfollowbutton"
+        app:layout_constraintTop_toBottomOf="@+id/username" />
+
+    <Button
+        android:id="@+id/userfollowbutton"
+        android:layout_width="110dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/ic_button"
+        android:text="Connect"
+        android:textColor="#F24D4D"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/usertabs"
+        app:layout_constraintEnd_toEndOf="@+id/usertabs"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/usertabs"
+        app:layout_constraintTop_toBottomOf="@+id/textViewlocation" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/usertabs"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:elevation="3dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline4"
+        app:layout_constraintWidth_percent="0.87"
+        app:tabIndicatorColor="#D50000"
+        app:tabIndicatorFullWidth="false"
+        app:tabIndicatorGravity="bottom"
+        app:tabInlineLabel="false" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvpager"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:cardCornerRadius="20dp"
+        app:cardPreventCornerOverlap="true"
+        app:cardUseCompatPadding="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/guideline"
+        app:layout_constraintWidth_percent="0.95">
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/vpuseritrest"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.4" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.13" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.34" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.38" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
