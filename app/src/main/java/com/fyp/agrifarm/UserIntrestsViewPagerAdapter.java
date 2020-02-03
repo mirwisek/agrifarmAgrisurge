@@ -37,7 +37,7 @@ public class UserIntrestsViewPagerAdapter extends FragmentPagerAdapter {
         {
             fragment = new FollowingFragment();
             Bundle bundle = new Bundle();
-            bundle.putString("uid",data.getString("uid"));
+            bundle.putString("docid",data.getString("docid"));
             fragment.setArguments(bundle);
         }
         return fragment;

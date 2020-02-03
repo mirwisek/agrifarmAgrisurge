@@ -29,7 +29,7 @@ public class FollowingFragment extends Fragment {
     RecyclerView FollowingRecyclerView;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference userRef = db.collection("users");
-    private String uid;
+    private String docid;
     private ArrayList<Following> data;
     FollowingRecyclerViewAdapter followingRecyclerViewAdapter;
 
@@ -53,10 +53,10 @@ public class FollowingFragment extends Fragment {
 
         Bundle bundle = this.getArguments();
         if (bundle!=null) {
-            uid = bundle.getString("uid");
+            docid = bundle.getString("docid");
 
 
-            userRef.document(uid).collection("following")
+            userRef.document(docid).collection("following")
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
@@ -64,7 +64,8 @@ public class FollowingFragment extends Fragment {
                             if (task.isSuccessful()) {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     String username = document.get("Username").toString();
-                                    Following holder = new Following(username);
+                                    String userimage = document.get("photouri").toString();
+                                    Following holder = new Following(username,userimage);
                                     data.add(holder);
                                 }
                                 followingRecyclerViewAdapter.notifyDataSetChanged();
