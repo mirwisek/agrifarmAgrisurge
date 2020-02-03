@@ -11,7 +11,7 @@
         android:id="@+id/FollowingRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/fragment_following"
+        tools:listitem="@layout/rv_item_following"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
 </FrameLayout>
