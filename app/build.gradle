@@ -91,6 +91,7 @@ dependencies {
 
     // For Plant Disease image capturing
     implementation 'com.google.firebase:firebase-ml-model-interpreter:22.0.1'
+    
 
     def camerax_version = '1.0.0-alpha09'
     implementation "androidx.camera:camera-core:${camerax_version}"

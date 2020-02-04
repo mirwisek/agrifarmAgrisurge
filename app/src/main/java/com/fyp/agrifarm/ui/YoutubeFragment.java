@@ -51,7 +51,7 @@ public class YoutubeFragment extends Fragment {
 //        YoutubeFragment youtubeFragment = YoutubeFragment.newInstance(videoUrl,"none");
 //
         getChildFragmentManager().beginTransaction()
-                .replace(R.id.fragmentYoutube, youFragment)
+                .replace(R.id.fragmentYoutube,  youFragment)
                 .commit();
 
         videoViewModel =

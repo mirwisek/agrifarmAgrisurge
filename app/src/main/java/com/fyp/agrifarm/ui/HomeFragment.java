@@ -24,9 +24,12 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.fyp.agrifarm.FirestoreUserRecyclerAdapter;
+import com.fyp.agrifarm.UserInformationActivity;
 import com.fyp.agrifarm.beans.PriceItem;
+import com.fyp.agrifarm.beans.User;
 import com.fyp.agrifarm.repo.VideoSharedViewModel;
-import com.fyp.agrifarm.ui.custom.FirestoreUserRecyclerAdapter;
+import com.fyp.agrifarm.FirestoreUserRecyclerAdapter;
 import com.fyp.agrifarm.repo.NewsEntity;
 import com.fyp.agrifarm.repo.NewsViewModel;
 import com.fyp.agrifarm.ui.custom.NewsRecyclerAdapter;
@@ -35,6 +38,7 @@ import com.fyp.agrifarm.ui.custom.PricesRecyclerAdapter;
 import com.fyp.agrifarm.ui.custom.VideoRecyclerAdapter;
 import com.fyp.agrifarm.beans.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.ml.common.FirebaseMLException;
@@ -111,15 +115,42 @@ public class HomeFragment extends Fragment implements
 
         RecyclerView rvUsers = parent.findViewById(R.id.rvUsers);
 
-        // Inflating users
+// Inflating users
         Query query = userRef;
-        FirestoreRecyclerOptions<FirebaseUser> options = new FirestoreRecyclerOptions.Builder<FirebaseUser>()
-                .setQuery(userRef, FirebaseUser.class)
+        FirestoreRecyclerOptions<User> options = new FirestoreRecyclerOptions.Builder<User>()
+                .setQuery(userRef,User.class)
                 .build();
-        adapter = new FirestoreUserRecyclerAdapter(options,getContext());
+        adapter = new com.fyp.agrifarm.FirestoreUserRecyclerAdapter(options,getContext());
         rvUsers.setHasFixedSize(true);
 //      rvUsers.setLayoutManager(new LinearLayoutManager(this.getContext()));
         rvUsers.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+//        UsersRecyclerAdapter usersAdapter = new UsersRecyclerAdapter(getContext());
+//        rvUsers.setAdapter(usersAdapter);
+//
+//        ArrayList<DummyUser> users = new ArrayList<>();
+//        users.add(new DummyUser("Andrew", R.drawable.one));
+//        users.add(new DummyUser("John Gibberson", R.drawable.twoo));
+//        users.add(new DummyUser("Akona Mattata", R.drawable.three));
+//        users.add(new DummyUser("Philip J. St.", R.drawable.four));
+//        users.add(new DummyUser("Frankenstein", R.drawable.five));
+//        users.add(new DummyUser("Farmer", R.drawable.sixx));
+//
+//        usersAdapter.changeDataSource(users);
+        adapter.setOnItemClickListener(new com.fyp.agrifarm.FirestoreUserRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void OnItemClick(DocumentSnapshot documentSnapshot, int position) {
+                User User = documentSnapshot.toObject(User.class);
+                String docid  = documentSnapshot.getId();
+                Intent intent = new Intent(getContext(), UserInformationActivity.class);
+                intent.putExtra("username",User.getFullname());
+                intent.putExtra("userphoto",User.getPhotoUri());
+                Log.i("uri",User.getPhotoUri());
+                intent.putExtra("docid",docid);
+                startActivityForResult(intent,20);
+            }
+        });
+
 
         RecyclerView rvPrices = parent.findViewById(R.id.rvPrices);
         List<PriceItem> priceList = new ArrayList<>();
