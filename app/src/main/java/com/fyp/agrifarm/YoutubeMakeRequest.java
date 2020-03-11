@@ -24,6 +24,7 @@ import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoListResponse;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,11 +46,10 @@ public class YoutubeMakeRequest {
     public static class MakeRequestTask extends AsyncTask<Void, Void, List<ShortVideo>> {
         private com.google.api.services.youtube.YouTube mService = null;
         private Exception mLastError = null;
-        private Context context;
-        private FrameLayout progressLayout;
+        private WeakReference<Context> context;
         private ResponseListener mResponseListener;
 
-        public MakeRequestTask(Context context, FrameLayout progressLayout, GoogleAccountCredential credential,
+        public MakeRequestTask(WeakReference<Context> context, GoogleAccountCredential credential,
                                @NonNull ResponseListener cancelListener) {
 
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
@@ -59,7 +59,6 @@ public class YoutubeMakeRequest {
                     .setApplicationName("AgriFarm")
                     .build();
             this.context = context;
-            this.progressLayout = progressLayout;
             this.mResponseListener = cancelListener;
         }
 
@@ -124,15 +123,9 @@ public class YoutubeMakeRequest {
         }
 
         @Override
-        protected void onPreExecute() {
-            progressLayout.setVisibility(View.VISIBLE);
-        }
-
-        @Override
         protected void onPostExecute(List<ShortVideo> output) {
-            progressLayout.setVisibility(View.GONE);
             if (output == null || output.size() == 0) {
-                Toast.makeText(context, "No results returned.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context.get(), "No results returned.", Toast.LENGTH_SHORT).show();
             } else {
                 mResponseListener.onVideosFetched(output);
             }
@@ -141,7 +134,6 @@ public class YoutubeMakeRequest {
 
         @Override
         protected void onCancelled() {
-            progressLayout.setVisibility(View.GONE);
             mResponseListener.onCancelled(mLastError);
         }
 

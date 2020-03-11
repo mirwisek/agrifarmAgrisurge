@@ -115,28 +115,16 @@ public class HomeFragment extends Fragment implements
 
         RecyclerView rvUsers = parent.findViewById(R.id.rvUsers);
 
-// Inflating users
+        // Inflating users
         Query query = userRef;
         FirestoreRecyclerOptions<User> options = new FirestoreRecyclerOptions.Builder<User>()
                 .setQuery(userRef,User.class)
                 .build();
         adapter = new com.fyp.agrifarm.FirestoreUserRecyclerAdapter(options,getContext());
         rvUsers.setHasFixedSize(true);
-//      rvUsers.setLayoutManager(new LinearLayoutManager(this.getContext()));
+
         rvUsers.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-//        UsersRecyclerAdapter usersAdapter = new UsersRecyclerAdapter(getContext());
-//        rvUsers.setAdapter(usersAdapter);
-//
-//        ArrayList<DummyUser> users = new ArrayList<>();
-//        users.add(new DummyUser("Andrew", R.drawable.one));
-//        users.add(new DummyUser("John Gibberson", R.drawable.twoo));
-//        users.add(new DummyUser("Akona Mattata", R.drawable.three));
-//        users.add(new DummyUser("Philip J. St.", R.drawable.four));
-//        users.add(new DummyUser("Frankenstein", R.drawable.five));
-//        users.add(new DummyUser("Farmer", R.drawable.sixx));
-//
-//        usersAdapter.changeDataSource(users);
         adapter.setOnItemClickListener(new com.fyp.agrifarm.FirestoreUserRecyclerAdapter.OnItemClickListener() {
             @Override
             public void OnItemClick(DocumentSnapshot documentSnapshot, int position) {

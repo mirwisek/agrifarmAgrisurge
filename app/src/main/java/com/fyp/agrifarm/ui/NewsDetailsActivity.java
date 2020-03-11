@@ -1,25 +1,21 @@
 package com.fyp.agrifarm.ui;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.fyp.agrifarm.R;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
-import java.net.URL;
 import java.time.LocalDateTime;
 
 import butterknife.BindView;
@@ -38,11 +34,11 @@ public class NewsDetailsActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        Intent intent=getIntent();
+        Intent intent = getIntent();
 
-        title=findViewById(R.id.tvNewsTitleDetail);
-        date=findViewById(R.id.tvNewsDate);
-        desc=findViewById(R.id.tvNewsDesp);
+        title = findViewById(R.id.tvNewsTitleDetail);
+        date = findViewById(R.id.tvNewsDate);
+        desc = findViewById(R.id.tvNewsDesp);
 
         LocalDateTime dateTime = null;
         Picasso.get().load(intent.getExtras().get("image").toString())

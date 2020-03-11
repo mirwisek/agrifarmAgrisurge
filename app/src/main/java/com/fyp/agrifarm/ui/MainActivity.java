@@ -2,6 +2,7 @@ package com.fyp.agrifarm.ui;
 
 import android.Manifest;
 import android.accounts.AccountManager;
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -31,9 +32,11 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.fyp.agrifarm.repo.DownloadNews;
+import com.fyp.agrifarm.repo.NewsEntity;
 import com.fyp.agrifarm.repo.NewsViewModel;
 import com.fyp.agrifarm.R;
 import com.fyp.agrifarm.YoutubeMakeRequest;
@@ -53,6 +56,8 @@ import com.google.api.services.youtube.YouTubeScopes;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -75,32 +80,23 @@ public class MainActivity extends AppCompatActivity
     private static final String[] SCOPES = { YouTubeScopes.YOUTUBE_READONLY };
 
     GoogleAccountCredential mCredential;
-    ProgressDialog mProgress;
 
     public static final String TAG = "MainActivity";
 
     private static HomeFragment homeFragment = null;
     private static WeatherFragment weatherFragment = null;
-    private NewsViewModel newsViewModel;
-    private static MainActivity mainActivityobj;
-    private static Context appContext;
     private FrameLayout progressLayout;
     private VideoSharedViewModel videoViewModel;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mainActivityobj=this;
-        appContext = getApplicationContext();
-        if (new NewsViewModel((Application) MainActivity.getAppContext()).getAllNotes()!=null){
-            new NewsViewModel((Application)MainActivity.getAppContext()).deleteAllNotes();
-        }
-        new DownloadNews().execute();
-
-        progressLayout = findViewById(R.id.progress_overlay);
-        progressLayout.setVisibility(View.VISIBLE);
+        // Download the news in AsyncTask to ROOM
+        NewsViewModel newsViewModel = new ViewModelProvider(this).get(NewsViewModel.class);
+        new DownloadNews(newsViewModel).execute();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -130,7 +126,6 @@ public class MainActivity extends AppCompatActivity
 //            uLocation.setText(userLocation);
             // TODO: The image is returned with a bit margin in left, TO FIX, ScaleType: CenterCrop clips the image instead
             PicassoUtils.loadCropAndSetImage(user.getPhotoUri(), uProfilePhoto, getResources());
-            progressLayout.setVisibility(View.GONE);
             getResultsFromApi();
         });
 
@@ -146,8 +141,7 @@ public class MainActivity extends AppCompatActivity
                     .commit();
         }
 
-        videoViewModel = ViewModelProviders.of(this)
-                        .get(VideoSharedViewModel.class);
+        videoViewModel = new ViewModelProvider(this).get(VideoSharedViewModel.class);
 
         mCredential = GoogleAccountCredential.usingOAuth2(
                 this, Arrays.asList(SCOPES))
@@ -155,11 +149,6 @@ public class MainActivity extends AppCompatActivity
 
 
     }
-    //  TODO: Remove the following 2 methods causing memory leaks
-    public static MainActivity getactivity(){
-        return mainActivityobj;
-    }
-    public static Context getAppContext() { return appContext; }
 
     private void getResultsFromApi() {
         if (! isGooglePlayServicesAvailable()) {
@@ -170,7 +159,7 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(getApplicationContext(), "No network connection available", Toast.LENGTH_SHORT).show();
         } else {
             new YoutubeMakeRequest.MakeRequestTask(
-                    getApplicationContext(), progressLayout, mCredential,
+                    new WeakReference<>(getApplication()), mCredential,
                     new YoutubeMakeRequest.MakeRequestTask.ResponseListener() {
                         @Override
                         public void onCancelled(Exception mLastError) {
@@ -307,6 +296,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @SuppressLint("SourceLockedOrientationActivity")
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
