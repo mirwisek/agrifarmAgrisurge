@@ -9,7 +9,7 @@ import androidx.room.TypeConverters;
 
 import com.fyp.agrifarm.beans.ShortVideo;
 
-@Database(entities = {NewsEntity.class, ShortVideo.class}, version = 1,exportSchema = false)
+@Database(entities = {NewsEntity.class, ShortVideo.class}, version = 2, exportSchema = false)
 @TypeConverters({DateConverter.class})
 public abstract class ViewModelDatabase extends RoomDatabase {
 

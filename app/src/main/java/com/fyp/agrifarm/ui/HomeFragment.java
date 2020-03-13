@@ -20,7 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -29,16 +29,13 @@ import com.fyp.agrifarm.UserInformationActivity;
 import com.fyp.agrifarm.beans.PriceItem;
 import com.fyp.agrifarm.beans.User;
 import com.fyp.agrifarm.repo.VideoSharedViewModel;
-import com.fyp.agrifarm.FirestoreUserRecyclerAdapter;
 import com.fyp.agrifarm.repo.NewsEntity;
-import com.fyp.agrifarm.repo.NewsViewModel;
+import com.fyp.agrifarm.repo.NewsSharedViewModel;
 import com.fyp.agrifarm.ui.custom.NewsRecyclerAdapter;
 import com.fyp.agrifarm.R;
 import com.fyp.agrifarm.ui.custom.PricesRecyclerAdapter;
 import com.fyp.agrifarm.ui.custom.VideoRecyclerAdapter;
-import com.fyp.agrifarm.beans.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.ml.common.FirebaseMLException;
@@ -54,7 +51,6 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -63,8 +59,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class HomeFragment extends Fragment implements
-        NewsRecyclerAdapter.OnNewsClinkListener{
+public class HomeFragment extends Fragment {
 
     public static final String TAG = "HomeFragment";
     public static final int REQUEST_PICK_IMAGE = 1111;
@@ -79,7 +74,7 @@ public class HomeFragment extends Fragment implements
     LiveData<List<NewsEntity>> listNewsLive;
     RecyclerView rvNews;
     private VideoSharedViewModel videoViewModel;
-    private NewsViewModel newsViewModel;
+    private NewsSharedViewModel newsSharedViewModel;
     private VideoRecyclerAdapter videoRecyclerAdapter;
     private NewsRecyclerAdapter newsRecyclerAdapter;
 
@@ -118,25 +113,22 @@ public class HomeFragment extends Fragment implements
         // Inflating users
         Query query = userRef;
         FirestoreRecyclerOptions<User> options = new FirestoreRecyclerOptions.Builder<User>()
-                .setQuery(userRef,User.class)
+                .setQuery(userRef, User.class)
                 .build();
-        adapter = new com.fyp.agrifarm.FirestoreUserRecyclerAdapter(options,getContext());
+        adapter = new com.fyp.agrifarm.FirestoreUserRecyclerAdapter(options, getContext());
         rvUsers.setHasFixedSize(true);
 
         rvUsers.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-        adapter.setOnItemClickListener(new com.fyp.agrifarm.FirestoreUserRecyclerAdapter.OnItemClickListener() {
-            @Override
-            public void OnItemClick(DocumentSnapshot documentSnapshot, int position) {
-                User User = documentSnapshot.toObject(User.class);
-                String docid  = documentSnapshot.getId();
-                Intent intent = new Intent(getContext(), UserInformationActivity.class);
-                intent.putExtra("username",User.getFullname());
-                intent.putExtra("userphoto",User.getPhotoUri());
-                Log.i("uri",User.getPhotoUri());
-                intent.putExtra("docid",docid);
-                startActivityForResult(intent,20);
-            }
+        adapter.setOnItemClickListener((documentSnapshot, position) -> {
+            User User = documentSnapshot.toObject(User.class);
+            String docid = documentSnapshot.getId();
+            Intent intent = new Intent(getContext(), UserInformationActivity.class);
+            intent.putExtra("username", User.getFullname());
+            intent.putExtra("userphoto", User.getPhotoUri());
+            Log.i("uri", User.getPhotoUri());
+            intent.putExtra("docid", docid);
+            startActivityForResult(intent, 20);
         });
 
 
@@ -153,11 +145,22 @@ public class HomeFragment extends Fragment implements
         rvPrices.setAdapter(priceAdapter);
 
         newsRecyclerAdapter =
-                new NewsRecyclerAdapter(getContext(),this);
+            new NewsRecyclerAdapter(getContext(), selectedNews -> {
+                // SharedViewModel instance isn't shared across activities
+                // That is why passing the attributes over intent for now
+                Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                intent.putExtra(DetailsActivity.MODE, DetailsActivity.MODE_NEWS);
+                intent.putExtra(DetailsActivity.KEY_TITLE, selectedNews.getTitle());
+                intent.putExtra(DetailsActivity.KEY_DESCRIPTION, selectedNews.getDescription());
+                intent.putExtra(DetailsActivity.KEY_IMAGE, selectedNews.getUrl());
+                intent.putExtra(DetailsActivity.KEY_DATE, selectedNews.getDate());
+                startActivity(intent);
+            });
+
         rvNews.setAdapter(newsRecyclerAdapter);
 
         videoRecyclerAdapter =
-                new VideoRecyclerAdapter(getContext(), null);
+                new VideoRecyclerAdapter(getContext());
         rvVideo.setAdapter(videoRecyclerAdapter);
 
         TextView tvWeatherForecast = parent.findViewById(R.id.tvWeatherForecast);
@@ -168,7 +171,7 @@ public class HomeFragment extends Fragment implements
         return parent;
     }
 
-    private void initMLKit(){
+    private void initMLKit() {
 
         cloudSource = new FirebaseCustomRemoteModel.Builder(
                 "PlantDisease-Detector").build();
@@ -191,72 +194,70 @@ public class HomeFragment extends Fragment implements
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
+        switch (requestCode) {
             case REQUEST_PICK_IMAGE:
-                if(data!=null){
-
-
+                if (data != null) {
 //                    try {
 //                        InputStream inputStream = getContext().getContentResolver().openInputStream(data.getData());
 //                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                        Picasso.get().load(data.getData()).into(new Target() {
-                            @Override
-                            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    Picasso.get().load(data.getData()).into(new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
 
-                                // Before initialzing intreperator, confirm model is downloaded
-                                FirebaseModelManager.getInstance().isModelDownloaded(cloudSource)
-                                        .addOnSuccessListener(isDownloaded -> {
-                                            FirebaseModelInterpreterOptions options = null;
-                                            if (isDownloaded) {
-                                                options = new FirebaseModelInterpreterOptions.Builder(cloudSource).build();
-                                            } else {
-                                                return;
-                                                // At this point we don't have local model in assets
+                            // Before initialzing intreperator, confirm model is downloaded
+                            FirebaseModelManager.getInstance().isModelDownloaded(cloudSource)
+                                    .addOnSuccessListener(isDownloaded -> {
+                                        FirebaseModelInterpreterOptions options = null;
+                                        if (isDownloaded) {
+                                            options = new FirebaseModelInterpreterOptions.Builder(cloudSource).build();
+                                        } else {
+                                            return;
+                                            // At this point we don't have local model in assets
 //                                              options = new FirebaseModelInterpreterOptions.Builder(localModel).build();
-                                            }
-                                            try {
-                                                FirebaseModelInterpreter interpreter = FirebaseModelInterpreter.getInstance(options);
+                                        }
+                                        try {
+                                            FirebaseModelInterpreter interpreter = FirebaseModelInterpreter.getInstance(options);
 
-                                                FirebaseModelInputOutputOptions inputOutputOptions =
-                                                        new FirebaseModelInputOutputOptions.Builder()
-                                                                .setInputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, IMG_HEIGHT, IMG_WIDTH, 3})
-                                                                .setOutputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, OUTPUT_CLASSES})
-                                                                .build();
+                                            FirebaseModelInputOutputOptions inputOutputOptions =
+                                                    new FirebaseModelInputOutputOptions.Builder()
+                                                            .setInputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, IMG_HEIGHT, IMG_WIDTH, 3})
+                                                            .setOutputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, OUTPUT_CLASSES})
+                                                            .build();
 
-                                                FirebaseModelInputs inputs = new FirebaseModelInputs.Builder()
-                                                        .add(imgToArray(bitmap))  // add() as many input arrays as your model requires
-                                                        .build();
+                                            FirebaseModelInputs inputs = new FirebaseModelInputs.Builder()
+                                                    .add(imgToArray(bitmap))  // add() as many input arrays as your model requires
+                                                    .build();
 
-                                                assert interpreter != null;
-                                                interpreter.run(inputs, inputOutputOptions)
-                                                        .addOnSuccessListener( result -> {
-                                                            // We are interested in just the first row for single input
-                                                            float[][] output = result.getOutput(0);
-                                                            float[] probabilities = output[0];
-                                                            String outputLabel = mapOutputToLabel(probabilities);
-                                                            Toast.makeText(getContext(), "Result: " + outputLabel, Toast.LENGTH_LONG).show();
-                                                        })
-                                                        .addOnFailureListener( e -> {
-                                                            Log.e(TAG, "getImagePrediction: Couldn't identify", e);
-                                                        });
+                                            assert interpreter != null;
+                                            interpreter.run(inputs, inputOutputOptions)
+                                                    .addOnSuccessListener(result -> {
+                                                        // We are interested in just the first row for single input
+                                                        float[][] output = result.getOutput(0);
+                                                        float[] probabilities = output[0];
+                                                        String outputLabel = mapOutputToLabel(probabilities);
+                                                        Toast.makeText(getContext(), "Result: " + outputLabel, Toast.LENGTH_LONG).show();
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        Log.e(TAG, "getImagePrediction: Couldn't identify", e);
+                                                    });
 
-                                            } catch (FirebaseMLException e) {
-                                                e.printStackTrace();
-                                            }
-                                        });
+                                        } catch (FirebaseMLException e) {
+                                            e.printStackTrace();
+                                        }
+                                    });
 
-                            }
+                        }
 
-                            @Override
-                            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+                        @Override
+                        public void onBitmapFailed(Exception e, Drawable errorDrawable) {
 
-                            }
+                        }
 
-                            @Override
-                            public void onPrepareLoad(Drawable placeHolderDrawable) {
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
 
-                            }
-                        });
+                        }
+                    });
 //                } catch (FileNotFoundException e) {
 //                        e.printStackTrace();
 //                    }
@@ -265,14 +266,14 @@ public class HomeFragment extends Fragment implements
         }
     }
 
-    public String getImagePrediction(Bitmap bitmap){
+    public String getImagePrediction(Bitmap bitmap) {
         AtomicReference<String> outputLabel = new AtomicReference<>("Couldn't Identify");
 
 
         return outputLabel.get();
     }
 
-    public float[][][][] imgToArray(Bitmap image){
+    public float[][][][] imgToArray(Bitmap image) {
         image = Bitmap.createScaledBitmap(image, IMG_WIDTH, IMG_HEIGHT, true);
 
         int batchNum = 0;
@@ -288,7 +289,7 @@ public class HomeFragment extends Fragment implements
 //                input[batchNum][x][y][2] = (Color.blue(pixel) - 127) / 128.0f;
                 input[batchNum][x][y][0] = Color.red(pixel);
                 input[batchNum][x][y][1] = Color.green(pixel);
-                input[batchNum][x][y][2] = Color.blue(pixel) ;
+                input[batchNum][x][y][2] = Color.blue(pixel);
             }
         }
         return input;
@@ -296,17 +297,17 @@ public class HomeFragment extends Fragment implements
 
     private String mapOutputToLabel(float[] probabilities) {
         StringBuilder sb = new StringBuilder();
-        for(float probability: probabilities) {
+        for (float probability : probabilities) {
             sb.append(probability + ", ");
         }
         Log.i("MLKit", "Probs are : " + sb.toString());
 
         String label = null;
-        try(InputStream is = getContext().getResources().openRawResource(R.raw.output_labels);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
-            for(float probability: probabilities) {
+        try (InputStream is = getContext().getResources().openRawResource(R.raw.output_labels);
+             BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+            for (float probability : probabilities) {
                 label = reader.readLine();
-                if(probability == 1.0) break;
+                if (probability == 1.0) break;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -333,19 +334,15 @@ public class HomeFragment extends Fragment implements
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         // Performing this task here when UI creation is completed
-        newsViewModel =
-                ViewModelProviders.of(getActivity()).get(NewsViewModel.class);
+        newsSharedViewModel = new ViewModelProvider(getActivity()).get(NewsSharedViewModel.class);
+        videoViewModel = new ViewModelProvider(getActivity()).get(VideoSharedViewModel.class);
 
-        videoViewModel =
-                ViewModelProviders.of(getActivity()).get(VideoSharedViewModel.class);
-
-        newsViewModel.getAllNotes().observe(getViewLifecycleOwner(),
+        newsSharedViewModel.getNewsList().observe(getViewLifecycleOwner(),
                 newsRecyclerAdapter::changeDataSource);
 
         // getViewLifecycleOwner will limit life cycle of the ViewModel to View
-        videoViewModel.getAllVideos().observe(getViewLifecycleOwner(), videoList -> {
-            videoRecyclerAdapter.updateList(videoList);
-        });
+        videoViewModel.getAllVideos().observe(getViewLifecycleOwner(),
+                videoRecyclerAdapter::updateList);
     }
 
     @Override
@@ -363,16 +360,6 @@ public class HomeFragment extends Fragment implements
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    @Override
-    public void OnNewsClick(int position) {
-        Intent intent=new Intent(getActivity(), NewsDetailsActivity.class);
-        intent.putExtra("title",listNewsLive.getValue().get(position).getTitle());
-        intent.putExtra("Desc",listNewsLive.getValue().get(position).getDescription());
-        intent.putExtra("image",listNewsLive.getValue().get(position).getUrl());
-        intent.putExtra("date",listNewsLive.getValue().get(position).getDate());
-        startActivity(intent);
     }
 
     public interface OnFragmentInteractionListener {

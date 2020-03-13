@@ -124,7 +124,7 @@ public class FirebaseUtils {
             }
             return;
         }
-        String userUid =firebaseUser.getUid();
+        String userUid = firebaseUser.getUid();
         firestoreUsers.document(userUid).get().addOnSuccessListener(documentSnapshot -> {
             if(documentSnapshot.exists()){
                 User user = documentSnapshot.toObject(User.class);

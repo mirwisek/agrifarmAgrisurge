@@ -7,39 +7,41 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.fyp.agrifarm.repo.NewsEntity;
 import com.fyp.agrifarm.R;
+import com.fyp.agrifarm.repo.NewsEntity;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 public class NewsRecyclerAdapter extends RecyclerView.Adapter {
 
-    public static final String TAG = "Recycler" ;
     private Context context;
     private List<NewsEntity> newsList;
     private OnNewsClinkListener onNewsClinkListener;
 
-    public NewsRecyclerAdapter(Context context,OnNewsClinkListener onNewsClinkListener){
+    public NewsRecyclerAdapter(Context context, OnNewsClinkListener newsClickListener){
         this.context = context;
-        this.onNewsClinkListener=onNewsClinkListener;
+        onNewsClinkListener = newsClickListener;
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(context)
                 .inflate(R.layout.rv_item_news, viewGroup, false);
 
-        return new VideoListViewHolder(view,onNewsClinkListener);
+        return new VideoListViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
         NewsEntity record = newsList.get(i);
 
         VideoListViewHolder holder = (VideoListViewHolder) viewHolder;
+        holder.itemView.setOnClickListener(v -> onNewsClinkListener.onNewsClick(record));
         holder.tvNewsTitle.setText(record.getTitle());
         // Picasso will run the task Asynchronously and load into the targeted view upon download complete
         // You can resize thumbnails with resize method
@@ -53,23 +55,15 @@ public class NewsRecyclerAdapter extends RecyclerView.Adapter {
         return newsList.size();
     }
 
-    private class VideoListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private static class VideoListViewHolder extends RecyclerView.ViewHolder{
 
         TextView tvNewsTitle;
         ImageView ivNewsThumb;
-        OnNewsClinkListener onNewsClinkListener;
 
-        public VideoListViewHolder(View view,OnNewsClinkListener onNewsClinkListener) {
+        VideoListViewHolder(View view) {
             super(view);
             tvNewsTitle = view.findViewById(R.id.tvNewsTitle);
             ivNewsThumb = view.findViewById(R.id.ivNewsThumb);
-            this.onNewsClinkListener=onNewsClinkListener;
-            view.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-            onNewsClinkListener.OnNewsClick(getAdapterPosition());
         }
     }
 
@@ -79,7 +73,7 @@ public class NewsRecyclerAdapter extends RecyclerView.Adapter {
     }
 
     public interface OnNewsClinkListener{
-        void OnNewsClick(int position);
+        void onNewsClick(NewsEntity selectedNews);
     }
 }
 

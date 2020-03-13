@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.fyp.agrifarm.R;
 import com.fyp.agrifarm.api.DeveloperKey;
@@ -22,16 +22,19 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-// TODO: 2. Refactor YOUTUBE FRAGMENT: AndroidX
 public class YoutubeFragment extends Fragment {
 
     public static final String TAG = "YoutubeFragment";
     private VideoSharedViewModel videoViewModel;
 
-    @BindView(R.id.tvPlayerVideoTitle) TextView tvTitle;
-    @BindView(R.id.tvPlayerVideoPublishDate) TextView tvPublishDate;
-    @BindView(R.id.tvPlayerVideoPublisher) TextView tvPublisher;
-    @BindView(R.id.tvPlayerVideoTags) TextView tvTags;
+    @BindView(R.id.tvPlayerVideoTitle)
+    TextView tvTitle;
+    @BindView(R.id.tvPlayerVideoPublishDate)
+    TextView tvPublishDate;
+    @BindView(R.id.tvPlayerVideoPublisher)
+    TextView tvPublisher;
+    @BindView(R.id.tvPlayerVideoTags)
+    TextView tvTags;
 
 //    private OnFragmentInteractionListener mListener;
 
@@ -51,11 +54,10 @@ public class YoutubeFragment extends Fragment {
 //        YoutubeFragment youtubeFragment = YoutubeFragment.newInstance(videoUrl,"none");
 //
         getChildFragmentManager().beginTransaction()
-                .replace(R.id.fragmentYoutube,  youFragment)
+                .replace(R.id.fragmentYoutube, youFragment)
                 .commit();
 
-        videoViewModel =
-                ViewModelProviders.of(getActivity()).get(VideoSharedViewModel.class);
+
         videoViewModel.getSelectedVideo().observe(getViewLifecycleOwner(), video -> {
 
             tvTitle.setText(video.getTitle());

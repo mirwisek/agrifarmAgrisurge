@@ -6,7 +6,6 @@ import android.util.Log;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.fyp.agrifarm.ui.MainActivity;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,7 +19,7 @@ public class DownloadNews extends AsyncTask<Void, Void, Void> {
     private static String imagelink = "";
     private ArrayList<NewsEntity> newsList;
     private RequestQueue queue;
-    private NewsViewModel viewModel;
+    private NewsSharedViewModel viewModel;
 
     private final static String[] LINKS = new String[]{
             "http://blog.agcocorp.com/category/agco/feed/",
@@ -28,7 +27,7 @@ public class DownloadNews extends AsyncTask<Void, Void, Void> {
             "http://sustainableagriculture.net/blog/feed/",
     };
 
-    public DownloadNews(NewsViewModel viewModel) {
+    public DownloadNews(NewsSharedViewModel viewModel) {
         this.viewModel = viewModel;
         queue = Volley.newRequestQueue(viewModel.getApplication());
 

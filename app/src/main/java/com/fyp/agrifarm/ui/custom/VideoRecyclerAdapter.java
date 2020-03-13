@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fyp.agrifarm.R;
@@ -24,19 +25,19 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter {
 
     private VideoRecyclerAdapter.OnItemClickListener mListener;
 
-    public VideoRecyclerAdapter(Context context, List<ShortVideo> videoList){
+    public VideoRecyclerAdapter(Context context){
         this.context = context;
-        this.videoList = videoList;
         if (context instanceof VideoRecyclerAdapter.OnItemClickListener) {
             mListener = (VideoRecyclerAdapter.OnItemClickListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnItemClickListener");
+                    + " must implement OnYoutubeItemClickListener");
         }
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, final int i) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, final int i) {
         View view = LayoutInflater.from(context)
                 .inflate(R.layout.rv_item_video, viewGroup, false);
 
@@ -44,7 +45,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
         ShortVideo video = videoList.get(i);
 
         VideoListViewHolder holder = (VideoListViewHolder) viewHolder;
@@ -65,12 +66,12 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter {
         return videoList.size();
     }
 
-    private class VideoListViewHolder extends RecyclerView.ViewHolder {
+    private static class VideoListViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvVideoTitle, tvDuration, tvChannelTitle;
         ImageView ivVideoThumb;
 
-        public VideoListViewHolder(View view) {
+        VideoListViewHolder(View view) {
             super(view);
             tvVideoTitle = view.findViewById(R.id.tvVideoTitle);
             tvDuration = view.findViewById(R.id.tvVideoDuration);

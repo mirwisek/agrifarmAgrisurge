@@ -3,15 +3,11 @@ package com.fyp.agrifarm.ui;
 import android.Manifest;
 import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
-import android.app.Application;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -19,7 +15,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,11 +28,9 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.fyp.agrifarm.repo.DownloadNews;
-import com.fyp.agrifarm.repo.NewsEntity;
-import com.fyp.agrifarm.repo.NewsViewModel;
+import com.fyp.agrifarm.repo.NewsSharedViewModel;
 import com.fyp.agrifarm.R;
 import com.fyp.agrifarm.YoutubeMakeRequest;
 import com.fyp.agrifarm.beans.ShortVideo;
@@ -54,10 +47,7 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecovera
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.youtube.YouTubeScopes;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -70,7 +60,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView.OnNavigationItemSelectedListener,
         HomeFragment.OnFragmentInteractionListener,
         WeatherFragment.OnFragmentInteractionListener,
-        VideoRecyclerAdapter.OnItemClickListener{
+        VideoRecyclerAdapter.OnItemClickListener {
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
@@ -85,7 +75,6 @@ public class MainActivity extends AppCompatActivity
 
     private static HomeFragment homeFragment = null;
     private static WeatherFragment weatherFragment = null;
-    private FrameLayout progressLayout;
     private VideoSharedViewModel videoViewModel;
 
 
@@ -95,8 +84,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         // Download the news in AsyncTask to ROOM
-        NewsViewModel newsViewModel = new ViewModelProvider(this).get(NewsViewModel.class);
-        new DownloadNews(newsViewModel).execute();
+        NewsSharedViewModel newsSharedViewModel = new ViewModelProvider(MainActivity.this).get(NewsSharedViewModel.class);
+        new DownloadNews(newsSharedViewModel).execute();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -146,8 +135,6 @@ public class MainActivity extends AppCompatActivity
         mCredential = GoogleAccountCredential.usingOAuth2(
                 this, Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
-
-
     }
 
     private void getResultsFromApi() {
