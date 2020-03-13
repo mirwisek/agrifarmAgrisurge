@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.fyp.agrifarm.R;
-import com.fyp.agrifarm.beans.User;
+import com.fyp.agrifarm.model.User;
 import com.fyp.agrifarm.utils.FirebaseUtils;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;

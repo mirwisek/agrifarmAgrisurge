@@ -22,7 +22,7 @@
             android:name=".ui.NetworkChangedReceiver"
             android:enabled="true"
             android:exported="false" />
-        <activity android:name=".UserInformationActivity"
+        <activity android:name=".ui.profile.UserInformationActivity"
             android:theme="@style/AppTheme.NoActionBar">
 
         </activity>

@@ -24,17 +24,17 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.fyp.agrifarm.FirestoreUserRecyclerAdapter;
-import com.fyp.agrifarm.UserInformationActivity;
-import com.fyp.agrifarm.beans.PriceItem;
-import com.fyp.agrifarm.beans.User;
-import com.fyp.agrifarm.repo.VideoSharedViewModel;
-import com.fyp.agrifarm.repo.NewsEntity;
-import com.fyp.agrifarm.repo.NewsSharedViewModel;
-import com.fyp.agrifarm.ui.custom.NewsRecyclerAdapter;
+import com.fyp.agrifarm.ui.profile.FirestoreUserRecyclerAdapter;
+import com.fyp.agrifarm.ui.profile.UserInformationActivity;
+import com.fyp.agrifarm.model.PriceItem;
+import com.fyp.agrifarm.model.User;
+import com.fyp.agrifarm.db.viewmodel.VideoSharedViewModel;
+import com.fyp.agrifarm.db.entity.NewsEntity;
+import com.fyp.agrifarm.db.viewmodel.NewsSharedViewModel;
+import com.fyp.agrifarm.ui.news.NewsRecyclerAdapter;
 import com.fyp.agrifarm.R;
-import com.fyp.agrifarm.ui.custom.PricesRecyclerAdapter;
-import com.fyp.agrifarm.ui.custom.VideoRecyclerAdapter;
+import com.fyp.agrifarm.ui.prices.PricesRecyclerAdapter;
+import com.fyp.agrifarm.ui.youtube.VideoRecyclerAdapter;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -115,7 +115,7 @@ public class HomeFragment extends Fragment {
         FirestoreRecyclerOptions<User> options = new FirestoreRecyclerOptions.Builder<User>()
                 .setQuery(userRef, User.class)
                 .build();
-        adapter = new com.fyp.agrifarm.FirestoreUserRecyclerAdapter(options, getContext());
+        adapter = new FirestoreUserRecyclerAdapter(options, getContext());
         rvUsers.setHasFixedSize(true);
 
         rvUsers.setAdapter(adapter);
@@ -126,7 +126,6 @@ public class HomeFragment extends Fragment {
             Intent intent = new Intent(getContext(), UserInformationActivity.class);
             intent.putExtra("username", User.getFullname());
             intent.putExtra("userphoto", User.getPhotoUri());
-            Log.i("uri", User.getPhotoUri());
             intent.putExtra("docid", docid);
             startActivityForResult(intent, 20);
         });
@@ -145,17 +144,17 @@ public class HomeFragment extends Fragment {
         rvPrices.setAdapter(priceAdapter);
 
         newsRecyclerAdapter =
-            new NewsRecyclerAdapter(getContext(), selectedNews -> {
-                // SharedViewModel instance isn't shared across activities
-                // That is why passing the attributes over intent for now
-                Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                intent.putExtra(DetailsActivity.MODE, DetailsActivity.MODE_NEWS);
-                intent.putExtra(DetailsActivity.KEY_TITLE, selectedNews.getTitle());
-                intent.putExtra(DetailsActivity.KEY_DESCRIPTION, selectedNews.getDescription());
-                intent.putExtra(DetailsActivity.KEY_IMAGE, selectedNews.getUrl());
-                intent.putExtra(DetailsActivity.KEY_DATE, selectedNews.getDate());
-                startActivity(intent);
-            });
+                new NewsRecyclerAdapter(getContext(), selectedNews -> {
+                    // SharedViewModel instance isn't shared across activities
+                    // That is why passing the attributes over intent for now
+                    Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                    intent.putExtra(DetailsActivity.MODE, DetailsActivity.MODE_NEWS);
+                    intent.putExtra(DetailsActivity.KEY_TITLE, selectedNews.getTitle());
+                    intent.putExtra(DetailsActivity.KEY_DESCRIPTION, selectedNews.getDescription());
+                    intent.putExtra(DetailsActivity.KEY_IMAGE, selectedNews.getUrl());
+                    intent.putExtra(DetailsActivity.KEY_DATE, selectedNews.getDate());
+                    startActivity(intent);
+                });
 
         rvNews.setAdapter(newsRecyclerAdapter);
 

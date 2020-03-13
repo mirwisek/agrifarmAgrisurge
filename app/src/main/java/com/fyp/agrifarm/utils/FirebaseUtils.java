@@ -12,10 +12,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.fyp.agrifarm.UserDataFetchListener;
-import com.fyp.agrifarm.UserDataUploadListener;
-import com.fyp.agrifarm.beans.User;
-import com.fyp.agrifarm.UserSignOutListener;
+import com.fyp.agrifarm.ui.profile.UserDataFetchListener;
+import com.fyp.agrifarm.ui.profile.UserDataUploadListener;
+import com.fyp.agrifarm.model.User;
+import com.fyp.agrifarm.ui.profile.UserSignOutListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;

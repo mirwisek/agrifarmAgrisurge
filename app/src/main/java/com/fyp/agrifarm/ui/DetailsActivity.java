@@ -9,8 +9,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.fyp.agrifarm.R;
-import com.fyp.agrifarm.repo.NewsEntity;
-import com.fyp.agrifarm.repo.NewsSharedViewModel;
+import com.fyp.agrifarm.db.entity.NewsEntity;
+import com.fyp.agrifarm.db.viewmodel.NewsSharedViewModel;
+import com.fyp.agrifarm.ui.news.NewsDetailsFragment;
 
 public class DetailsActivity extends AppCompatActivity {
 
