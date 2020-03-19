@@ -1,37 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">AgriFarm</string>
-  <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
-  <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
-  <string name="action_delete_debug">Delete Account(Debug)</string>
-  <string name="action_sign_out">Sign Out (Debug)</string>
-  <string name="agriculture">Agriculture</string>
-  <string name="Btn_Lang_Eng" translatable="false">English</string>
-  <string name="Btn_Lang_Urdu" translatable="false">اردو</string>
+    <string name="app_name">AgriFarm</string>
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
+    <string name="action_delete_debug">Delete Account(Debug)</string>
+    <string name="action_sign_out">Sign Out (Debug)</string>
+    <string name="agriculture">Agriculture</string>
+    <string name="Btn_Lang_Eng" translatable="false">English</string>
+    <string name="Btn_Lang_Urdu" translatable="false">اردو</string>
 
-  <string name="title_activity_language">LanguageActivity</string>
+    <string name="title_activity_language">LanguageActivity</string>
 
-  <!-- Strings related to login -->
-  <string name="prompt_user_fullname">Full Name</string>
-  <string name="prompt_user_occupation">Occupation</string>
-  <string name="prompt_user_age">Age</string>
-  <string name="prompt_user_location">City</string>
+    <!-- Strings related to login -->
+    <string name="prompt_user_fullname">Full Name</string>
+    <string name="prompt_user_occupation">Occupation</string>
+    <string name="prompt_user_age">Age</string>
+    <string name="prompt_user_location">City</string>
 
-  <string name="action_get_started">Get Started</string>
-  <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
-  <string name="facebook_application_id" translatable="false">1113488918840348</string>
-  <string name="facebook_login_protocol_scheme" translatable="false">fb1113488918840348</string>
-  <string name="nav_header_desc">Navigation header</string>
+    <string name="action_get_started">Get Started</string>
+    <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
+    <string name="facebook_application_id" translatable="false">1113488918840348</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb1113488918840348</string>
+    <string name="nav_header_desc">Navigation header</string>
 
-  <!-- For CameraX -->
-  <string name="capture_button_alt">Capture</string>
-  <string name="gallery_button_alt">Gallery</string>
-  <string name="back_button_alt">Back</string>
-  <string name="share_button_alt">Share</string>
-  <string name="share_hint">Share using</string>
-  <string name="capture_mode_camera">Camera</string>
-  <string name="delete_button_alt">Delete</string>
-  <string name="delete_title">Confirm</string>
-  <string name="action_signout">Sign Out</string>
-  <string name="action_delete">Delete</string>
+    <!-- For CameraX -->
+    <string name="capture_button_alt">Capture</string>
+    <string name="gallery_button_alt">Gallery</string>
+    <string name="back_button_alt">Back</string>
+    <string name="share_button_alt">Share</string>
+    <string name="share_hint">Share using</string>
+    <string name="capture_mode_camera">Camera</string>
+    <string name="delete_button_alt">Delete</string>
+    <string name="delete_title">Confirm</string>
+    <string name="action_signout">Sign Out</string>
+    <string name="action_delete">Delete</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

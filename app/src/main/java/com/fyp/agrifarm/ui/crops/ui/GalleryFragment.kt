@@ -1,4 +1,4 @@
-package com.fyp.agrifarm.ui.crops
+package com.fyp.agrifarm.ui.crops.ui
 
 import android.content.Intent
 import android.os.Build
@@ -17,6 +17,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager.widget.ViewPager
 import com.fyp.agrifarm.R
+import com.fyp.agrifarm.ui.crops.GalleryFragmentArgs
 import com.fyp.agrifarm.ui.crops.ui.PhotoFragment
 import com.fyp.agrifarm.ui.crops.utils.padWithDisplayCutout
 import java.io.File
