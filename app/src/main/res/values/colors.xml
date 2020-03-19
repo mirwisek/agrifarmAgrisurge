@@ -9,4 +9,7 @@
     <color name="colorHourlyForecast">#006837</color>
     <color name="colorSecondary">#FFC107</color>
     <color name="colorLoginBackground">#FFFFFF</color>
+    <color name="icActive">#FFFFFFFF</color>
+    <color name="icFocused">#DDFFFFFF</color>
+    <color name="icPressed">#AAFFFFFF</color>
 </resources>

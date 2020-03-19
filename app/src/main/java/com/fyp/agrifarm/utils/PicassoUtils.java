@@ -125,7 +125,8 @@ public class PicassoUtils {
         RoundedBitmapDrawable roundedBitmap = RoundedBitmapDrawableFactory
                 .create(resources, bitmap);
         roundedBitmap.setCircular(true);
-        roundedBitmap.setCornerRadius(bitmap.getWidth());
+        float max = Math.max(bitmap.getWidth(), bitmap.getHeight());
+        roundedBitmap.setCornerRadius(max);
         targetImageView.setImageDrawable(roundedBitmap);
     }
 

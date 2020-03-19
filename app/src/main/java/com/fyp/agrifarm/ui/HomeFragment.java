@@ -24,6 +24,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.fyp.agrifarm.ui.crops.CameraActivity;
 import com.fyp.agrifarm.ui.profile.FirestoreUserRecyclerAdapter;
 import com.fyp.agrifarm.ui.profile.UserInformationActivity;
 import com.fyp.agrifarm.model.PriceItem;
@@ -101,10 +102,10 @@ public class HomeFragment extends Fragment {
         rvNews = parent.findViewById(R.id.rvNews);
 
         parent.findViewById(R.id.fabTakeImage).setOnClickListener((v) -> {
-
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("image/*");
-            startActivityForResult(intent, REQUEST_PICK_IMAGE);
+                startActivity(new Intent(getContext(), CameraActivity.class));
+//            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//            intent.setType("image/*");
+//            startActivityForResult(intent, REQUEST_PICK_IMAGE);
 
         });
 

@@ -247,7 +247,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/ic_camera"
         android:clickable="true"
-        android:layout_margin="@dimen/margin_default"
+        android:layout_margin="@dimen/margin_xsmall"
         app:backgroundTint="@color/colorPrimary"
         android:layout_gravity="bottom|end"/>
 
