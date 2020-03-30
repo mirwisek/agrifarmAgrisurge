@@ -17,7 +17,6 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager.widget.ViewPager
 import com.fyp.agrifarm.R
-import com.fyp.agrifarm.ui.crops.GalleryFragmentArgs
 import com.fyp.agrifarm.ui.crops.ui.PhotoFragment
 import com.fyp.agrifarm.ui.crops.utils.padWithDisplayCutout
 import java.io.File
@@ -94,7 +93,7 @@ class GalleryFragment internal constructor() : Fragment() {
                             .getMimeTypeFromExtension(mediaFile.extension)
                     // Get URI from our FileProvider implementation
                     val uri = FileProvider.getUriForFile(
-                            view.context, com.fyp.agrifarm.BuildConfig.APPLICATION_ID + ".provider", mediaFile)
+                            view.context, `package` + ".provider", mediaFile)
                     // Set the appropriate intent extra, type, action and flags
                     putExtra(Intent.EXTRA_STREAM, uri)
                     type = mediaType

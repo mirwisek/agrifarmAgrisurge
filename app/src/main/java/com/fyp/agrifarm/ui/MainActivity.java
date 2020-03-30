@@ -28,7 +28,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
-
 import com.fyp.agrifarm.db.DownloadNews;
 import com.fyp.agrifarm.db.viewmodel.NewsSharedViewModel;
 import com.fyp.agrifarm.R;

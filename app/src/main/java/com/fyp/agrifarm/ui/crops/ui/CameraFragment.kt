@@ -1,10 +1,8 @@
 package com.fyp.agrifarm.ui.crops.ui
 
 import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.app.AlertDialog
+import android.content.*
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -17,11 +15,14 @@ import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
-import android.view.*
+import android.view.KeyEvent
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.camera.core.*
-import androidx.camera.core.ImageCapture.Metadata
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -32,13 +33,18 @@ import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.Navigation
 import com.fyp.agrifarm.R
-import com.fyp.agrifarm.ui.crops.*
+import com.fyp.agrifarm.ui.crops.CameraActivity
+import com.fyp.agrifarm.ui.crops.KEY_EVENT_ACTION
+import com.fyp.agrifarm.ui.crops.KEY_EVENT_EXTRA
+import com.fyp.agrifarm.ui.crops.PermissionsFragment
 import com.fyp.agrifarm.ui.crops.utils.ANIMATION_FAST_MILLIS
 import com.fyp.agrifarm.ui.crops.utils.ANIMATION_SLOW_MILLIS
 import com.fyp.agrifarm.ui.crops.utils.simulateClick
 import com.fyp.agrifarm.utils.PicassoUtils
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
-import com.squareup.picasso.PicassoProvider
 import com.squareup.picasso.Target
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,7 +52,6 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executor
-import java.util.concurrent.Executors
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -64,6 +69,7 @@ class CameraFragment : Fragment() {
     private lateinit var broadcastManager: LocalBroadcastManager
     private lateinit var displayManager: DisplayManager
     private lateinit var mainExecutor: Executor
+    private lateinit var storageReference: StorageReference
 
     private var displayId: Int = -1
     private val lensFacing: Int = CameraSelector.LENS_FACING_BACK
@@ -139,7 +145,7 @@ class CameraFragment : Fragment() {
 
             // Remove thumbnail padding
             val padding = resources.getDimension(R.dimen.stroke_small).toInt()
-            thumbnail.setPadding(padding,padding,padding,padding)
+            thumbnail.setPadding(padding, padding, padding, padding)
 
             // Load thumbnail into circular button using Picasso
             Picasso.get().load(fileUri).centerCrop().resize(thumbnail.width, thumbnail.height).into(object : Target {
@@ -160,6 +166,31 @@ class CameraFragment : Fragment() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == 69) {
+            val uploadTask = storageReference!!.putFile(data!!.data!!)
+            val task = uploadTask.continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    Toast.makeText(context, "HOGAYA", Toast.LENGTH_LONG).show()
+                }
+                storageReference!!.downloadUrl
+            }.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val downloaduri = task.result
+                    val url = downloaduri!!.toString()
+                    Log.d("DirectLink", url)
+
+
+                }
+            }
+        }
+
+
+    }
+
     /** Define callback that will be triggered after a photo has been taken and saved to disk */
     private val imageSavedListener = object : ImageCapture.OnImageSavedCallback {
         override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
@@ -170,6 +201,37 @@ class CameraFragment : Fragment() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 // Update the gallery thumbnail with latest picture taken
                 setGalleryThumbnail(fileUri)
+//                Log.d("HAHA","HANJII")
+//                val builder: AlertDialog.Builder? = activity?.let {
+//                    AlertDialog.Builder(it)
+//                }
+//                builder?.setMessage("Please select yes or no to upload the image to our database")
+//                        ?.setTitle("ImageUpload")
+//                val dialog: AlertDialog? = builder?.create()
+//                val alertDialog: AlertDialog? = activity?.let {
+//                    val builder = AlertDialog.Builder(it)
+//                    builder.apply {
+//                        setPositiveButton("Yes",
+//                                DialogInterface.OnClickListener { dialog, id ->
+//                                    storageReference = FirebaseStorage.getInstance().getReference("CropImages")
+//                                    val intent = Intent()
+//                                    intent.type = "image/*"
+//                                    intent.action = Intent.ACTION_GET_CONTENT
+//                                    startActivityForResult(intent, 69)
+//
+//
+//                                })
+//                        setNegativeButton("No",
+//                                DialogInterface.OnClickListener { dialog, id ->
+//                                    // User cancelled the dialog
+//                                })
+//                    }
+//
+//                    // Create the AlertDialog
+//                    builder.create()
+//                }
+//
+
             }
 
             // Implicit broadcasts will be ignored for devices running API level >= 24
@@ -180,6 +242,7 @@ class CameraFragment : Fragment() {
                 )
             }
 
+
             // If the folder selected is an external media directory, this is unnecessary
             // but otherwise other apps will not be able to access our images unless we
             // scan them using [MediaScannerConnection]
@@ -188,6 +251,7 @@ class CameraFragment : Fragment() {
             MediaScannerConnection.scanFile(
                     context, arrayOf(fileUri.path), arrayOf(mimeType), null
             )
+            Toast.makeText(context,"IN",Toast.LENGTH_LONG).show()
         }
 
         override fun onError(exception: ImageCaptureException) {
@@ -270,15 +334,15 @@ class CameraFragment : Fragment() {
         cameraProviderFuture.addListener(Runnable {
 
             // CameraProvider
-                val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
             // Preview
             preview = Preview.Builder()
-                // We request aspect ratio but no resolution
-                .setTargetAspectRatio(screenAspectRatio)
-                // Set initial target rotation
-                .setTargetRotation(rotation)
-                .build()
+                    // We request aspect ratio but no resolution
+                    .setTargetAspectRatio(screenAspectRatio)
+                    // Set initial target rotation
+                    .setTargetRotation(rotation)
+                    .build()
 
             // Default PreviewSurfaceProvider
             preview?.setSurfaceProvider(viewFinder.previewSurfaceProvider)
@@ -286,14 +350,14 @@ class CameraFragment : Fragment() {
 
             // ImageCapture
             imageCapture = ImageCapture.Builder()
-                .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-                // We request aspect ratio but no resolution to match preview config, but letting
-                // CameraX optimize for whatever specific resolution best fits requested capture mode
-                .setTargetAspectRatio(screenAspectRatio)
-                // Set initial target rotation, we will have to call this again if rotation changes
-                // during the lifecycle of this use case
-                .setTargetRotation(rotation)
-                .build()
+                    .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+                    // We request aspect ratio but no resolution to match preview config, but letting
+                    // CameraX optimize for whatever specific resolution best fits requested capture mode
+                    .setTargetAspectRatio(screenAspectRatio)
+                    // Set initial target rotation, we will have to call this again if rotation changes
+                    // during the lifecycle of this use case
+                    .setTargetRotation(rotation)
+                    .build()
 
             // Must unbind the use-cases before rebinding them.
             cameraProvider.unbindAll()
@@ -302,9 +366,9 @@ class CameraFragment : Fragment() {
                 // A variable number of use-cases can be passed here -
                 // camera provides access to CameraControl & CameraInfo
                 camera = cameraProvider.bindToLifecycle(
-                    this as LifecycleOwner, cameraSelector, preview, imageCapture
+                        this as LifecycleOwner, cameraSelector, preview, imageCapture
                 )
-            } catch(exc: Exception) {
+            } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
 
@@ -363,6 +427,7 @@ class CameraFragment : Fragment() {
                 // Setup image capture listener which is triggered after photo has been taken
                 imageCapture.takePicture(outputFileOptions, mainExecutor, imageSavedListener)
 
+
                 // We can only change the foreground Drawable using API level 23+ API
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
@@ -391,6 +456,7 @@ class CameraFragment : Fragment() {
     companion object {
 
         private const val TAG = "CameraXBasic"
+        val user = FirebaseAuth.getInstance().currentUser?.uid.toString()
         private const val FILENAME = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val PHOTO_EXTENSION = ".jpg"
         private const val RATIO_4_3_VALUE = 4.0 / 3.0
@@ -398,7 +464,7 @@ class CameraFragment : Fragment() {
 
         /** Helper function used to create a timestamped file */
         private fun createFile(baseFolder: File, format: String, extension: String) =
-                File(baseFolder, SimpleDateFormat(format, Locale.US)
+                File(baseFolder, user + SimpleDateFormat(format, Locale.US)
                         .format(System.currentTimeMillis()) + extension)
     }
 }

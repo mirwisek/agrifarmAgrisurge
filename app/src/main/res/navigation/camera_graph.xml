@@ -37,7 +37,7 @@
 
     <fragment
         android:id="@+id/gallery_fragment"
-        android:name="com.fyp.agrifarm.ui.crops.GalleryFragment"
+        android:name="com.fyp.agrifarm.ui.crops.ui.GalleryFragment"
         android:label="GalleryFragment" >
         <argument
             android:name="root_directory"
