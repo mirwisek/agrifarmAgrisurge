@@ -4,35 +4,21 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.fyp.agrifarm.R;
 import com.fyp.agrifarm.db.viewmodel.NewsSharedViewModel;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class NewsDetailsFragment extends Fragment {
 
-    @BindView(R.id.tvNewsTitleDetail)
-    TextView title;
-    @BindView(R.id.tvNewsDate)
-    TextView date;
-    @BindView(R.id.tvNewsDesc)
-    TextView desc;
-
-    @BindView(R.id.newsImageContainer)
-    RelativeLayout imageContainer;
 
     NewsSharedViewModel newsSharedViewModel;
 
@@ -48,7 +34,10 @@ public class NewsDetailsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_news_details, container, false);
 
-        ButterKnife.bind(this, view);
+        TextView title = view.findViewById(R.id.tvNewsTitleDetail);
+        TextView date = view.findViewById(R.id.tvNewsDate);
+        TextView desc = view.findViewById(R.id.tvNewsDesc);
+        TextView imageContainer = view.findViewById(R.id.newsImageContainer);
 
         newsSharedViewModel = new ViewModelProvider(requireActivity()).get(NewsSharedViewModel.class);
 

@@ -71,11 +71,13 @@ class CameraFragment : Fragment() {
     private lateinit var mainExecutor: Executor
     private lateinit var storageReference: StorageReference
 
+
     private var displayId: Int = -1
     private val lensFacing: Int = CameraSelector.LENS_FACING_BACK
     private var preview: Preview? = null
     private var imageCapture: ImageCapture? = null
     private var camera: Camera? = null
+    private var captureButton: ImageButton? = null
 
     /** Volume down button receiver used to trigger shutter */
     private val volumeDownReceiver = object : BroadcastReceiver() {
@@ -102,7 +104,7 @@ class CameraFragment : Fragment() {
         override fun onDisplayChanged(displayId: Int) = view?.let { view ->
             if (displayId == this@CameraFragment.displayId) {
                 Log.d(TAG, "Rotation changed: ${view.display.rotation}")
-                imageCapture?.setTargetRotation(view.display.rotation)
+                imageCapture?.targetRotation = view.display.rotation
             }
         } ?: Unit
     }
@@ -171,12 +173,12 @@ class CameraFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == 69) {
-            val uploadTask = storageReference!!.putFile(data!!.data!!)
+            val uploadTask = storageReference.putFile(data!!.data!!)
             val task = uploadTask.continueWithTask { task ->
                 if (!task.isSuccessful) {
                     Toast.makeText(context, "HOGAYA", Toast.LENGTH_LONG).show()
                 }
-                storageReference!!.downloadUrl
+                storageReference.downloadUrl
             }.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val downloaduri = task.result
@@ -194,6 +196,7 @@ class CameraFragment : Fragment() {
     /** Define callback that will be triggered after a photo has been taken and saved to disk */
     private val imageSavedListener = object : ImageCapture.OnImageSavedCallback {
         override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+            Toast.makeText(requireContext(), "Image taken", Toast.LENGTH_LONG).show()
             val fileUri = outputFileResults.savedUri ?: return
             Log.d(TAG, "Photo capture succeeded: $fileUri")
 
@@ -251,7 +254,7 @@ class CameraFragment : Fragment() {
             MediaScannerConnection.scanFile(
                     context, arrayOf(fileUri.path), arrayOf(mimeType), null
             )
-            Toast.makeText(context,"IN",Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "IN", Toast.LENGTH_LONG).show()
         }
 
         override fun onError(exception: ImageCaptureException) {
@@ -404,15 +407,16 @@ class CameraFragment : Fragment() {
 
         // Inflate a new view containing all UI for controlling the camera
         val controls = View.inflate(requireContext(), R.layout.camera_ui_container, container)
+        captureButton = controls.findViewById<ImageButton>(R.id.camera_capture_button)
 
         // Listener for button used to capture photo
-        controls.findViewById<ImageButton>(R.id.camera_capture_button).setOnClickListener {
+        captureButton?.setOnClickListener { captureButton ->
 
             // Get a stable reference of the modifiable image capture use case
             imageCapture?.let { imageCapture ->
 
                 // Create output file to hold the image
-                val photoFile = createFile(outputDirectory, FILENAME, PHOTO_EXTENSION)
+                val photoFile = createFile(outputDirectory)
 
                 // Setup image capture metadata
 //                val metadata = Metadata().apply {
@@ -435,7 +439,14 @@ class CameraFragment : Fragment() {
                     container.postDelayed({
                         container.foreground = ColorDrawable(Color.WHITE)
                         container.postDelayed(
-                                { container.foreground = null }, ANIMATION_FAST_MILLIS)
+                                {
+                                    container.foreground = null
+                                    // TODO: @HK Add the switch camera icon back, incase user wants\
+                                    // retry taking the picure the drawable should change back to same one
+                                    // instead of check icon
+                                    captureButton.background = resources.getDrawable(
+                                            R.drawable.fui_ic_check_circle_black_128dp, null)
+                                }, ANIMATION_FAST_MILLIS)
                     }, ANIMATION_SLOW_MILLIS)
                 }
             }
@@ -455,17 +466,19 @@ class CameraFragment : Fragment() {
 
     companion object {
 
-        private const val TAG = "CameraXBasic"
-        val user = FirebaseAuth.getInstance().currentUser?.uid.toString()
+        private const val TAG = "CameraFragment"
+        // No more needed, this will just prolong file name,
+        // instead of uid_timestamp as file name, we'll use uid (directory in fb storage) > timestamp
+//        val user = FirebaseAuth.getInstance().currentUser?.uid.toString()
         private const val FILENAME = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val PHOTO_EXTENSION = ".jpg"
         private const val RATIO_4_3_VALUE = 4.0 / 3.0
         private const val RATIO_16_9_VALUE = 16.0 / 9.0
 
         /** Helper function used to create a timestamped file */
-        private fun createFile(baseFolder: File, format: String, extension: String) =
-                File(baseFolder, user + SimpleDateFormat(format, Locale.US)
-                        .format(System.currentTimeMillis()) + extension)
+        private fun createFile(baseFolder: File) =
+                File(baseFolder, SimpleDateFormat(FILENAME, Locale.US)
+                        .format(System.currentTimeMillis()) + PHOTO_EXTENSION)
     }
 }
 
