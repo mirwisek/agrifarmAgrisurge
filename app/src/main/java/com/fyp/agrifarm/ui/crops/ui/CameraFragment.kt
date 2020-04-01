@@ -41,11 +41,14 @@ import com.fyp.agrifarm.ui.crops.utils.ANIMATION_FAST_MILLIS
 import com.fyp.agrifarm.ui.crops.utils.ANIMATION_SLOW_MILLIS
 import com.fyp.agrifarm.ui.crops.utils.simulateClick
 import com.fyp.agrifarm.utils.PicassoUtils
+import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
+import kotlinx.android.synthetic.main.camera_ui_container.*
+import kotlinx.android.synthetic.main.chat_activity_toolbar.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
@@ -69,7 +72,9 @@ class CameraFragment : Fragment() {
     private lateinit var broadcastManager: LocalBroadcastManager
     private lateinit var displayManager: DisplayManager
     private lateinit var mainExecutor: Executor
-    private lateinit var storageReference: StorageReference
+    private var storageReference = FirebaseStorage.getInstance().getReference("CropImages/" )
+
+
 
 
     private var displayId: Int = -1
@@ -78,6 +83,7 @@ class CameraFragment : Fragment() {
     private var imageCapture: ImageCapture? = null
     private var camera: Camera? = null
     private var captureButton: ImageButton? = null
+    private var ischeck : Boolean = true
 
     /** Volume down button receiver used to trigger shutter */
     private val volumeDownReceiver = object : BroadcastReceiver() {
@@ -168,30 +174,7 @@ class CameraFragment : Fragment() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == 69) {
-            val uploadTask = storageReference.putFile(data!!.data!!)
-            val task = uploadTask.continueWithTask { task ->
-                if (!task.isSuccessful) {
-                    Toast.makeText(context, "HOGAYA", Toast.LENGTH_LONG).show()
-                }
-                storageReference.downloadUrl
-            }.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val downloaduri = task.result
-                    val url = downloaduri!!.toString()
-                    Log.d("DirectLink", url)
-
-
-                }
-            }
-        }
-
-
-    }
 
     /** Define callback that will be triggered after a photo has been taken and saved to disk */
     private val imageSavedListener = object : ImageCapture.OnImageSavedCallback {
@@ -204,37 +187,6 @@ class CameraFragment : Fragment() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 // Update the gallery thumbnail with latest picture taken
                 setGalleryThumbnail(fileUri)
-//                Log.d("HAHA","HANJII")
-//                val builder: AlertDialog.Builder? = activity?.let {
-//                    AlertDialog.Builder(it)
-//                }
-//                builder?.setMessage("Please select yes or no to upload the image to our database")
-//                        ?.setTitle("ImageUpload")
-//                val dialog: AlertDialog? = builder?.create()
-//                val alertDialog: AlertDialog? = activity?.let {
-//                    val builder = AlertDialog.Builder(it)
-//                    builder.apply {
-//                        setPositiveButton("Yes",
-//                                DialogInterface.OnClickListener { dialog, id ->
-//                                    storageReference = FirebaseStorage.getInstance().getReference("CropImages")
-//                                    val intent = Intent()
-//                                    intent.type = "image/*"
-//                                    intent.action = Intent.ACTION_GET_CONTENT
-//                                    startActivityForResult(intent, 69)
-//
-//
-//                                })
-//                        setNegativeButton("No",
-//                                DialogInterface.OnClickListener { dialog, id ->
-//                                    // User cancelled the dialog
-//                                })
-//                    }
-//
-//                    // Create the AlertDialog
-//                    builder.create()
-//                }
-//
-
             }
 
             // Implicit broadcasts will be ignored for devices running API level >= 24
@@ -410,46 +362,90 @@ class CameraFragment : Fragment() {
         captureButton = controls.findViewById<ImageButton>(R.id.camera_capture_button)
 
         // Listener for button used to capture photo
+        val photoFile = createFile(outputDirectory)
+
         captureButton?.setOnClickListener { captureButton ->
 
-            // Get a stable reference of the modifiable image capture use case
-            imageCapture?.let { imageCapture ->
+//            var ischeck : Boolean = false
+//            var current = controls.findViewById<ImageButton>(R.id.camera_capture_button).background as Int
+//
+//              Toast.makeText(context,"HANJII AAAB AYEGA MAAZAAA",Toast.LENGTH_LONG).show()
 
-                // Create output file to hold the image
-                val photoFile = createFile(outputDirectory)
+              // Get a stable reference of the modifiable image capture use case
 
-                // Setup image capture metadata
+            if (ischeck==true) {
+                imageCapture?.let { imageCapture ->
+
+                    // Create output file to hold the image
+//                    val photoFile = createFile(outputDirectory)
+
+                    // Setup image capture metadata
 //                val metadata = Metadata().apply {
 //
 //                    // Mirror image when using the front camera
 //                    isReversedHorizontal = lensFacing == CameraSelector.LENS_FACING_FRONT
 //                }
 
-                val outputFileOptions = ImageCapture.OutputFileOptions.Builder(photoFile)
+                    val outputFileOptions = ImageCapture.OutputFileOptions.Builder(photoFile)
 //                        .setMetadata(metadata)
-                        .build()
-                // Setup image capture listener which is triggered after photo has been taken
-                imageCapture.takePicture(outputFileOptions, mainExecutor, imageSavedListener)
+                            .build()
+                    // Setup image capture listener which is triggered after photo has been taken
+                    imageCapture.takePicture(outputFileOptions, mainExecutor, imageSavedListener)
 
 
-                // We can only change the foreground Drawable using API level 23+ API
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    // We can only change the foreground Drawable using API level 23+ API
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-                    // Display flash animation to indicate that photo was captured
-                    container.postDelayed({
-                        container.foreground = ColorDrawable(Color.WHITE)
-                        container.postDelayed(
-                                {
-                                    container.foreground = null
-                                    // TODO: @HK Add the switch camera icon back, incase user wants\
-                                    // retry taking the picure the drawable should change back to same one
-                                    // instead of check icon
-                                    captureButton.background = resources.getDrawable(
-                                            R.drawable.fui_ic_check_circle_black_128dp, null)
-                                }, ANIMATION_FAST_MILLIS)
-                    }, ANIMATION_SLOW_MILLIS)
+                        // Display flash animation to indicate that photo was captured
+                        container.postDelayed({
+                            container.foreground = ColorDrawable(Color.WHITE)
+                            container.postDelayed(
+                                    {
+                                        container.foreground = null
+                                        // TODO: @HK Add the switch camera icon back, incase user wants\
+                                        // retry taking the picure the drawable should change back to same one
+                                        // instead of check icon
+                                        captureButton.background = resources.getDrawable(
+                                                R.drawable.fui_ic_check_circle_black_128dp, null)
+                                        ischeck = false
+                                    }, ANIMATION_FAST_MILLIS)
+                        }, ANIMATION_SLOW_MILLIS)
+
+                    }
                 }
             }
+            else
+            {
+
+                var file = Uri.fromFile(photoFile)
+                Log.d("uploadS",""+file.lastPathSegment)
+                storageReference.child(FirebaseAuth.getInstance().currentUser?.uid.toString())
+                        .child(file.lastPathSegment.toString()).putFile(file).addOnFailureListener {
+                            Log.d("uploadS"," Done")
+                }.addOnSuccessListener {
+                    Log.d("uploadS"," Done")
+                            ischeck = true
+                            captureButton.setBackgroundResource(R.drawable.ic_shutter)
+                            Toast.makeText(context,"Image Uploaded",Toast.LENGTH_SHORT).show()
+
+                }
+
+            }
+
+
+//                if(ischeck){
+//                    controls.findViewById<ImageButton>(R.id.camera_capture_button).setBackgroundResource(R.drawable.ic_shutter);
+//                }else{
+//                    controls.findViewById<ImageButton>(R.id.camera_capture_button).setBackgroundResource(R.drawable.ic_tick);
+//
+//                }
+//
+//                ischeck = !ischeck; // reverse
+
+
+//              Toast.makeText(context,"HANJII AAAB AYEGA MAAZAAA",Toast.LENGTH_LONG).show()
+//              Log.d("Inelseif","I AM HERE")
+
         }
 
 
@@ -462,6 +458,7 @@ class CameraFragment : Fragment() {
             }
         }
     }
+
 
 
     companion object {
