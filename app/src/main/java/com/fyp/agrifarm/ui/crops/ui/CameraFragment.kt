@@ -351,6 +351,7 @@ class CameraFragment : Fragment() {
 
     /** Method used to re-draw the camera UI controls, called every time configuration changes. */
     private fun updateCameraUi() {
+        ischeck = true
 
         // Remove previous UI if any
         container.findViewById<ConstraintLayout>(R.id.camera_ui_container)?.let {
@@ -408,6 +409,7 @@ class CameraFragment : Fragment() {
                                         captureButton.background = resources.getDrawable(
                                                 R.drawable.fui_ic_check_circle_black_128dp, null)
                                         ischeck = false
+
                                     }, ANIMATION_FAST_MILLIS)
                         }, ANIMATION_SLOW_MILLIS)
 
@@ -447,6 +449,12 @@ class CameraFragment : Fragment() {
 //              Log.d("Inelseif","I AM HERE")
 
         }
+
+        // Listener for button used to retake image
+        controls.findViewById<ImageButton>(R.id.camera_switch_button).setOnClickListener {
+            updateCameraUi()
+        }
+
 
 
         // Listener for button used to view the most recent photo
