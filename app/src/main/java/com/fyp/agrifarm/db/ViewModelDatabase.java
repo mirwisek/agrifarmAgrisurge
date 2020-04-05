@@ -7,11 +7,11 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
-import com.fyp.agrifarm.db.entity.ShortVideo;
-import com.fyp.agrifarm.db.converter.DateConverter;
-import com.fyp.agrifarm.db.dao.NewsDoa;
-import com.fyp.agrifarm.db.dao.VideoDao;
-import com.fyp.agrifarm.db.entity.NewsEntity;
+import com.fyp.agrifarm.app.news.db.NewsDoa;
+import com.fyp.agrifarm.app.news.db.NewsEntity;
+import com.fyp.agrifarm.app.youtube.db.ShortVideo;
+import com.fyp.agrifarm.app.youtube.db.VideoDao;
+import com.fyp.agrifarm.app.youtube.db.converter.DateConverter;
 
 @Database(entities = {NewsEntity.class, ShortVideo.class}, version = 2, exportSchema = false)
 @TypeConverters({DateConverter.class})

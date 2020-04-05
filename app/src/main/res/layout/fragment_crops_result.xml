@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite"
+    tools:context=".app.crops.ui.CropsReasultFragment">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardViewCrop"
+        android:layout_width="230dp"
+        android:layout_height="350dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="60dp"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivCropSubject"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_check"
+            android:transitionName="leafSubject" />
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:visibility="invisible"
+        android:id="@+id/tvCropFeedback"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Finding disease..."
+        android:textAlignment="center"
+        android:textSize="20sp"
+        android:layout_marginTop="50dp"
+        app:layout_constraintEnd_toEndOf="@id/cardViewCrop"
+        app:layout_constraintStart_toStartOf="@+id/cardViewCrop"
+        app:layout_constraintTop_toBottomOf="@+id/cardViewCrop" />
+
+    <ProgressBar
+        android:visibility="invisible"
+        android:id="@+id/progressCropDiagnosis"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/tvCropFeedback"
+        app:layout_constraintStart_toStartOf="@+id/tvCropFeedback"
+        app:layout_constraintTop_toBottomOf="@+id/tvCropFeedback"
+        app:layout_constraintVertical_bias="0.2" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

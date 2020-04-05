@@ -2,12 +2,13 @@
 <navigation
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/permissions_fragment">
 
     <fragment
         android:id="@+id/permissions_fragment"
-        android:name="com.fyp.agrifarm.ui.crops.PermissionsFragment"
+        android:name="com.fyp.agrifarm.app.crops.PermissionsFragment"
         android:label="PermissionsFragment" >
 
         <action
@@ -20,28 +21,24 @@
 
     <fragment
         android:id="@+id/camera_fragment"
-        android:name="com.fyp.agrifarm.ui.crops.ui.CameraFragment"
+        android:name="com.fyp.agrifarm.app.crops.ui.CameraFragment"
         android:label="CameraFragment" >
-
-        <action
-            android:id="@+id/action_camera_to_gallery"
-            app:destination="@id/gallery_fragment" />
 
         <action
             android:id="@+id/action_camera_to_permissions"
             app:destination="@id/permissions_fragment"
             app:popUpTo="@id/camera_fragment"
             app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_image_to_cropsResultFragment"
+            app:destination="@id/cropsResultFragment" />
 
     </fragment>
 
     <fragment
-        android:id="@+id/gallery_fragment"
-        android:name="com.fyp.agrifarm.ui.crops.ui.GalleryFragment"
-        android:label="GalleryFragment" >
-        <argument
-            android:name="root_directory"
-            app:argType="string" />
-    </fragment>
+        android:id="@+id/cropsResultFragment"
+        android:name="com.fyp.agrifarm.app.crops.ui.CropsResultFragment"
+        android:label="fragment_crops_result"
+        tools:layout="@layout/fragment_crops_result" />
 
 </navigation>
