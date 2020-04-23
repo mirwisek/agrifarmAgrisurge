@@ -168,6 +168,16 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
+            <ToggleButton
+                android:id="@+id/rvPricesToogleButton"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvHintPrices"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tvHintPrices"
+                app:layout_constraintTop_toTopOf="@+id/guideHWidgetEnd"
+                android:background="@color/colorAccent"/>
+
             <TextView
                 android:id="@+id/tvHintPeople"
                 android:layout_width="wrap_content"
@@ -250,5 +260,12 @@
         android:layout_margin="@dimen/margin_xsmall"
         app:backgroundTint="@color/colorPrimary"
         android:layout_gravity="bottom|end"/>
+
+  <androidx.fragment.app.FragmentContainerView
+      android:id="@+id/locationListFragmentContainer"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

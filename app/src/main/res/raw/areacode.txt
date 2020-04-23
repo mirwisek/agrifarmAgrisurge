@@ -1,0 +1,34 @@
+48, Quetta
+49, Awaran
+50, Bolan
+51, Dera Bukti
+52, Harnai
+53, Jhal Magsi
+54, Kech
+55, Khuzdar
+56, Lasbela
+57, Mastung
+58, Naseerabad
+59, Panjgur
+60, Qilla Abdullah
+61, Sibi
+62, Zhob
+63, Sohbatpur
+64, Surab
+65, Barkhan
+66, Chagai
+67, Gawadar
+68, Jafar Abad,
+69, Kalat
+70, Kharan
+71, Kohlu
+72, Loralai
+73, Musa Khel
+74, Nushki
+75, Pishin
+76, Qilla Saifullah
+77, Sherani
+78, Washuk
+79, Ziarat
+80, Lehri
+81, Duki
