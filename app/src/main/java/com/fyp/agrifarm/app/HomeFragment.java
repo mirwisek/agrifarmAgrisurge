@@ -140,6 +140,7 @@ public class HomeFragment extends Fragment implements LocationListFragment.OnLis
         adapter = new FirestoreUserRecyclerAdapter(options, getContext());
         rvUsers.setHasFixedSize(true);
 
+
         rvUsers.setAdapter(adapter);
         adapter.notifyDataSetChanged();
         adapter.setOnItemClickListener((documentSnapshot, position) -> {

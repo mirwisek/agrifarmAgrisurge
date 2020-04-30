@@ -23,9 +23,12 @@ public class RecommendedVideosRecyclerViewAdapter extends RecyclerView.Adapter<R
     private List<ShortVideo> rvVideoDetailsList ;
     private Context context;
 
-    public RecommendedVideosRecyclerViewAdapter( Context context) {
+    private OnItemClickListener mListener;
+
+    public RecommendedVideosRecyclerViewAdapter( Context context , OnItemClickListener onItemClickListener) {
 
         this.context = context ;
+        this.mListener = onItemClickListener;
     }
 
     @NonNull
@@ -33,7 +36,7 @@ public class RecommendedVideosRecyclerViewAdapter extends RecyclerView.Adapter<R
     public VideosViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.rv_recomended_videos_item, parent, false);
-        return new RecommendedVideosRecyclerViewAdapter.VideosViewHolder(view);
+        return new RecommendedVideosRecyclerViewAdapter.VideosViewHolder(view , mListener);
     }
 
     @Override
@@ -54,22 +57,33 @@ public class RecommendedVideosRecyclerViewAdapter extends RecyclerView.Adapter<R
         return rvVideoDetailsList.size();
     }
 
-    public class VideosViewHolder extends RecyclerView.ViewHolder {
+    public class VideosViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public YouTubeThumbnailView thumbnailView;
         public TextView Videotitle;
         public TextView Channelname;
         public TextView Videoiews;
         public TextView UploadTime;
+        OnItemClickListener onItemClickListener;
 
-        public VideosViewHolder(@NonNull View itemView) {
+        public VideosViewHolder(@NonNull View itemView , OnItemClickListener onItemClickListener) {
             super(itemView);
             Videotitle = itemView.findViewById(R.id.rvVideoTitle);
             Channelname = itemView.findViewById(R.id.rvChanelName);
             Videoiews = itemView.findViewById(R.id.rvVideoViews);
             UploadTime = itemView.findViewById(R.id.rvVideoUploadTime);
             thumbnailView = itemView.findViewById(R.id.youTubeThumbnailView);
+            itemView.setOnClickListener(this::onClick);
+            this.onItemClickListener = onItemClickListener ;
         }
 
+        @Override
+        public void onClick(View v) {
+            onItemClickListener.onVideoClicked(rvVideoDetailsList.get(getAdapterPosition()));
+        }
+    }
+
+    public interface OnItemClickListener {
+        void onVideoClicked(ShortVideo video);
     }
 
     public void updateList(List<ShortVideo> list){

@@ -1,6 +1,5 @@
 package com.fyp.agrifarm.app.youtube;//package com.fyp.agriculture;
 
-import android.app.DownloadManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,31 +8,23 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.fyp.agrifarm.R;
 import com.fyp.agrifarm.api.DeveloperKey;
+import com.fyp.agrifarm.app.youtube.db.ShortVideo;
 import com.fyp.agrifarm.app.youtube.viewmodel.VideoSharedViewModel;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class YoutubeFragment extends Fragment {
+public class YoutubeFragment extends Fragment implements RecommendedVideosRecyclerViewAdapter.OnItemClickListener {
 
     public static final String TAG = "YoutubeFragment";
     private VideoSharedViewModel videoViewModel;
@@ -46,8 +37,8 @@ public class YoutubeFragment extends Fragment {
     TextView tvPublisher;
     @BindView(R.id.tvPlayerVideoTags)
     TextView tvTags;
-    RecommendedVideosRecyclerViewAdapter recommendedVideosRecyclerViewAdapter ;
-    RecyclerView RecommendedVideoRecyclerView ;
+    RecommendedVideosRecyclerViewAdapter recommendedVideosRecyclerViewAdapter;
+    RecyclerView RecommendedVideoRecyclerView;
 //    private OnFragmentInteractionListener mListener;
 
     public YoutubeFragment() {
@@ -71,7 +62,7 @@ public class YoutubeFragment extends Fragment {
 
         RecommendedVideoRecyclerView = parent.findViewById(R.id.rvRecomendedVideos);
         RecommendedVideoRecyclerView.setHasFixedSize(true);
-        recommendedVideosRecyclerViewAdapter = new RecommendedVideosRecyclerViewAdapter(getContext());
+        recommendedVideosRecyclerViewAdapter = new RecommendedVideosRecyclerViewAdapter(getContext(), this::onVideoClicked);
 
         videoViewModel = new ViewModelProvider(requireActivity()).get(VideoSharedViewModel.class);
 
@@ -108,15 +99,22 @@ public class YoutubeFragment extends Fragment {
 
         });
 
-        videoViewModel.getAllVideos().observe(getViewLifecycleOwner(),recommendedVideosRecyclerViewAdapter::updateList);
+        videoViewModel.getAllVideos().observe(getViewLifecycleOwner(), recommendedVideosRecyclerViewAdapter::updateList);
         RecommendedVideoRecyclerView.setAdapter(recommendedVideosRecyclerViewAdapter);
-
-
 
 
         return parent;
     }
 
+
+    @Override
+    public void onVideoClicked(ShortVideo video) {
+        videoViewModel.selectVideo(video);
+        getChildFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentYoutube, new YoutubeFragment(), YoutubeFragment.TAG)
+                .commit();
+    }
 
 
 //    @Override
