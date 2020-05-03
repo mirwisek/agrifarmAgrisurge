@@ -47,6 +47,8 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlaySe
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.youtube.YouTubeScopes;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
@@ -59,7 +61,6 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class MainActivity extends AppCompatActivity
         implements EasyPermissions.PermissionCallbacks,
         NavigationView.OnNavigationItemSelectedListener,
-        HomeFragment.OnFragmentInteractionListener,
         WeatherFragment.OnFragmentInteractionListener,
         VideoRecyclerAdapter.OnItemClickListener {
 
@@ -71,11 +72,11 @@ public class MainActivity extends AppCompatActivity
     private static final String[] SCOPES = { YouTubeScopes.YOUTUBE_READONLY };
 
     GoogleAccountCredential mCredential;
+    GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
 
     public static final String TAG = "MainActivity";
 
     private static HomeFragment homeFragment = null;
-    private static WeatherFragment weatherFragment = null;
     private VideoSharedViewModel videoViewModel;
 
 
@@ -83,10 +84,6 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // Download the news in AsyncTask to ROOM
-        NewsSharedViewModel newsSharedViewModel = new ViewModelProvider(MainActivity.this).get(NewsSharedViewModel.class);
-        new DownloadNews(newsSharedViewModel).execute();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -133,9 +130,19 @@ public class MainActivity extends AppCompatActivity
 
         videoViewModel = new ViewModelProvider(this).get(VideoSharedViewModel.class);
 
-        mCredential = GoogleAccountCredential.usingOAuth2(
-                this, Arrays.asList(SCOPES))
+        mCredential = GoogleAccountCredential.usingOAuth2(this, Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
+
+        // Set Youtube account to be that of the one logged in with
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        // Also make sure if user signs in through phone then don't set account without an email
+        if (user != null && user.getEmail() != null && !user.getEmail().isEmpty()){
+            mCredential.setSelectedAccountName(user.getEmail());
+        } else {
+            // Not called in OTP Login, so we have to call it to configure YouTube account
+            getResultsFromApi();
+        }
+
     }
 
     private void getResultsFromApi() {
@@ -146,6 +153,7 @@ public class MainActivity extends AppCompatActivity
         } else if (!isDeviceOnline()) {
             Toast.makeText(getApplicationContext(), "No network connection available", Toast.LENGTH_SHORT).show();
         } else {
+            Log.i(TAG, "getResultsFromApi: perhaps else");
             new YoutubeMakeRequest.MakeRequestTask(
                     new WeakReference<>(getApplication()), mCredential,
                     new YoutubeMakeRequest.MakeRequestTask.ResponseListener() {
@@ -185,18 +193,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     private boolean isGooglePlayServicesAvailable() {
-        GoogleApiAvailability apiAvailability =
-                GoogleApiAvailability.getInstance();
-        final int connectionStatusCode =
-                apiAvailability.isGooglePlayServicesAvailable(this);
+        final int connectionStatusCode = apiAvailability.isGooglePlayServicesAvailable(this);
         return connectionStatusCode == ConnectionResult.SUCCESS;
     }
 
     private void acquireGooglePlayServices() {
-        GoogleApiAvailability apiAvailability =
-                GoogleApiAvailability.getInstance();
-        final int connectionStatusCode =
-                apiAvailability.isGooglePlayServicesAvailable(this);
+        final int connectionStatusCode = apiAvailability.isGooglePlayServicesAvailable(this);
         if (apiAvailability.isUserResolvableError(connectionStatusCode)) {
             showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
         }
@@ -204,7 +206,6 @@ public class MainActivity extends AppCompatActivity
 
     void showGooglePlayServicesAvailabilityErrorDialog(
             final int connectionStatusCode) {
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         Dialog dialog = apiAvailability.getErrorDialog(
                 MainActivity.this,
                 connectionStatusCode,
@@ -277,9 +278,8 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
             case REQUEST_AUTHORIZATION:
-                if (resultCode == RESULT_OK) {
+                if (resultCode == RESULT_OK)
                     getResultsFromApi();
-                }
                 break;
         }
     }
@@ -353,22 +353,6 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    @Override
-    public void onForecastClick(View v) {
-        FragmentManager fm = getSupportFragmentManager();
-        Fragment fragment = fm.findFragmentByTag(WeatherFragment.TAG);
-        if (fragment == null) {
-            if (weatherFragment == null)
-                weatherFragment = new WeatherFragment();
-            fragment = weatherFragment;
-        }
-
-        fm.beginTransaction()
-                .replace(R.id.fragmentHolder, fragment, WeatherFragment.TAG)
-                .addToBackStack(HomeFragment.TAG)
-                .commit();
     }
 
     @Override

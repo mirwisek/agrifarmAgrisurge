@@ -12,17 +12,14 @@ class DetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
+
         val fm = supportFragmentManager
         val intent = intent
-        val mode = intent.getStringExtra(MODE)
-        when (mode) {
+        when (intent.getStringExtra(MODE)) {
             MODE_NEWS -> {
-                val title = intent.getStringExtra(KEY_TITLE)
-                val desc = intent.getStringExtra(KEY_DESCRIPTION)
-                val image = intent.getStringExtra(KEY_IMAGE)
-                val date = intent.getStringExtra(KEY_DATE)
+                val newsId = intent.getIntExtra(KEY_ID, -1)
                 val newsSharedViewModel = ViewModelProvider(this).get(NewsSharedViewModel::class.java)
-                newsSharedViewModel.selectNews(NewsEntity(title, desc, image, date))
+                newsSharedViewModel.selectNews(newsId)
 
                 var fragment = fm.findFragmentByTag(NewsDetailsFragment.TAG)
                 fragment = fragment ?: NewsDetailsFragment()
@@ -39,6 +36,6 @@ class DetailsActivity : AppCompatActivity() {
         const val KEY_TITLE = "title"
         const val KEY_DESCRIPTION = "desc"
         const val KEY_IMAGE = "image"
-        const val KEY_DATE = "date"
+        const val KEY_ID = "newsId"
     }
 }

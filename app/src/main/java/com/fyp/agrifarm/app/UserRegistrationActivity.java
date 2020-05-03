@@ -53,18 +53,23 @@ public class UserRegistrationActivity extends AppCompatActivity {
     FrameLayout progressBar;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onStart() {
+        super.onStart();
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         // if no user has logged in
         if (user == null) {
             launchLoginActivity();
-        }
-        else {
+        } else {
             launchMainActivity();
             finish();
         }
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
 //        try {
 //            PackageInfo info = getPackageManager().getPackageInfo(
 //                    "com.fyp.agrifarm",
@@ -146,7 +151,6 @@ public class UserRegistrationActivity extends AppCompatActivity {
         Log.d(TAG, "onActivityResult: called");
         switch (requestCode) {
             case RC_SIGN_IN:
-                // TODO: @Ehtisham TASK:1 you have to insert code here for time-out
                 IdpResponse response = IdpResponse.fromResultIntent(data);
                 if (resultCode == RESULT_OK) {
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -188,10 +192,10 @@ public class UserRegistrationActivity extends AppCompatActivity {
 
     private void launchLoginActivity() {
         List<AuthUI.IdpConfig> providers = Arrays.asList(
-                new AuthUI.IdpConfig.EmailBuilder().build(),
+//                new AuthUI.IdpConfig.EmailBuilder().build(),
                 new AuthUI.IdpConfig.PhoneBuilder().build(),
-                new AuthUI.IdpConfig.GoogleBuilder().build(),
-                new AuthUI.IdpConfig.FacebookBuilder().build()
+                new AuthUI.IdpConfig.GoogleBuilder().build()
+//                new AuthUI.IdpConfig.FacebookBuilder().build()
         );
         startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
                         .setIsSmartLockEnabled(false)

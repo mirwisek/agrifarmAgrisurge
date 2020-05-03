@@ -2,9 +2,12 @@ package com.fyp.agrifarm.app.news;
 
 import android.app.Application;
 import android.os.AsyncTask;
+import android.os.Bundle;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
+import com.fyp.agrifarm.app.news.db.DownloadNews;
 import com.fyp.agrifarm.db.ViewModelDatabase;
 import com.fyp.agrifarm.app.news.db.NewsDoa;
 import com.fyp.agrifarm.app.news.db.NewsEntity;
@@ -14,16 +17,23 @@ import java.util.List;
 public class NewsRepository {
     private NewsDoa newsDao;
     private LiveData<List<NewsEntity>> newsList;
-    ViewModelDatabase database;
 
-    public NewsRepository(Application application) {
-        database = ViewModelDatabase.getInstance(application);
-        newsDao = database.newsDoa();
-        newsList = newsDao.getAllNews();
+    private NewsRepository() {}
+    private static NewsRepository ourInstance;
+
+    public static NewsRepository getInstance(Application app) {
+        if(ourInstance == null){
+            ourInstance = new NewsRepository(app);
+        }
+        return ourInstance;
     }
 
-    public void insert(NewsEntity news) {
-        new InsertNewsAsyncTask(newsDao).execute(news);
+    private NewsRepository(Application app) {
+        ViewModelDatabase database = ViewModelDatabase.getInstance(app);
+        newsDao = database.newsDoa();
+        deleteAllNews();
+        new DownloadNews(app).execute();
+        newsList = newsDao.getAllNews();
     }
 
     public void deleteAllNews() {
@@ -34,18 +44,12 @@ public class NewsRepository {
         return newsList;
     }
 
-    private static class InsertNewsAsyncTask extends AsyncTask<NewsEntity, Void, Void> {
-        private NewsDoa newsDao;
-
-        private InsertNewsAsyncTask(NewsDoa newsDao) {
-            this.newsDao = newsDao;
+    public NewsEntity getNewsById(int newsId) {
+        for(NewsEntity news: newsList.getValue()){
+            if(news.getId() == newsId)
+                return news;
         }
-
-        @Override
-        protected Void doInBackground(NewsEntity... news) {
-            newsDao.insert(news[0]);
-            return null;
-        }
+        return null;
     }
 
 

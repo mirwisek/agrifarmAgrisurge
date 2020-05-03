@@ -91,6 +91,7 @@
                 app:layout_constraintTop_toTopOf="@id/tvWeatherTemp"/>
 
             <TextView
+                android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Partly Cloudy"
@@ -168,15 +169,26 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
-            <ToggleButton
-                android:id="@+id/rvPricesToogleButton"
+            <ProgressBar
+                android:id="@+id/progressPrices"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="@+id/tvHintPrices"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/tvHintPrices"
-                app:layout_constraintTop_toTopOf="@+id/guideHWidgetEnd"
-                android:background="@color/colorAccent"/>
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/btnLocation"
+                app:layout_constraintBottom_toBottomOf="@id/btnLocation"
+                app:layout_constraintEnd_toStartOf="@id/guideVertEnd"
+                app:layout_constraintStart_toStartOf="@id/guideVertStart" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLocation"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+                android:text="Turn on location"
+                android:textColor="#fff"
+                app:layout_constraintBottom_toBottomOf="@id/rvPrices"
+                app:layout_constraintEnd_toEndOf="@id/guideVertEnd"
+                app:layout_constraintStart_toStartOf="@+id/guideVertStart"
+                app:layout_constraintTop_toTopOf="@id/rvPrices" />
 
             <TextView
                 android:id="@+id/tvHintPeople"
@@ -251,12 +263,14 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabTakeImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_camera"
-        android:clickable="true"
+        android:text="Crop Doctor"
+        app:icon="@drawable/ic_camera"
+        app:iconTint="@color/colorWhite"
+        android:textColor="@color/colorWhite"
         android:layout_margin="@dimen/margin_xsmall"
         app:backgroundTint="@color/colorPrimary"
         android:layout_gravity="bottom|end"/>

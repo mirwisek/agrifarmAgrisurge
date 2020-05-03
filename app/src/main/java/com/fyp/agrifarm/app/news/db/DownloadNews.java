@@ -1,12 +1,15 @@
 package com.fyp.agrifarm.app.news.db;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.fyp.agrifarm.app.news.NewsRepository;
 import com.fyp.agrifarm.app.news.viewmodel.NewsSharedViewModel;
+import com.fyp.agrifarm.db.ViewModelDatabase;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,9 +21,8 @@ import java.util.ArrayList;
 public class DownloadNews extends AsyncTask<Void, Void, Void> {
 
     private static String imagelink = "";
-    private ArrayList<NewsEntity> newsList;
     private RequestQueue queue;
-    private NewsSharedViewModel viewModel;
+    private NewsDoa newsDoa;
 
     private final static String[] LINKS = new String[]{
             "http://blog.agcocorp.com/category/agco/feed/",
@@ -28,10 +30,9 @@ public class DownloadNews extends AsyncTask<Void, Void, Void> {
             "http://sustainableagriculture.net/blog/feed/",
     };
 
-    public DownloadNews(NewsSharedViewModel viewModel) {
-        this.viewModel = viewModel;
-        queue = Volley.newRequestQueue(viewModel.getApplication());
-
+    public DownloadNews(Context context) {
+        queue = Volley.newRequestQueue(context);
+        newsDoa = ViewModelDatabase.getInstance(context).newsDoa();
     }
 
     @Override
@@ -83,8 +84,7 @@ public class DownloadNews extends AsyncTask<Void, Void, Void> {
                                 }
                             }
                         }
-
-                        viewModel.insert(new NewsEntity(title, description, imagelink, publishedDate));
+                        new InsertNewsAsync(newsDoa).execute(new NewsEntity(title, description, imagelink, publishedDate));
                         imagelink = "";
                     }
                 }, error -> {
@@ -100,4 +100,23 @@ public class DownloadNews extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
+        Log.i("ANN", "onPostExecute: I'm done");
+    }
+
+    private static class InsertNewsAsync extends AsyncTask<NewsEntity, Void, Void> {
+        private NewsDoa newsDao;
+
+        private InsertNewsAsync(NewsDoa newsDao) {
+            this.newsDao = newsDao;
+        }
+
+        @Override
+        protected Void doInBackground(NewsEntity... news) {
+            newsDao.insert(news[0]);
+            return null;
+        }
+    }
 }
