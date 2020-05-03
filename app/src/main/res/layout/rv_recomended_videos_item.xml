@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.google.android.youtube.player.YouTubeThumbnailView
+        android:id="@+id/youTubeThumbnailView"
+        android:layout_width="150dp"
+        android:layout_height="110dp"
+        android:src="@drawable/ic_thumb_down"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/rvVideoTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Video Title"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/youTubeThumbnailView"
+        app:layout_constraintTop_toTopOf="@+id/youTubeThumbnailView" />
+
+    <TextView
+        android:id="@+id/rvChanelName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Channel Name"
+        android:textSize="8sp"
+        app:layout_constraintEnd_toEndOf="@+id/rvVideoTitle"
+        app:layout_constraintStart_toStartOf="@+id/rvVideoTitle"
+        app:layout_constraintTop_toBottomOf="@+id/rvVideoTitle" />
+
+    <TextView
+        android:id="@+id/rvVideoViews"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="3.1K Views"
+        app:layout_constraintStart_toStartOf="@+id/rvChanelName"
+        app:layout_constraintTop_toBottomOf="@+id/rvChanelName" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="6dp"
+        android:text="-"
+        app:layout_constraintStart_toEndOf="@+id/rvVideoViews"
+        app:layout_constraintTop_toBottomOf="@+id/rvChanelName" />
+
+    <TextView
+        android:id="@+id/rvVideoUploadTime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="6dp"
+        android:text="2 Weeks ago"
+        app:layout_constraintStart_toEndOf="@+id/textView5"
+        app:layout_constraintTop_toBottomOf="@+id/rvChanelName" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

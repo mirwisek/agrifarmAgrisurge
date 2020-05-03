@@ -1,8 +1,10 @@
 package com.fyp.agrifarm.app;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -14,28 +16,34 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentContainer;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.fyp.agrifarm.R;
 import com.fyp.agrifarm.app.crops.CameraActivity;
+import com.fyp.agrifarm.app.news.db.NewsEntity;
+import com.fyp.agrifarm.app.news.ui.NewsRecyclerAdapter;
+import com.fyp.agrifarm.app.news.viewmodel.NewsSharedViewModel;
+import com.fyp.agrifarm.app.prices.model.PriceItem;
+import com.fyp.agrifarm.app.prices.ui.PricesRecyclerAdapter;
+import com.fyp.agrifarm.app.profile.model.User;
 import com.fyp.agrifarm.app.profile.ui.FirestoreUserRecyclerAdapter;
 import com.fyp.agrifarm.app.profile.ui.UserInformationActivity;
-import com.fyp.agrifarm.app.prices.model.PriceItem;
-import com.fyp.agrifarm.app.profile.model.User;
-import com.fyp.agrifarm.app.youtube.viewmodel.VideoSharedViewModel;
-import com.fyp.agrifarm.app.news.db.NewsEntity;
-import com.fyp.agrifarm.app.news.viewmodel.NewsSharedViewModel;
-import com.fyp.agrifarm.app.news.ui.NewsRecyclerAdapter;
-import com.fyp.agrifarm.R;
-import com.fyp.agrifarm.app.prices.ui.PricesRecyclerAdapter;
 import com.fyp.agrifarm.app.youtube.VideoRecyclerAdapter;
+import com.fyp.agrifarm.app.youtube.viewmodel.VideoSharedViewModel;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -55,12 +63,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class HomeFragment extends Fragment {
+
+public class HomeFragment extends Fragment implements LocationListFragment.OnListFragmentInteractionListener {
 
     public static final String TAG = "HomeFragment";
     public static final int REQUEST_PICK_IMAGE = 1111;
@@ -71,6 +81,11 @@ public class HomeFragment extends Fragment {
     private static final int IMG_WIDTH = 256;
     private static final int IMG_HEIGHT = 256;
     private static final int OUTPUT_CLASSES = 15;
+    private String UserDistrict = "";
+    private String Areas = "";
+    private String UserAreacode = "";
+    LocationList userlocation;
+
 
     LiveData<List<NewsEntity>> listNewsLive;
     RecyclerView rvNews;
@@ -88,6 +103,10 @@ public class HomeFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+
+    private ToggleButton rvPricesToggleButton;
+    private RecyclerView rvPrices;
+
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -95,14 +114,16 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        String dd;
         CoordinatorLayout parent = (CoordinatorLayout) inflater.inflate(R.layout.content_main, container,
                 false);
         Bitmap betaBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.beta);
         RecyclerView rvVideo = parent.findViewById(R.id.rvVideo);
         rvNews = parent.findViewById(R.id.rvNews);
 
+
         parent.findViewById(R.id.fabTakeImage).setOnClickListener((v) -> {
-                startActivity(new Intent(getContext(), CameraActivity.class));
+            startActivity(new Intent(getContext(), CameraActivity.class));
 //            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 //            intent.setType("image/*");
 //            startActivityForResult(intent, REQUEST_PICK_IMAGE);
@@ -119,6 +140,7 @@ public class HomeFragment extends Fragment {
         adapter = new FirestoreUserRecyclerAdapter(options, getContext());
         rvUsers.setHasFixedSize(true);
 
+
         rvUsers.setAdapter(adapter);
         adapter.notifyDataSetChanged();
         adapter.setOnItemClickListener((documentSnapshot, position) -> {
@@ -131,8 +153,10 @@ public class HomeFragment extends Fragment {
             startActivityForResult(intent, 20);
         });
 
+        rvPricesToggleButton = parent.findViewById(R.id.rvPricesToogleButton);
 
-        RecyclerView rvPrices = parent.findViewById(R.id.rvPrices);
+
+        rvPrices = parent.findViewById(R.id.rvPrices);
         List<PriceItem> priceList = new ArrayList<>();
         priceList.add(new PriceItem("Cherry", "97.22", PriceItem.CHERRY, PriceItem.ARROW_DOWN));
         priceList.add(new PriceItem("Kinno", "60.00", PriceItem.ORANGE, PriceItem.ARROW_UP));
@@ -143,6 +167,7 @@ public class HomeFragment extends Fragment {
 
         PricesRecyclerAdapter priceAdapter = new PricesRecyclerAdapter(getContext(), priceList);
         rvPrices.setAdapter(priceAdapter);
+
 
         newsRecyclerAdapter =
                 new NewsRecyclerAdapter(getContext(), selectedNews -> {
@@ -168,8 +193,113 @@ public class HomeFragment extends Fragment {
 
         initMLKit();
 
+
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+        } else {
+
+            rvPricesToggleButton.setVisibility(View.GONE);
+            HomeFragmentViewModel homeFragmentViewModel = new ViewModelProvider(getActivity()).get(HomeFragmentViewModel.class);
+            homeFragmentViewModel.getLocation().observe(getViewLifecycleOwner(), new Observer<String>() {
+                @Override
+                public void onChanged(String s) {
+                    UserDistrict = s;
+                    readCodeFile();
+                    if (UserDistrict.isEmpty())
+                    {
+                        Toast.makeText(getContext(), "Location Not Found Please Select your location Manually from the Provided List ", Toast.LENGTH_SHORT).show();
+                        Fragment LocationListFragment = new LocationListFragment();
+                        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+                        transaction.replace(R.id.locationListFragmentContainer,LocationListFragment).commit();
+                    }
+                    else {
+                        //Extracting the Codes
+                        try (BufferedReader br = new BufferedReader(new StringReader(Areas))) {
+                            String line;
+                            String area;
+                            String code;
+                            while ((line = br.readLine()) != null) {
+
+                                area = line.substring(4);
+                                code = line.substring(0, 2);
+                                Log.d(TAG, "run: " + code + area);
+                                if (area.equals(UserDistrict)) {
+                                    UserAreacode = code;
+                                    Toast.makeText(getContext(), "" + UserDistrict + " " + UserAreacode, Toast.LENGTH_SHORT).show();
+                                }
+
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+
+        }
+
+
         return parent;
     }
+
+    private void readCodeFile() {
+
+        InputStream inputStream = getResources().openRawResource(R.raw.areacode);
+        try {
+            byte[] buffer = new byte[inputStream.available()];
+            while (inputStream.read(buffer) != -1) {
+                Areas = new String(buffer);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1 && grantResults.length > 0) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                HomeFragmentViewModel homeFragmentViewModel = new ViewModelProvider(getActivity()).get(HomeFragmentViewModel.class);
+                homeFragmentViewModel.getLocation().observe(getViewLifecycleOwner(), new Observer<String>() {
+                    @Override
+                    public void onChanged(String s) {
+
+//                        Toast.makeText(getContext(), "" + s, Toast.LENGTH_SHORT).show();
+                        UserDistrict = s;
+                        readCodeFile();
+                        //Extracting the Codes
+                        try (BufferedReader br = new BufferedReader(new StringReader(Areas))) {
+                            String line;
+                            String area;
+                            String code;
+                            while ((line = br.readLine()) != null) {
+
+                                area = line.substring(4);
+                                code = line.substring(0, 2);
+                                Log.d(TAG, "run: " + code + area);
+                                if (area.equals(UserDistrict)) {
+                                    UserAreacode = code;
+                                }
+
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+            }
+        } else {
+
+            Toast.makeText(getContext(), "Location Not Detected ", Toast.LENGTH_SHORT).show();
+
+        }    }
+
 
     private void initMLKit() {
 
@@ -322,6 +452,8 @@ public class HomeFragment extends Fragment {
 
         super.onStart();
         adapter.startListening();
+
+
     }
 
     @Override
@@ -360,6 +492,14 @@ public class HomeFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onListFragmentInteraction(LocationList item) {
+        userlocation = item ;
+        UserDistrict = userlocation.location.substring(4);
+        UserAreacode = userlocation.location.substring(0,2);
+        Toast.makeText(getContext(), "You have selected " + UserDistrict , Toast.LENGTH_SHORT).show();
     }
 
     public interface OnFragmentInteractionListener {
