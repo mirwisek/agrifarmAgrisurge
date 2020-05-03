@@ -323,7 +323,7 @@ class CameraFragment : Fragment() {
     /** Method used to re-draw the camera UI controls, called every time configuration changes. */
     private fun updateCameraUi() {
 
-        // TODO: [Efficiency] updateCameraUi is also callen for retryCapture that does the following overhead
+        // TODO: [Efficiency] updateCameraUi is also called for retryCapture that does the following overhead
         // Remove previous UI if any
         container.findViewById<ConstraintLayout>(R.id.camera_ui_container)?.let {
             container.removeView(it)
