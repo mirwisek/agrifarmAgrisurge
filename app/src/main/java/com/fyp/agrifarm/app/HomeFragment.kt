@@ -149,7 +149,7 @@ class HomeFragment() : Fragment(), OnLocationItemClickListener {
         rvVideo.adapter = videoRecyclerAdapter
 
         // TODO: Remove unused MLKit
-        initMLKit()
+//        initMLKit()
 
         // First load update required
         pricesViewModel.location.observe(viewLifecycleOwner, androidx.lifecycle.Observer {

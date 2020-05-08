@@ -55,7 +55,7 @@ public class DownloadNews extends AsyncTask<Void, Void, Void> {
                         String description = item.getElementsByTag("description").text();
                         String guid = item.getElementsByTag("guid").text();
 //                    String link=item.getElementsByTag("link").text();
-                        String content = item.getElementsByTag("content:encoded").text();
+                        String content = item.getElementsByTag("content:encoded").html();
 
                         try {
                             Log.i("one", imagelink);

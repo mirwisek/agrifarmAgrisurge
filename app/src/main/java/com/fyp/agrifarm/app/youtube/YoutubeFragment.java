@@ -55,6 +55,7 @@ public class YoutubeFragment extends Fragment implements RecommendedVideosRecycl
 
         YouTubePlayerSupportFragment youFragment = YouTubePlayerSupportFragment.newInstance();
 //        YoutubeFragment youtubeFragment = YoutubeFragment.newInstance(videoUrl,"none");
+
 //
         getChildFragmentManager().beginTransaction()
                 .replace(R.id.fragmentYoutube, youFragment)
@@ -86,11 +87,8 @@ public class YoutubeFragment extends Fragment implements RecommendedVideosRecycl
                     if (!wasRestored) {
                         youTubePlayer.loadVideo(video.getId());
 
-                        youTubePlayer.setOnFullscreenListener(new YouTubePlayer.OnFullscreenListener() {
-                            //                        @Override
-                            public void onFullscreen(boolean b) {
-                                Log.i(TAG, "Fullscreen Changed");
-                            }
+                        youTubePlayer.setOnFullscreenListener(b -> {
+                            Log.i(TAG, "Fullscreen Changed");
                         });
 
                     }

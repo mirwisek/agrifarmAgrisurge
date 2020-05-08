@@ -52,6 +52,7 @@ class NewsDetailsFragment : Fragment() {
                 } else {
                     desc.text = Html.fromHtml(news.description)
                 }
+                log(news.description)
                 // Make links clickable
                 desc.movementMethod = LinkMovementMethod.getInstance()
             }

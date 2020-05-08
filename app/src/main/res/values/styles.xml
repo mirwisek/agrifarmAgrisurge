@@ -49,5 +49,12 @@
         <item name="android:textColor">@color/colorSecondary</item>
     </style>
 
+    <style name="NewsDetailsFragmentBottomSheet" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="android:topLeftRadius">20dp</item>
+        <item name="android:topRightRadius">20dp</item>
+        <item name="android:bottomLeftRadius">0dp</item>
+        <item name="android:bottomRightRadius">0dp</item>
+    </style>
+
 
 </resources>
