@@ -1,6 +1,7 @@
 package com.fyp.agrifarm.app
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -16,7 +17,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.fyp.agrifarm.R
-import com.fyp.agrifarm.app.prices.ui.LocationListFragment.OnLocationItemClickListener
 import com.fyp.agrifarm.app.crops.CameraActivity
 import com.fyp.agrifarm.app.news.db.NewsEntity
 import com.fyp.agrifarm.app.news.ui.NewsRecyclerAdapter
@@ -27,10 +27,12 @@ import com.fyp.agrifarm.app.prices.model.LoadState
 import com.fyp.agrifarm.app.prices.model.LocationListItem
 import com.fyp.agrifarm.app.prices.model.PriceItem
 import com.fyp.agrifarm.app.prices.ui.LocationListFragment
+import com.fyp.agrifarm.app.prices.ui.LocationListFragment.OnLocationItemClickListener
 import com.fyp.agrifarm.app.prices.ui.PricesRecyclerAdapter
 import com.fyp.agrifarm.app.profile.model.User
 import com.fyp.agrifarm.app.profile.ui.FirestoreUserRecyclerAdapter
 import com.fyp.agrifarm.app.profile.ui.UserInformationActivity
+import com.fyp.agrifarm.app.weather.model.WeatherViewModel
 import com.fyp.agrifarm.app.youtube.VideoRecyclerAdapter
 import com.fyp.agrifarm.app.youtube.viewmodel.VideoSharedViewModel
 import com.google.android.gms.common.api.ResolvableApiException
@@ -48,6 +50,7 @@ import com.squareup.picasso.Picasso
 import com.squareup.picasso.Picasso.LoadedFrom
 import com.squareup.picasso.Target
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.content_weather.*
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -56,7 +59,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 const val KEY_LOCATION_SET = "userDistrict"
 
-class HomeFragment() : Fragment(), OnLocationItemClickListener {
+ class HomeFragment() : Fragment(), OnLocationItemClickListener {
 
     private val db = FirebaseFirestore.getInstance()
     private val userRef = db.collection("users")
@@ -65,10 +68,12 @@ class HomeFragment() : Fragment(), OnLocationItemClickListener {
 
     private lateinit var pricesViewModel: PricesViewModel
     private lateinit var videoViewModel: VideoSharedViewModel
+    private lateinit var weatherViewModel: WeatherViewModel
     private lateinit var newsSharedViewModel: NewsSharedViewModel
     private lateinit var videoRecyclerAdapter: VideoRecyclerAdapter
     private lateinit var newsRecyclerAdapter: NewsRecyclerAdapter
     private lateinit var adapter: FirestoreUserRecyclerAdapter
+    private var mListener: OnFragmentInteractionListener? = null
 
 
     companion object {
@@ -96,6 +101,7 @@ class HomeFragment() : Fragment(), OnLocationItemClickListener {
         pricesViewModel = ViewModelProvider(this).get(PricesViewModel::class.java)
         newsSharedViewModel = ViewModelProvider(this).get(NewsSharedViewModel::class.java)
         videoViewModel = ViewModelProvider(this).get(VideoSharedViewModel::class.java)
+        weatherViewModel = ViewModelProvider(this).get(WeatherViewModel::class.java)
 
         newsSharedViewModel.newsList.observe(viewLifecycleOwner, androidx.lifecycle.Observer { list ->
             newsRecyclerAdapter.changeDataSource(list)
@@ -187,7 +193,18 @@ class HomeFragment() : Fragment(), OnLocationItemClickListener {
                 requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), RC_LOCATION)
             }
         }
+
+        tvWeatherForecast.setOnClickListener { v: View? -> mListener?.onForecastClick(v) }
     }
+    private fun getweatherinformation()
+    {
+        weatherViewModel.dailyforcast.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            tvweatherdescription.setText(it.description)
+
+
+        })
+    }
+
 
     private fun getLocation() {
         enableGPS().addOnCompleteListener { task ->
@@ -398,8 +415,20 @@ class HomeFragment() : Fragment(), OnLocationItemClickListener {
         return task
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mListener = if (context is OnFragmentInteractionListener) {
+            context
+        } else {
+            throw RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener")
+        }
+    }
 
-
+    override fun onDetach() {
+        super.onDetach()
+        mListener = null
+    }
     override fun onStart() {
         super.onStart()
         adapter.startListening()
@@ -413,6 +442,9 @@ class HomeFragment() : Fragment(), OnLocationItemClickListener {
     override fun onLocationSelected(item: LocationListItem) {
         saveLocationToSharedPrefs(item)
         pricesViewModel.setLocation(item)
+    }
+    interface OnFragmentInteractionListener {
+        fun onForecastClick(v: View?)
     }
 
 }

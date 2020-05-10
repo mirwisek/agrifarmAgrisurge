@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.fyp.agrifarm.R;
 import com.fyp.agrifarm.app.weather.model.WeatherHourlyForecast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WeatherHourlyRecyclerAdapter extends RecyclerView.Adapter {
@@ -18,9 +19,8 @@ public class WeatherHourlyRecyclerAdapter extends RecyclerView.Adapter {
     private Context context;
     private List<WeatherHourlyForecast> weatherList;
 
-    public WeatherHourlyRecyclerAdapter(Context context, List<WeatherHourlyForecast> weatherList){
+    public WeatherHourlyRecyclerAdapter(Context context){
         this.context = context;
-        this.weatherList = weatherList;
     }
 
     @Override
@@ -43,6 +43,8 @@ public class WeatherHourlyRecyclerAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
+        if(weatherList == null)
+            return 0;
         return weatherList.size();
     }
 
@@ -55,6 +57,10 @@ public class WeatherHourlyRecyclerAdapter extends RecyclerView.Adapter {
             tvTime = view.findViewById(R.id.tvWeatherHourlyTime);
             tvTemperature = view.findViewById(R.id.tvWeatherHourlyTemp);
         }
+    }
+    public void updateList(List<WeatherHourlyForecast> list){
+        weatherList = new ArrayList<>(list);
+        notifyDataSetChanged();
     }
 }
 

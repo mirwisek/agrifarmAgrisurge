@@ -1,15 +1,19 @@
 package com.fyp.agrifarm.app.prices
 
+import android.R
 import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
 import android.location.Geocoder
 import android.os.Looper
-import androidx.lifecycle.*
+import android.util.Log
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.fyp.agrifarm.app.KEY_LOCATION_SET
-import com.fyp.agrifarm.app.prices.model.LocationListItem
 import com.fyp.agrifarm.app.getSharedPrefs
-import com.fyp.agrifarm.app.log
 import com.fyp.agrifarm.app.prices.model.LoadState
+import com.fyp.agrifarm.app.prices.model.LocationListItem
 import com.fyp.agrifarm.utils.AssetUtils
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -20,6 +24,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.*
+
 
 class PricesViewModel(application: Application) : AndroidViewModel(application) {
     private val context: Context = application.applicationContext
@@ -66,7 +71,13 @@ class PricesViewModel(application: Application) : AndroidViewModel(application) 
                             val latestLocationIndex = locationResult.locations.size - 1
                             val latitude = locationResult.locations[latestLocationIndex].latitude
                             val longitude = locationResult.locations[latestLocationIndex].longitude
+                            //posting lat and lon values in SharedPeference for WeatherViewModel
+                            context.getSharedPrefs().edit()
+                                    .putString("lat", latitude.toString())
+                                    .apply()
+                            context.getSharedPrefs().edit().putString("lon",longitude.toString()).apply()
                             // It'll post the location value inside
+                            Log.d("hassaaan",""+latitude+longitude)
                             decodeToAddress(latitude, longitude)
                         }
                         LocationServices.getFusedLocationProviderClient(context).removeLocationUpdates(this)

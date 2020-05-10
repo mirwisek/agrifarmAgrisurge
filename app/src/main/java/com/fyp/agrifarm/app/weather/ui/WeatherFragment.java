@@ -1,53 +1,36 @@
 package com.fyp.agrifarm.app.weather.ui;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fyp.agrifarm.R;
+import com.fyp.agrifarm.app.ExtensionsKt;
 import com.fyp.agrifarm.app.weather.model.WeatherDailyForecast;
-import com.fyp.agrifarm.app.weather.model.WeatherHourlyForecast;
-
-import java.util.Arrays;
+import com.fyp.agrifarm.app.weather.model.WeatherViewModel;
+import com.squareup.picasso.Picasso;
 
 public class WeatherFragment extends Fragment {
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+
     public static final String TAG = "WeatherFragment";
+    private WeatherViewModel weatherViewModel;
 
-    private String mParam1;
-    private String mParam2;
-
-    private OnFragmentInteractionListener mListener;
 
     public WeatherFragment() {
         // Required empty public constructor
     }
 
-    public static WeatherFragment newInstance(String param1, String param2) {
-        WeatherFragment fragment = new WeatherFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,54 +39,44 @@ public class WeatherFragment extends Fragment {
                 false);
 
 //        parent.findViewById(R.id.layout_rel).setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        weatherViewModel = new ViewModelProvider(getActivity()).get(WeatherViewModel.class);
+
 
         RecyclerView rvHourlyForecast = parent.findViewById(R.id.rvHourlyForecast);
-        WeatherHourlyRecyclerAdapter hourlyRecyclerAdapter =
-                new WeatherHourlyRecyclerAdapter(getContext(), Arrays.asList(
-                        new WeatherHourlyForecast("2 PM", "19"),
-                        new WeatherHourlyForecast("5 PM", "18"),
-                        new WeatherHourlyForecast("8 PM", "17"),
-                        new WeatherHourlyForecast("11 PM", "19"),
-                        new WeatherHourlyForecast("2 AM", "16"),
-                        new WeatherHourlyForecast("5 AM", "20"),
-                        new WeatherHourlyForecast("8 AM", "21"),
-                        new WeatherHourlyForecast("11 AM", "25")
-                ));
+
+        WeatherHourlyRecyclerAdapter hourlyRecyclerAdapter = new WeatherHourlyRecyclerAdapter(getContext());
+        weatherViewModel.getHourlyforcastlist().observe(getViewLifecycleOwner(), hourlyRecyclerAdapter::updateList);
         rvHourlyForecast.setAdapter(hourlyRecyclerAdapter);
 
         RecyclerView rvDailyForecast = parent.findViewById(R.id.rvDailyForecast);
-        WeatherDailyRecyclerAdapter dailyRecyclerAdapter =
-                new WeatherDailyRecyclerAdapter(getContext(), Arrays.asList(
-                        new WeatherDailyForecast("Sunday", "19", "SUNNY"),
-                        new WeatherDailyForecast("Monday", "23", "SUNNY"),
-                        new WeatherDailyForecast("Tuesday", "11", "SUNNY"),
-                        new WeatherDailyForecast("Wednesday", "17", "SUNNY"),
-                        new WeatherDailyForecast("Thursday", "22", "SUNNY"),
-                        new WeatherDailyForecast("Friday", "12", "SUNNY")
-                ));
+
+        WeatherDailyRecyclerAdapter dailyRecyclerAdapter = new WeatherDailyRecyclerAdapter(getContext());
+        weatherViewModel.getDailyforcastlist().observe(getViewLifecycleOwner(), dailyRecyclerAdapter::updateList);
         rvDailyForecast.setAdapter(dailyRecyclerAdapter);
+
+
+        TextView wftemperatute = parent.findViewById(R.id.tvWeatherTemp);
+        TextView wfdescription = parent.findViewById(R.id.tvweatherdescription);
+        TextView wfwindpressure = parent.findViewById(R.id.tvWeatherWind);
+        TextView wfhumidity = parent.findViewById(R.id.tvWeatherHumidity);
+        TextView wfday = parent.findViewById(R.id.tvWeatherDay);
+        ImageView weatherIcon = parent.findViewById(R.id.ivWeatherIcon);
+        weatherViewModel.getDailyforcast().observe(getViewLifecycleOwner(), new Observer<WeatherDailyForecast>() {
+            @Override
+            public void onChanged(WeatherDailyForecast weatherDailyForecast) {
+                String temperatue = weatherDailyForecast.getTemperature() + "°C";
+                wftemperatute.setText(temperatue);
+                wfdescription.setText(weatherDailyForecast.getDescription());
+                wfday.setText(weatherDailyForecast.getDay());
+                wfhumidity.setText(weatherDailyForecast.getHumidity());
+                wfwindpressure.setText(weatherDailyForecast.getWindPressure());
+                Picasso.get().load(weatherDailyForecast.getIconurl()).into(weatherIcon);
+            }
+        });
+
 
         return parent;
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    public interface OnFragmentInteractionListener {
-        void onItemClick(View v);
-    }
 }

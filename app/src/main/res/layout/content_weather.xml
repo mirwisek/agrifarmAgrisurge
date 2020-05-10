@@ -25,20 +25,21 @@
             android:layout_width="100dp"
             android:layout_height="75dp"
             android:layout_marginTop="8dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginRight="30dp"
             android:src="@drawable/ic_w_partly_cloudy"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/tvweatherdescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="20dp"
+            android:layout_marginRight="31dp"
             android:text="Partly Cloudy"
             android:textAllCaps="true"
+            android:textStyle="bold"
             android:textColor="@color/colorWhite"
-            android:textSize="12sp"
+            android:textSize="13sp"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ivWeatherIcon" />
 
@@ -49,6 +50,8 @@
             android:text="22&#xb0;"
             android:textColor="@color/colorWhite"
             android:textSize="50sp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -59,6 +62,7 @@
             android:text="Today"
             android:textColor="@color/colorWhite"
             android:textSize="20sp"
+            android:layout_marginStart="10dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvWeatherTemp" />
 
@@ -67,6 +71,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Wind 6km/h"
+            android:layout_marginStart="10dp"
             android:textColor="@color/colorWhite"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -77,8 +82,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/ic_drop_resized"
-            android:drawablePadding="8dp"
+            android:drawablePadding="10dp"
             android:text="30%"
+            android:layout_marginStart="10dp"
             android:textColor="@color/colorWhite"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"

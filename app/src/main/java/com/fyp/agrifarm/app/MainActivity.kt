@@ -23,8 +23,9 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import com.fyp.agrifarm.R
+import com.fyp.agrifarm.app.HomeFragment.OnFragmentInteractionListener
 import com.fyp.agrifarm.app.profile.model.User
-import com.fyp.agrifarm.app.weather.ui.WeatherFragment.OnFragmentInteractionListener
+import com.fyp.agrifarm.app.weather.ui.WeatherFragment
 import com.fyp.agrifarm.app.youtube.VideoRecyclerAdapter
 import com.fyp.agrifarm.app.youtube.YoutubeFragment
 import com.fyp.agrifarm.app.youtube.YoutubeMakeRequest.MakeRequestTask
@@ -51,8 +52,7 @@ import java.util.*
 class MainActivity : AppCompatActivity(),
         PermissionCallbacks,
         NavigationView.OnNavigationItemSelectedListener,
-        OnFragmentInteractionListener,
-        VideoRecyclerAdapter.OnItemClickListener {
+        VideoRecyclerAdapter.OnItemClickListener, OnFragmentInteractionListener {
 
     private val apiAvailability = GoogleApiAvailability.getInstance()
     private lateinit var mCredential: GoogleAccountCredential
@@ -67,6 +67,8 @@ class MainActivity : AppCompatActivity(),
         private val SCOPES = arrayOf(YouTubeScopes.YOUTUBE_READONLY)
         const val TAG = "MainActivity"
         private var homeFragment: HomeFragment? = null
+        private  var weatherFragment:WeatherFragment? = null
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -309,7 +311,7 @@ class MainActivity : AppCompatActivity(),
         return true
     }
 
-    override fun onItemClick(v: View) {}
+
     override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
         // Do nothing
     }
@@ -323,6 +325,20 @@ class MainActivity : AppCompatActivity(),
         supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.fragmentHolder, YoutubeFragment(), YoutubeFragment.TAG)
+                .addToBackStack(HomeFragment.TAG)
+                .commit()
+    }
+
+    override fun onForecastClick(v: View?) {
+        val fm = supportFragmentManager
+        var fragment = fm.findFragmentByTag(WeatherFragment.TAG)
+        if (fragment == null) {
+            if (weatherFragment == null)
+                weatherFragment = WeatherFragment()
+            fragment = weatherFragment
+        }
+        fm.beginTransaction()
+                .replace(R.id.fragmentHolder, fragment!!, WeatherFragment.TAG)
                 .addToBackStack(HomeFragment.TAG)
                 .commit()
     }
