@@ -39,7 +39,7 @@ public class WeatherFragment extends Fragment {
                 false);
 
 //        parent.findViewById(R.id.layout_rel).setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
-        weatherViewModel = new ViewModelProvider(getActivity()).get(WeatherViewModel.class);
+        weatherViewModel = new ViewModelProvider(this).get(WeatherViewModel.class);
 
 
         RecyclerView rvHourlyForecast = parent.findViewById(R.id.rvHourlyForecast);
@@ -61,17 +61,15 @@ public class WeatherFragment extends Fragment {
         TextView wfhumidity = parent.findViewById(R.id.tvWeatherHumidity);
         TextView wfday = parent.findViewById(R.id.tvWeatherDay);
         ImageView weatherIcon = parent.findViewById(R.id.ivWeatherIcon);
-        weatherViewModel.getDailyforcast().observe(getViewLifecycleOwner(), new Observer<WeatherDailyForecast>() {
-            @Override
-            public void onChanged(WeatherDailyForecast weatherDailyForecast) {
-                String temperatue = weatherDailyForecast.getTemperature() + "°C";
-                wftemperatute.setText(temperatue);
-                wfdescription.setText(weatherDailyForecast.getDescription());
-                wfday.setText(weatherDailyForecast.getDay());
-                wfhumidity.setText(weatherDailyForecast.getHumidity());
-                wfwindpressure.setText(weatherDailyForecast.getWindPressure());
-                Picasso.get().load(weatherDailyForecast.getIconurl()).into(weatherIcon);
-            }
+
+        weatherViewModel.getDailyforcast().observe(getViewLifecycleOwner(), weatherDailyForecast -> {
+            String temperatue = weatherDailyForecast.getTemperature() + "°C";
+            wftemperatute.setText(temperatue);
+            wfdescription.setText(weatherDailyForecast.getDescription());
+            wfday.setText(weatherDailyForecast.getDay());
+            wfhumidity.setText(weatherDailyForecast.getHumidity());
+            wfwindpressure.setText(weatherDailyForecast.getWindPressure());
+            Picasso.get().load(weatherDailyForecast.getIconurl()).into(weatherIcon);
         });
 
 
