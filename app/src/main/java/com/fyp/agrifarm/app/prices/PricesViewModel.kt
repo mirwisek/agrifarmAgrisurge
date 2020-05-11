@@ -1,12 +1,9 @@
 package com.fyp.agrifarm.app.prices
 
-import android.R
 import android.app.Application
 import android.content.Context
-import android.content.SharedPreferences
 import android.location.Geocoder
 import android.os.Looper
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -74,10 +71,9 @@ class PricesViewModel(application: Application) : AndroidViewModel(application) 
                             //posting lat and lon values in SharedPeference for WeatherViewModel
                             context.getSharedPrefs().edit()
                                     .putString("lat", latitude.toString())
+                                    .putString("lon",longitude.toString())
                                     .apply()
-                            context.getSharedPrefs().edit().putString("lon",longitude.toString()).apply()
                             // It'll post the location value inside
-                            Log.d("hassaaan",""+latitude+longitude)
                             decodeToAddress(latitude, longitude)
                         }
                         LocationServices.getFusedLocationProviderClient(context).removeLocationUpdates(this)

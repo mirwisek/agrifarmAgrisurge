@@ -159,6 +159,7 @@ const val KEY_LOCATION_SET = "userDistrict"
 
         // First load update required
         pricesViewModel.location.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+
             it?.let { pricesViewModel.currentState.postValue(LoadState.LOADED) }
             pricesViewModel.location.removeObservers(this)
         })

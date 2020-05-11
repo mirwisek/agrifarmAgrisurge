@@ -120,8 +120,6 @@ public class WeatherViewModel extends AndroidViewModel {
 
                             WeatherDailyForecast weatherDailyForecast = new WeatherDailyForecast(day, temperature, description, null, null, iconUrl);
                             listfordaily.add(weatherDailyForecast);
-
-
                         }
 
                     } catch (JSONException e) {
