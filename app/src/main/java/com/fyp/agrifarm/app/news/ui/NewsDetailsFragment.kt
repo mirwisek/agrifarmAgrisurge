@@ -1,31 +1,21 @@
 package com.fyp.agrifarm.app.news.ui
 
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
 import android.text.method.LinkMovementMethod
-import android.text.util.Linkify
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.fyp.agrifarm.R
 import com.fyp.agrifarm.app.log
-import com.fyp.agrifarm.app.news.db.NewsEntity
 import com.fyp.agrifarm.app.news.viewmodel.NewsSharedViewModel
 import com.squareup.picasso.Picasso
-import com.squareup.picasso.Picasso.LoadedFrom
-import com.squareup.picasso.Target
-import kotlinx.android.synthetic.main.fragment_news_details.*
-import kotlinx.android.synthetic.main.rv_item_news.*
 
 class NewsDetailsFragment : Fragment() {
 

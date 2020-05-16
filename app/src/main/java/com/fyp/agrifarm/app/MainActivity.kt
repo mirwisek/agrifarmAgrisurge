@@ -55,19 +55,23 @@ class MainActivity : AppCompatActivity(),
         VideoRecyclerAdapter.OnItemClickListener, OnFragmentInteractionListener {
 
     private val apiAvailability = GoogleApiAvailability.getInstance()
-    private lateinit var mCredential: GoogleAccountCredential
     private lateinit var videoViewModel: VideoSharedViewModel
 
     companion object {
+        lateinit var mCredential: GoogleAccountCredential
         const val REQUEST_ACCOUNT_PICKER = 1000
         const val REQUEST_AUTHORIZATION = 1001
         const val REQUEST_GOOGLE_PLAY_SERVICES = 1002
         const val REQUEST_PERMISSION_GET_ACCOUNTS = 1003
         private const val PREF_ACCOUNT_NAME = "accountName"
-        private val SCOPES = arrayOf(YouTubeScopes.YOUTUBE_READONLY)
+        const val GCP_ML_SCOPE = "https://www.googleapis.com/auth/cloud-platform"
+        private val SCOPES = arrayOf(
+                YouTubeScopes.YOUTUBE_READONLY,
+                GCP_ML_SCOPE
+        )
         const val TAG = "MainActivity"
         private var homeFragment: HomeFragment? = null
-        private  var weatherFragment:WeatherFragment? = null
+        private var weatherFragment: WeatherFragment? = null
 
     }
 
