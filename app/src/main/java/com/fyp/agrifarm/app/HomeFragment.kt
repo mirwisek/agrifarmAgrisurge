@@ -8,16 +8,19 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.fyp.agrifarm.R
 import com.fyp.agrifarm.app.crops.CameraActivity
+import com.fyp.agrifarm.app.crops.PermissionsFragment.Companion.hasPermissions
 import com.fyp.agrifarm.app.news.db.NewsEntity
 import com.fyp.agrifarm.app.news.ui.NewsRecyclerAdapter
 import com.fyp.agrifarm.app.news.ui.NewsRecyclerAdapter.OnNewsClinkListener
@@ -40,8 +43,10 @@ import com.google.android.gms.location.*
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.ml.common.FirebaseMLException
 import com.google.firebase.ml.common.modeldownload.FirebaseModelDownloadConditions
 import com.google.firebase.ml.common.modeldownload.FirebaseModelManager
@@ -50,16 +55,16 @@ import com.squareup.picasso.Picasso
 import com.squareup.picasso.Picasso.LoadedFrom
 import com.squareup.picasso.Target
 import kotlinx.android.synthetic.main.content_main.*
-import kotlinx.android.synthetic.main.content_weather.*
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.atomic.AtomicReference
 
 const val KEY_LOCATION_SET = "userDistrict"
 
- class HomeFragment() : Fragment(), OnLocationItemClickListener {
+class HomeFragment() : Fragment(), OnLocationItemClickListener {
 
     private val db = FirebaseFirestore.getInstance()
     private val userRef = db.collection("users")
@@ -188,7 +193,7 @@ const val KEY_LOCATION_SET = "userDistrict"
         })
 
         btnLocation.setOnClickListener {
-            if(hasPermissions(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            if (hasPermissions(Manifest.permission.ACCESS_FINE_LOCATION)) {
                 getLocation()
             } else {
                 requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), RC_LOCATION)
@@ -196,14 +201,91 @@ const val KEY_LOCATION_SET = "userDistrict"
         }
 
         tvWeatherForecast.setOnClickListener { v: View? -> mListener?.onForecastClick(v) }
+
+        getweatherinformation()
+
     }
-    private fun getweatherinformation()
-    {
-        weatherViewModel.dailyforcast.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            tvweatherdescription.setText(it.description)
+
+    private fun getweatherinformation() {
+        val weatherViewModel = ViewModelProvider(activity!!).get(WeatherViewModel::class.java)
+        weatherViewModel.dailyforcast.observe(viewLifecycleOwner, Observer { weatherDailyForecast ->
+            val temperatue = weatherDailyForecast.temperature + "°C"
+            tvWeatherTemp.text = temperatue
+            tvWeatherDescription.text = weatherDailyForecast.description
+            tvWeatherDay.text = weatherDailyForecast.day
+            tvWeatherHumidity.text = weatherDailyForecast.humidity
+            var WeatherIconMap: Map<String, Int>? = null
+            WeatherIconMap = HashMap()
+            WeatherIconMap.put("01d", R.drawable.ic_wi_day_sunny)
+            WeatherIconMap.put("02d", R.drawable.ic_wi_day_cloudy)
+            WeatherIconMap.put("03d", R.drawable.ic_wi_cloud)
+            WeatherIconMap.put("04d", R.drawable.ic_wi_cloudy)
+            WeatherIconMap.put("09d", R.drawable.ic_wi_showers)
+            WeatherIconMap.put("10d", R.drawable.ic_wi_day_rain_mix)
+            WeatherIconMap.put("11d", R.drawable.ic_wi_thunderstorm)
+            WeatherIconMap.put("13d", R.drawable.ic_wi_snow)
+            WeatherIconMap.put("50d", R.drawable.ic_wi_fog)
+            WeatherIconMap.put("04n", R.drawable.ic_wi_cloudy)
 
 
-        })
+            val iconurl = weatherDailyForecast.iconurl
+            if (weatherDailyForecast.iconurl == "01d") {
+                ivWeatherIcon.setImageResource(WeatherIconMap.get("01d")!!)
+            }
+            if (weatherDailyForecast.iconurl == "02d") {
+                ivWeatherIcon.setImageResource(WeatherIconMap.get("02d")!!)
+            }
+            if (weatherDailyForecast.iconurl == "03d") {
+                ivWeatherIcon.setImageResource(WeatherIconMap.get("03d")!!)
+            }
+            if (weatherDailyForecast.iconurl == "04d") {
+                ivWeatherIcon.setImageResource(WeatherIconMap.get("04d")!!)
+            }
+            if (weatherDailyForecast.iconurl == "04n") {
+                ivWeatherIcon.setImageResource(WeatherIconMap.get("04n")!!)
+            }
+            if (weatherDailyForecast.iconurl == "50d") {
+                ivWeatherIcon.setImageResource(WeatherIconMap.get("50d")!!)
+            }
+            if (weatherDailyForecast.iconurl == "09d") {
+                ivWeatherIcon.setImageResource(WeatherIconMap.get("09d")!!)
+            }
+            if (weatherDailyForecast.iconurl == "10d") {
+                ivWeatherIcon.setImageResource(WeatherIconMap.get("10d")!!)
+            }
+            if (weatherDailyForecast.iconurl == "11d") {
+                ivWeatherIcon.setImageResource(WeatherIconMap.get("11d")!!)
+            }
+            if (weatherDailyForecast.iconurl == "13d") {
+                ivWeatherIcon.setImageResource(WeatherIconMap.get("13d")!!)
+            }
+
+//            Picasso.get().load(iconurl).into(ivWeatherIcon)
+
+//        val c = Calendar.getInstance().time
+//
+//        val df = SimpleDateFormat("yyyy_MM_dd")
+//        val formattedDate = df.format(c)
+//
+//        val newsref = FirebaseFirestore.getInstance().collection("news").document("2020").collection(formattedDate).orderBy("date", Query.Direction.DESCENDING)
+//        newsref.get().addOnSuccessListener { documentSnapshot ->
+//            if (documentSnapshot.isEmpty) {
+//                Toast.makeText(context, "No News for this data ", Toast.LENGTH_SHORT)
+//            } else {
+//                for (document in documentSnapshot.documents) {
+//                    val newsarray = document.get("news") as List<Map<String, Any>>?
+//                    val map = newsarray?.get(0)
+//                    val data = document.data
+//                    Log.d("MSIS",""+data)
+//                }
+//
+//            }
+//
+//        }.addOnFailureListener { exception ->
+//            exception.printStackTrace()
+//        }
+//
+
     }
 
 
@@ -430,6 +512,7 @@ const val KEY_LOCATION_SET = "userDistrict"
         super.onDetach()
         mListener = null
     }
+
     override fun onStart() {
         super.onStart()
         adapter.startListening()
@@ -444,6 +527,7 @@ const val KEY_LOCATION_SET = "userDistrict"
         saveLocationToSharedPrefs(item)
         pricesViewModel.setLocation(item)
     }
+
     interface OnFragmentInteractionListener {
         fun onForecastClick(v: View?)
     }

@@ -3,6 +3,7 @@ package com.fyp.agrifarm.app.news.db;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "news_table")
@@ -31,6 +32,12 @@ public class NewsEntity {
         this.description = description;
         this.url = url;
         this.date=date;
+    }
+    @Ignore
+    public NewsEntity(String title, String url, String date) {
+        this.title = title;
+        this.url = url;
+        this.date = date;
     }
 
     public void setId(int id) {
