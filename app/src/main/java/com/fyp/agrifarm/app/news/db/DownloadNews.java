@@ -1,122 +1,91 @@
 package com.fyp.agrifarm.app.news.db;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.fyp.agrifarm.app.news.NewsRepository;
-import com.fyp.agrifarm.app.news.viewmodel.NewsSharedViewModel;
 import com.fyp.agrifarm.db.ViewModelDatabase;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
 
-public class DownloadNews extends AsyncTask<Void, Void, Void> {
+public class DownloadNews {
 
-    private static String imagelink = "";
-    private RequestQueue queue;
     private NewsDoa newsDoa;
-
-    private final static String[] LINKS = new String[]{
-            "http://blog.agcocorp.com/category/agco/feed/",
-            "http://www.mediterraneadeagroquimicos.cat/wordpress_2/feed/",
-            "http://sustainableagriculture.net/blog/feed/",
-    };
+    ArrayList<FakeNewsEnitity> newslist;
 
     public DownloadNews(Context context) {
-        queue = Volley.newRequestQueue(context);
         newsDoa = ViewModelDatabase.getInstance(context).newsDoa();
+        fetchNews();
     }
 
-    @Override
-    protected void onPreExecute() {
-        Log.i("Download NEWS", "onPreExecute: Working on it");
-    }
 
-    protected Void doInBackground(Void... voids) {
-        for (String link : LINKS) {
-            try {
-                StringRequest request = new StringRequest(link, response -> {
-                    Document document = Jsoup.parse(response);
-                    Elements itemElements = document.getElementsByTag("item");
+    private void fetchNews() {
+        FirebaseFirestore.getInstance().collection("static").document("newsSources")
+                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+//                ArrayList<String> list = ((ArrayList<String>) documentSnapshot.get("sources"));
+                new InsertNewsAsync(newsDoa).execute(getNewsFromSource("sustainableagriculture.net"));
 
-                    for (int i = 0; i < itemElements.size(); i++) {
-
-                        Element item = itemElements.get(i);
-                        String title = item.getElementsByTag("title").text();
-                        String publishedDate = item.getElementsByTag("pubDate").text();
-                        String description = item.getElementsByTag("description").text();
-                        String guid = item.getElementsByTag("guid").text();
-//                    String link=item.getElementsByTag("link").text();
-                        String content = item.getElementsByTag("content:encoded").html();
-
-                        try {
-                            Log.i("one", imagelink);
-                            Elements imageurl = item.getElementsByTag("image");
-                            if (imagelink.isEmpty()) {
-                                throw new NullPointerException(imagelink);
-                            }
-                        } catch (NullPointerException decs) {
-                            try {
-                                Log.i("two", imagelink);
-                                Elements srcs = Jsoup.parse(content).select("[src]");
-                                imagelink = (srcs.get(0).attr("abs:src"));
-                                if (imagelink.isEmpty()) {
-                                    throw new NullPointerException(imagelink);
-                                }
-                            } catch (Exception contnt) {
-                                try {
-                                    Log.i("three", imagelink);
-                                    Elements srcs = Jsoup.parse(description).select("[src]"); //get All tags containing "src"
-                                    imagelink = (srcs.get(0).attr("abs:src"));
-                                    if (imagelink.isEmpty()) {
-                                        throw new NullPointerException(imagelink);
-                                    }
-                                } catch (Exception e) {
-                                    imagelink = "https://blog.agcocorp.com/wp-content/uploads/2019/07/190717-CropTourTillage-Fig2.jpg";
-                                }
-                            }
-                        }
-                        new InsertNewsAsync(newsDoa).execute(new NewsEntity(title, description, imagelink, publishedDate));
-                        imagelink = "";
-                    }
-                }, error -> {
-                    Log.i("error", "onErrorResponse: " + error.getMessage());
-                    error.printStackTrace();
-                });
-                queue.add(request);
-
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-        }
-        return null;
+
+        });
+
+//        Log.d("DA",""+newslist.get(1));
     }
 
-    @Override
-    protected void onPostExecute(Void aVoid) {
-        super.onPostExecute(aVoid);
-        Log.i("ANN", "onPostExecute: I'm done");
+    private ArrayList<FakeNewsEnitity> getNewsFromSource(String collectionName) {
+        ArrayList<FakeNewsEnitity> arrayList = new ArrayList<>();
+        FirebaseFirestore.getInstance().collection("newsFetch").document("2020_05_17").collection(collectionName).document("newsDetails").get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        ArrayList<HashMap<String, Object>> data = ((ArrayList<HashMap<String, Object>>) documentSnapshot.get("news"));
+                        for (int i = 0; i <data.size(); i++) {
+                            HashMap<String, Object> sample = data.get(i);
+                            FakeNewsEnitity obj = new FakeNewsEnitity();
+                            obj.setGuid(Objects.requireNonNull(sample.get("guid")).toString());
+                            obj.setLink(Objects.requireNonNull(sample.get("link")).toString());
+                            obj.setImage(Objects.requireNonNull(sample.get("image")).toString());
+                            ArrayList<String> categorieslist = ((ArrayList<String>) sample.get("categories"));
+                            obj.setCatergories(categorieslist);
+                            obj.setTitle(Objects.requireNonNull(sample.get("title")).toString());
+                            arrayList.add(obj);
+
+                        }
+                        Log.d("Sourcec", " " + arrayList.size());
+
+                    }
+
+                });
+
+        return arrayList ;
     }
 
-    private static class InsertNewsAsync extends AsyncTask<NewsEntity, Void, Void> {
+
+    private static class InsertNewsAsync extends AsyncTask<ArrayList<FakeNewsEnitity>, Void, Void> {
         private NewsDoa newsDao;
-
         private InsertNewsAsync(NewsDoa newsDao) {
             this.newsDao = newsDao;
         }
 
+
         @Override
-        protected Void doInBackground(NewsEntity... news) {
-            newsDao.insert(news[0]);
+        protected Void doInBackground(ArrayList<FakeNewsEnitity>... arrayLists) {
+            ArrayList<FakeNewsEnitity> list = arrayLists[0];
+            for (int i = 0 ; i< list.size(); i++) {
+                newsDao.insert(list.get(i));
+            }
             return null;
         }
+
+
     }
 }

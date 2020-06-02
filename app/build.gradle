@@ -125,4 +125,8 @@ dependencies {
 
     // CameraX View class
     implementation "androidx.camera:camera-view:1.0.0-alpha08"
+
+    def preference_version = "1.1.1"
+
+    implementation "androidx.preference:preference-ktx:$preference_version"
 }

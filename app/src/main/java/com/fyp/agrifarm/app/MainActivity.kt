@@ -22,6 +22,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
 import com.fyp.agrifarm.R
 import com.fyp.agrifarm.app.HomeFragment.OnFragmentInteractionListener
 import com.fyp.agrifarm.app.profile.model.User
@@ -52,7 +54,7 @@ import java.util.*
 class MainActivity : AppCompatActivity(),
         PermissionCallbacks,
         NavigationView.OnNavigationItemSelectedListener,
-        VideoRecyclerAdapter.OnItemClickListener, OnFragmentInteractionListener {
+        VideoRecyclerAdapter.OnItemClickListener, OnFragmentInteractionListener , PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
 
     private val apiAvailability = GoogleApiAvailability.getInstance()
     private lateinit var mCredential: GoogleAccountCredential
@@ -296,14 +298,20 @@ class MainActivity : AppCompatActivity(),
         // Handle navigation view item clicks here.
         val id = item.itemId
         when (id) {
-            R.id.nav_camera -> {
-                // Handle the camera action
-            }
-            R.id.nav_gallery -> {
-            }
+
             R.id.nav_slideshow -> {
+                FirebaseUtils.signOut(this) {
+                    startActivity(Intent(this@MainActivity, UserRegistrationActivity::class.java))
+                    finish()
+                }
+
             }
             R.id.nav_manage -> {
+                supportFragmentManager
+                        .beginTransaction()
+                        .replace(R.id.fragmentHolder, SettingsFragment())
+                        .addToBackStack(HomeFragment.TAG)
+                        .commit()
             }
         }
         val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
@@ -341,5 +349,21 @@ class MainActivity : AppCompatActivity(),
                 .replace(R.id.fragmentHolder, fragment!!, WeatherFragment.TAG)
                 .addToBackStack(HomeFragment.TAG)
                 .commit()
+    }
+
+    override fun onPreferenceStartFragment(caller: PreferenceFragmentCompat?, pref: Preference?): Boolean {
+        // Instantiate the new Fragment
+        val args = pref!!.extras
+        val fragment = supportFragmentManager.fragmentFactory.instantiate(
+                classLoader,
+                pref!!.fragment)
+        fragment.arguments = args
+        fragment.setTargetFragment(caller, 0)
+        // Replace the existing Fragment with the new Fragment
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentHolder, fragment)
+                .addToBackStack(HomeFragment.TAG)
+                .commit()
+        return true
     }
 }

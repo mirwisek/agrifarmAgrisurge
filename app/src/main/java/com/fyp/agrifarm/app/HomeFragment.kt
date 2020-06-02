@@ -20,8 +20,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.fyp.agrifarm.R
 import com.fyp.agrifarm.app.crops.CameraActivity
-import com.fyp.agrifarm.app.crops.PermissionsFragment.Companion.hasPermissions
-import com.fyp.agrifarm.app.news.db.NewsEntity
+import com.fyp.agrifarm.app.news.db.FakeNewsEnitity
+import com.fyp.agrifarm.app.news.db.NewsObject
 import com.fyp.agrifarm.app.news.ui.NewsRecyclerAdapter
 import com.fyp.agrifarm.app.news.ui.NewsRecyclerAdapter.OnNewsClinkListener
 import com.fyp.agrifarm.app.news.viewmodel.NewsSharedViewModel
@@ -43,10 +43,8 @@ import com.google.android.gms.location.*
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import com.google.firebase.ml.common.FirebaseMLException
 import com.google.firebase.ml.common.modeldownload.FirebaseModelDownloadConditions
 import com.google.firebase.ml.common.modeldownload.FirebaseModelManager
@@ -58,9 +56,9 @@ import kotlinx.android.synthetic.main.content_main.*
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
-import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.collections.ArrayList
 
 const val KEY_LOCATION_SET = "userDistrict"
 
@@ -147,15 +145,18 @@ class HomeFragment() : Fragment(), OnLocationItemClickListener {
 
         val priceAdapter = PricesRecyclerAdapter(context, priceList)
         rvPrices.adapter = priceAdapter
-        newsRecyclerAdapter = NewsRecyclerAdapter(context, OnNewsClinkListener { selectedNews: NewsEntity ->
+
+        newsRecyclerAdapter = NewsRecyclerAdapter(context, OnNewsClinkListener { selectedNews: FakeNewsEnitity? ->
             // SharedViewModel instance isn't shared across activities
             // That is why passing the attributes over intent for now
             val intent = Intent(activity, DetailsActivity::class.java)
             intent.putExtra(DetailsActivity.MODE, DetailsActivity.MODE_NEWS)
-            intent.putExtra(DetailsActivity.KEY_ID, selectedNews.id)
+            intent.putExtra(DetailsActivity.KEY_ID, selectedNews?.id)
             startActivity(intent)
         })
         rvNews.adapter = newsRecyclerAdapter
+
+
         videoRecyclerAdapter = VideoRecyclerAdapter(context)
         rvVideo.adapter = videoRecyclerAdapter
 
@@ -204,7 +205,40 @@ class HomeFragment() : Fragment(), OnLocationItemClickListener {
 
         getweatherinformation()
 
+        val collectionReference = FirebaseFirestore.getInstance().collection("static").document("newsSources")
+        collectionReference.get().addOnSuccessListener { querySnapshot ->
+            val datasources = querySnapshot["sources"] as ArrayList<String>
+            for (sources in datasources) {
+                getNewsFromSource(datasources.get(0))
+            }
+        }
+
     }
+
+    private fun getNewsFromSource(collectionName: String): ArrayList<NewsObject> {
+        val arrayList = ArrayList<NewsObject>()
+        FirebaseFirestore.getInstance().collection("newsFetch").document("2020_05_17").collection(collectionName).document("newsDetails").get()
+                .addOnSuccessListener { querySnapshot ->
+
+                    val data: ArrayList<HashMap<String, Any>> = querySnapshot["news"] as ArrayList<HashMap<String, Any>>
+                    for (x in 1 until data.size) {
+                        val sample = data[x]
+                        val newsObject = NewsObject()
+                        newsObject.guid = sample.get("guid").toString()
+                        newsObject.link = sample.get("link").toString()
+                        newsObject.image = sample.get("image").toString()
+                        val categorieslist: ArrayList<String> = sample.get("categories") as ArrayList<String>
+                        newsObject.categories = categorieslist
+                        arrayList.add(newsObject)
+
+                    }
+
+                    Log.d("Sourcec", " " + arrayList.size)
+                }
+
+        return arrayList
+    }
+
 
     private fun getweatherinformation() {
         val weatherViewModel = ViewModelProvider(activity!!).get(WeatherViewModel::class.java)
@@ -286,6 +320,7 @@ class HomeFragment() : Fragment(), OnLocationItemClickListener {
 //        }
 //
 
+        })
     }
 
 

@@ -6,15 +6,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fyp.agrifarm.app.log
 import com.fyp.agrifarm.app.news.NewsRepository
-import com.fyp.agrifarm.app.news.db.NewsEntity
+import com.fyp.agrifarm.app.news.db.FakeNewsEnitity
+
 
 class NewsSharedViewModel(application: Application) : AndroidViewModel(application) {
 
-    val newsList: LiveData<List<NewsEntity>> = NewsRepository.getInstance(application).newsList
+    val newsList: LiveData<List<FakeNewsEnitity>> = NewsRepository.getInstance(application).newsList
 
-    private val selectedNews = MutableLiveData<NewsEntity>()
+    private val selectedNews = MutableLiveData<FakeNewsEnitity>()
 
-    fun selectNews(newsEntity: NewsEntity) {
+    fun selectNews(newsEntity: FakeNewsEnitity) {
         selectedNews.value = newsEntity
     }
 
@@ -23,7 +24,7 @@ class NewsSharedViewModel(application: Application) : AndroidViewModel(applicati
         selectedNews.postValue(news)
     }
 
-    fun getSelectedNews(): LiveData<NewsEntity> {
+    fun getSelectedNews(): LiveData<FakeNewsEnitity> {
         return selectedNews
     }
 }
