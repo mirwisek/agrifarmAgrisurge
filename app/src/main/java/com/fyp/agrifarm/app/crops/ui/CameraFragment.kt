@@ -13,8 +13,11 @@ import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.print.PrintAttributes
 import android.util.DisplayMetrics
 import android.util.Log
+import android.util.Rational
+import android.util.Size
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -271,6 +274,7 @@ class CameraFragment : Fragment() {
                     .setTargetAspectRatio(screenAspectRatio)
                     // Set initial target rotation
                     .setTargetRotation(rotation)
+                    .setDefaultResolution(Size(1280, 1080))
                     .build()
 
             // Default PreviewSurfaceProvider
@@ -279,13 +283,15 @@ class CameraFragment : Fragment() {
 
             // ImageCapture
             imageCapture = ImageCapture.Builder()
-                    .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+                    .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
                     // We request aspect ratio but no resolution to match preview config, but letting
                     // CameraX optimize for whatever specific resolution best fits requested capture mode
                     .setTargetAspectRatio(screenAspectRatio)
+
                     // Set initial target rotation, we will have to call this again if rotation changes
                     // during the lifecycle of this use case
                     .setTargetRotation(rotation)
+                    .setDefaultResolution(Size(1280, 1080))
                     .build()
 
             // Must unbind the use-cases before rebinding them.
@@ -425,6 +431,7 @@ class CameraFragment : Fragment() {
         private const val PHOTO_EXTENSION = ".jpg"
         private const val RATIO_4_3_VALUE = 4.0 / 3.0
         private const val RATIO_16_9_VALUE = 16.0 / 9.0
+
 
         /** Helper function used to create a timestamped file */
         private fun createFile(baseFolder: File) =
