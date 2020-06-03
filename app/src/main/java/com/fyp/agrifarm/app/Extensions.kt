@@ -3,6 +3,7 @@ package com.fyp.agrifarm.app
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Bitmap
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -10,7 +11,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.fyp.agrifarm.R
-import com.fyp.agrifarm.app.news.ui.NewsDetailsFragment
+
+
+fun Bitmap.getResizedBitmap(maxSize: Int): Bitmap {
+    val bitmapRatio = width.toFloat() / height.toFloat()
+    if (bitmapRatio > 1) {
+        width = maxSize
+        height = (width / bitmapRatio).toInt()
+    } else {
+        height = maxSize
+        width = (height * bitmapRatio).toInt()
+    }
+    return Bitmap.createScaledBitmap(this, width, height, true)
+}
 
 fun Context.toast(msg: String, len: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, msg, len).show()

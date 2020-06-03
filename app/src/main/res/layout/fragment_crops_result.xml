@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhite"
-    tools:context=".app.crops.ui.CropsReasultFragment">
+    android:background="@color/colorWhite">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardViewCrop"
@@ -35,7 +34,7 @@
         android:layout_height="wrap_content"
         android:text="Finding disease..."
         android:textAlignment="center"
-        android:textSize="20sp"
+        android:textSize="12sp"
         android:layout_marginTop="50dp"
         app:layout_constraintEnd_toEndOf="@id/cardViewCrop"
         app:layout_constraintStart_toStartOf="@+id/cardViewCrop"

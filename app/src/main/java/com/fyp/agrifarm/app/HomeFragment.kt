@@ -19,7 +19,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.fyp.agrifarm.R
 import com.fyp.agrifarm.app.crops.CameraActivity
-import com.fyp.agrifarm.app.crops.ui.ModelRequestFragment
+import com.fyp.agrifarm.app.crops.CropsViewModel
+import com.fyp.agrifarm.app.crops.ui.ModelRequest
 import com.fyp.agrifarm.app.news.db.NewsEntity
 import com.fyp.agrifarm.app.news.ui.NewsRecyclerAdapter
 import com.fyp.agrifarm.app.news.ui.NewsRecyclerAdapter.OnNewsClinkListener
@@ -42,7 +43,6 @@ import com.google.android.gms.location.*
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
-import com.google.api.client.util.Base64
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ml.common.FirebaseMLException
@@ -54,7 +54,6 @@ import com.squareup.picasso.Picasso.LoadedFrom
 import com.squareup.picasso.Target
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.content_weather.*
-import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.File
@@ -109,6 +108,14 @@ const val KEY_LOCATION_SET = "userDistrict"
         videoViewModel = ViewModelProvider(this).get(VideoSharedViewModel::class.java)
         weatherViewModel = ViewModelProvider(this).get(WeatherViewModel::class.java)
 
+        // Just initialize to get the values inside of it ready
+        val cropViewModel = ViewModelProvider(this).get(CropsViewModel::class.java)
+
+        cropViewModel.modelMetadata.observe(viewLifecycleOwner, androidx.lifecycle.Observer { it ?.let { map ->
+            ModelRequest.getInstance().init(map["name"]!!, map["version"]!!)
+            cropViewModel.modelMetadata.removeObservers(this)
+        }})
+
         newsSharedViewModel.newsList.observe(viewLifecycleOwner, androidx.lifecycle.Observer { list ->
             newsRecyclerAdapter.changeDataSource(list)
         })
@@ -117,28 +124,10 @@ const val KEY_LOCATION_SET = "userDistrict"
             videoRecyclerAdapter.updateList(it)
         })
 
-
-        newsSharedViewModel.output.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            log("Value of output:: $it")
-        })
+        ModelRequest.getInstance().setCredentials(MainActivity.mCredential)
 
         fabTakeImage.setOnClickListener {
-
-            val json = JSONObject()
-//            val jsonArr = JSONArray()
-            val input = ModelRequestFragment.formatInput(resources)
-//            jsonArr.put(input)
-            json.put("instances", input)
-//            log("input json $json")
-
-            val file = File(requireContext().getExternalFilesDir(
-                    Environment.DIRECTORY_DOCUMENTS)?.absolutePath +  "/jsonOutput.txt")
-            file.writeText(json.toString())
-            ModelRequestFragment.credential = MainActivity.mCredential
-            newsSharedViewModel.setInputItem(file)
-
-
-//            startAnActivity(CameraActivity::class.java)
+            startAnActivity(CameraActivity::class.java)
         }
 
         // Inflating users

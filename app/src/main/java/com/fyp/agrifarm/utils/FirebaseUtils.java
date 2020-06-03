@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.fyp.agrifarm.app.ExtensionsKt;
 import com.fyp.agrifarm.app.profile.db.UserDataFetchListener;
 import com.fyp.agrifarm.app.profile.db.UserDataUploadListener;
 import com.fyp.agrifarm.app.profile.model.User;
@@ -23,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
