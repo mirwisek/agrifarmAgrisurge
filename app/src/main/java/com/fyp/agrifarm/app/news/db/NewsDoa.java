@@ -13,11 +13,11 @@ public interface NewsDoa {
 
     // If primary keys clash occurs, replace with latest data
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(NewsEntity news);
+    void insert(FakeNewsEnitity news);
 
-    @Query("DELETE FROM news_table")
+    @Query("DELETE FROM news_table1")
     void deleteAllNews();
 
-    @Query("SELECT * FROM news_table ")
-    LiveData<List<NewsEntity>> getAllNews();
+    @Query("SELECT * FROM news_table1 ")
+    LiveData<List<FakeNewsEnitity>> getAllNews();
 }

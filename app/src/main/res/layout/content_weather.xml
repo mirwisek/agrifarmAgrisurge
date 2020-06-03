@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/ivWeatherIcon"
+            android:id="@+id/wfivWeatherIcon"
             android:layout_width="100dp"
             android:layout_height="75dp"
             android:layout_marginTop="8dp"
@@ -31,32 +31,32 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tvweatherdescription"
+            android:id="@+id/wftvweatherdescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="31dp"
+            android:layout_marginRight="35dp"
             android:text="Partly Cloudy"
             android:textAllCaps="true"
             android:textStyle="bold"
             android:textColor="@color/colorWhite"
             android:textSize="13sp"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ivWeatherIcon" />
+            app:layout_constraintTop_toBottomOf="@id/wfivWeatherIcon" />
 
         <TextView
-            android:id="@+id/tvWeatherTemp"
+            android:id="@+id/wftvWeatherTemp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="22&#xb0;"
             android:textColor="@color/colorWhite"
             android:textSize="50sp"
-            android:layout_marginStart="15dp"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tvWeatherDay"
+            android:id="@+id/wftvWeatherDay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Today"
@@ -64,10 +64,10 @@
             android:textSize="20sp"
             android:layout_marginStart="10dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvWeatherTemp" />
+            app:layout_constraintTop_toBottomOf="@id/wftvWeatherTemp" />
 
         <TextView
-            android:id="@+id/tvWeatherWind"
+            android:id="@+id/wftvWeatherWind"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Wind 6km/h"
@@ -75,10 +75,10 @@
             android:textColor="@color/colorWhite"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvWeatherDay" />
+            app:layout_constraintTop_toBottomOf="@id/wftvWeatherDay" />
 
         <TextView
-            android:id="@+id/tvWeatherHumidity"
+            android:id="@+id/wftvWeatherHumidity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/ic_drop_resized"
@@ -88,7 +88,7 @@
             android:textColor="@color/colorWhite"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvWeatherWind" />
+            app:layout_constraintTop_toBottomOf="@id/wftvWeatherWind" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

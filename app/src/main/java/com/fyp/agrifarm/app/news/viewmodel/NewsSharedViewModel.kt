@@ -4,15 +4,10 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import com.fyp.agrifarm.app.crops.ui.ModelRequest
 import com.fyp.agrifarm.app.news.NewsRepository
+import com.fyp.agrifarm.app.news.db.FakeNewsEnitity
+
 import com.fyp.agrifarm.app.news.db.NewsEntity
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeout
-import java.io.File
 
 class NewsSharedViewModel(application: Application) : AndroidViewModel(application) {
 

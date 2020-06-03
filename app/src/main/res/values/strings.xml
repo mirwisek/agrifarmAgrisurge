@@ -37,4 +37,33 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+    //String Entries For Preferences
+
+    <string-array name="onlineStatus">
+        <item>Online</item>
+        <item>Offline</item>
+    </string-array>
+    <string-array name="statuselection">
+        <item>Online</item>
+        <item>Offline</item>
+    </string-array>
+    <string-array name="pricesettings">
+        <item>Current Prices</item>
+        <item>"Predicted Prices"</item>
+    </string-array>
+    <string-array name="pselection">
+        <item>Current Prices</item>
+        <item>"Predicted Prices"</item>
+    </string-array>
+    <string-array name="temperatureUnit">
+        <item>Fahrenheit</item>
+        <item>Celsius</item>
+    </string-array>
+    <string-array name="tselection">
+        <item>Fahrenheit</item>
+        <item>Celsius</item>
+    </string-array>
+
 </resources>

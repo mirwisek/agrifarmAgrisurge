@@ -34,15 +34,15 @@ class NewsDetailsFragment : Fragment() {
 
         newsSharedViewModel.getSelectedNews().observe(viewLifecycleOwner, Observer {
             it?.let { news ->
-                Picasso.get().load(news.url).placeholder(R.color.colorPrimaryDark).into(imageView)
+                Picasso.get().load(news.image).placeholder(R.color.colorPrimaryDark).into(imageView)
                 title.text = news.title
-                date.text = news.date
+                date.text = news.guid
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    desc.text = Html.fromHtml(news.description, Html.FROM_HTML_MODE_COMPACT)
+                    desc.text = Html.fromHtml(news.title, Html.FROM_HTML_MODE_COMPACT)
                 } else {
-                    desc.text = Html.fromHtml(news.description)
+                    desc.text = Html.fromHtml(news.title)
                 }
-                log(news.description)
+                log(news.title)
                 // Make links clickable
                 desc.movementMethod = LinkMovementMethod.getInstance()
             }

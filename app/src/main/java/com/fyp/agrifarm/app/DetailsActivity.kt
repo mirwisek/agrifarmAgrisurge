@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.fyp.agrifarm.R
-import com.fyp.agrifarm.app.news.db.NewsEntity
+
 import com.fyp.agrifarm.app.news.ui.NewsDetailsFragment
 import com.fyp.agrifarm.app.news.viewmodel.NewsSharedViewModel
 

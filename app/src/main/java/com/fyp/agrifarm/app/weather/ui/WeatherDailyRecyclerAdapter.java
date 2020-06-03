@@ -14,12 +14,15 @@ import com.fyp.agrifarm.app.weather.model.WeatherDailyForecast;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class WeatherDailyRecyclerAdapter extends RecyclerView.Adapter {
-
+    private Map<String, Integer> WeatherIconMap;
     private Context context;
     private List<WeatherDailyForecast> weatherList;
+
 
     public WeatherDailyRecyclerAdapter(Context context){
         this.context = context;
@@ -43,7 +46,46 @@ public class WeatherDailyRecyclerAdapter extends RecyclerView.Adapter {
         holder.tvDay.setText(record.getDay());
         holder.tvDescription.setText(record.getDescription());
         holder.tvTemperature.setText(record.getTemperature() + "\u00B0");
-        Picasso.get().load(record.getIconurl()).into(holder.weatherIcon);
+
+
+
+        if (record.getIconurl().equals("01d")) {
+            holder.weatherIcon.setImageResource(WeatherIconMap.get("01d"));
+        }
+        if (record.getIconurl().equals("02d")) {
+            holder.weatherIcon.setImageResource(WeatherIconMap.get("02d"));
+        }
+        if (record.getIconurl().equals("03d")) {
+            holder.weatherIcon.setImageResource(WeatherIconMap.get("03d"));
+        }
+        if (record.getIconurl().equals("04d")) {
+            holder.weatherIcon.setImageResource(WeatherIconMap.get("04d"));
+        }
+        if (record.getIconurl().equals("04n")) {
+            holder.weatherIcon.setImageResource(WeatherIconMap.get("04n"));
+        }
+        if (record.getIconurl().equals("50d"))
+        {
+            holder.weatherIcon.setImageResource(WeatherIconMap.get("50d"));
+        }
+        if (record.getIconurl().equals("09d"))
+        {
+            holder.weatherIcon.setImageResource(WeatherIconMap.get("09d"));
+        }
+        if (record.getIconurl().equals("10d"))
+        {
+            holder.weatherIcon.setImageResource(WeatherIconMap.get("10d"));
+        }
+        if (record.getIconurl().equals("11d"))
+        {
+            holder.weatherIcon.setImageResource(WeatherIconMap.get("11d"));
+        }
+        if (record.getIconurl().equals("13d"))
+        {
+            holder.weatherIcon.setImageResource(WeatherIconMap.get("13d"));
+        }
+
+//        Picasso.get().load(record.getIconurl()).into(holder.weatherIcon);
     }
 
     @Override
@@ -70,6 +112,17 @@ public class WeatherDailyRecyclerAdapter extends RecyclerView.Adapter {
     public void updateList(List<WeatherDailyForecast> list){
         weatherList = new ArrayList<>(list);
         notifyDataSetChanged();
+        WeatherIconMap = new HashMap<>();
+        WeatherIconMap.put("01d", R.drawable.ic_wi_day_sunny);
+        WeatherIconMap.put("02d", R.drawable.ic_wi_day_cloudy);
+        WeatherIconMap.put("03d", R.drawable.ic_wi_cloud);
+        WeatherIconMap.put("04d", R.drawable.ic_wi_cloudy);
+        WeatherIconMap.put("09d", R.drawable.ic_wi_showers);
+        WeatherIconMap.put("10d", R.drawable.ic_wi_day_rain_mix);
+        WeatherIconMap.put("11d", R.drawable.ic_wi_thunderstorm);
+        WeatherIconMap.put("13d", R.drawable.ic_wi_snow);
+        WeatherIconMap.put("50d", R.drawable.ic_wi_fog);
+        WeatherIconMap.put("04n", R.drawable.ic_wi_cloudy);
     }
 }
 

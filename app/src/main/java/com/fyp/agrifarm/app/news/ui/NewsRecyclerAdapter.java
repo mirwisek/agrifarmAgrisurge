@@ -1,6 +1,7 @@
 package com.fyp.agrifarm.app.news.ui;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fyp.agrifarm.R;
-import com.fyp.agrifarm.app.news.db.NewsEntity;
+import com.fyp.agrifarm.app.news.db.FakeNewsEnitity;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.List;
 public class NewsRecyclerAdapter extends RecyclerView.Adapter {
 
     private Context context;
-    private List<NewsEntity> newsList;
+    private List<FakeNewsEnitity> newsList;
     private OnNewsClinkListener onNewsClinkListener;
 
     public NewsRecyclerAdapter(Context context, OnNewsClinkListener newsClickListener){
@@ -38,14 +39,14 @@ public class NewsRecyclerAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-        NewsEntity record = newsList.get(i);
-
+        FakeNewsEnitity record = newsList.get(i);
+        Log.d("DASASA",""+record.toString());
         VideoListViewHolder holder = (VideoListViewHolder) viewHolder;
         holder.itemView.setOnClickListener(v -> onNewsClinkListener.onNewsClick(record));
         holder.tvNewsTitle.setText(record.getTitle());
         // Picasso will run the task Asynchronously and load into the targeted view upon download complete
         // You can resize thumbnails with resize method
-        Picasso.get().load(record.getUrl()).into(holder.ivNewsThumb);
+        Picasso.get().load(record.getImage()).into(holder.ivNewsThumb);
     }
 
     @Override
@@ -67,13 +68,13 @@ public class NewsRecyclerAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public void changeDataSource(List<NewsEntity> list){
+    public void changeDataSource(List<FakeNewsEnitity> list){
         newsList = list;
         notifyDataSetChanged();
     }
 
     public interface OnNewsClinkListener{
-        void onNewsClick(NewsEntity selectedNews);
+        void onNewsClick(FakeNewsEnitity selectedNews);
     }
 }
 

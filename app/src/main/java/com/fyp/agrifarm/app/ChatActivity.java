@@ -6,6 +6,9 @@ import androidx.appcompat.widget.Toolbar;
 import android.os.Bundle;
 
 import com.fyp.agrifarm.R;
+import com.fyp.agrifarm.app.news.db.NewsObject;
+
+import java.util.ArrayList;
 
 public class ChatActivity extends AppCompatActivity {
 

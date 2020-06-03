@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".app.MainActivity"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".app.MainActivity">
 
-    <ScrollView android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -32,9 +33,9 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_gravity="center"
-                android:scaleType="fitXY"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
+                android:scaleType="fitXY"
                 android:src="@drawable/ic_weather_widget_shape"
                 app:layout_constraintBottom_toTopOf="@+id/guideHWidgetEnd"
                 app:layout_constraintEnd_toStartOf="@id/guideVertEnd"
@@ -46,14 +47,14 @@
                 android:id="@+id/tvWeatherTemp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="@id/guideVertStart"
-                app:layout_constraintTop_toTopOf="@id/ivWidgetBg"
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="15dp"
                 android:text="22&#xb0;"
                 android:textColor="@color/colorWhite"
                 android:textSize="30sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@id/guideVertStart"
+                app:layout_constraintTop_toTopOf="@id/ivWidgetBg" />
 
 
             <TextView
@@ -71,14 +72,14 @@
                 android:id="@+id/tvWeatherHumidity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="30%"
                 android:layout_below="@id/tvWeatherDay"
-                android:textColor="@color/colorWhite"
                 android:drawableLeft="@drawable/ic_drop_resized"
                 android:drawablePadding="6dp"
+                android:text="30%"
+                android:textColor="@color/colorWhite"
                 android:textSize="12sp"
                 app:layout_constraintStart_toStartOf="@id/tvWeatherTemp"
-                app:layout_constraintTop_toBottomOf="@id/tvWeatherDay"/>
+                app:layout_constraintTop_toBottomOf="@id/tvWeatherDay" />
 
 
             <ImageView
@@ -88,10 +89,10 @@
                 android:layout_marginEnd="20dp"
                 android:src="@drawable/ic_w_partly_cloudy"
                 app:layout_constraintEnd_toStartOf="@id/guideVertEnd"
-                app:layout_constraintTop_toTopOf="@id/tvWeatherTemp"/>
+                app:layout_constraintTop_toTopOf="@id/tvWeatherTemp" />
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/tvWeatherDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Partly Cloudy"
@@ -106,16 +107,15 @@
                 android:id="@+id/tvWeatherForecast"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Weather Forecast"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@color/colorWhite"
+                android:drawableEnd="@drawable/ic_arrow_next_resized"
                 android:paddingEnd="10dp"
                 android:paddingBottom="8dp"
-                android:drawableEnd="@drawable/ic_arrow_next_resized"
-                app:layout_constraintEnd_toStartOf="@id/guideVertEnd"
-                app:layout_constraintBottom_toBottomOf="@id/ivWidgetBg"/>
-
+                android:text="Weather Forecast"
+                android:textColor="@color/colorWhite"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/ivWidgetBg"
+                app:layout_constraintEnd_toStartOf="@id/guideVertEnd" />
 
 
             <androidx.constraintlayout.widget.Guideline
@@ -144,39 +144,39 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.22"/>
+                app:layout_constraintGuide_percent="0.22" />
 
             <TextView
                 android:id="@+id/tvHintPrices"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Today's market prices"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:textSize="15sp"
+                android:text="Today's market prices"
                 android:textColor="@color/colorBlack"
-                app:layout_constraintTop_toBottomOf="@id/guideHWidgetEnd"
-                app:layout_constraintStart_toStartOf="@id/guideVertStart"/>
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="@id/guideVertStart"
+                app:layout_constraintTop_toBottomOf="@id/guideHWidgetEnd" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvPrices"
                 android:layout_width="0dp"
                 android:layout_height="70dp"
-                android:paddingLeft="20dp"
                 android:orientation="horizontal"
+                android:paddingLeft="20dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintTop_toBottomOf="@id/tvHintPrices"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@id/tvHintPrices" />
 
             <ProgressBar
                 android:id="@+id/progressPrices"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@id/btnLocation"
                 app:layout_constraintBottom_toBottomOf="@id/btnLocation"
                 app:layout_constraintEnd_toStartOf="@id/guideVertEnd"
-                app:layout_constraintStart_toStartOf="@id/guideVertStart" />
+                app:layout_constraintStart_toStartOf="@id/guideVertStart"
+                app:layout_constraintTop_toTopOf="@id/btnLocation" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLocation"
@@ -194,70 +194,81 @@
                 android:id="@+id/tvHintPeople"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="People you may know"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:textSize="15sp"
+                android:text="People you may know"
                 android:textColor="@color/colorBlack"
-                app:layout_constraintTop_toBottomOf="@id/rvPrices"
-                app:layout_constraintStart_toStartOf="@id/guideVertStart"/>
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="@id/guideVertStart"
+                app:layout_constraintTop_toBottomOf="@id/rvPrices" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvUsers"
                 android:layout_width="0dp"
                 android:layout_height="120dp"
-                android:paddingLeft="20dp"
                 android:orientation="horizontal"
+                android:paddingLeft="20dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintTop_toBottomOf="@id/tvHintPeople"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@id/tvHintPeople">
+            </androidx.recyclerview.widget.RecyclerView>
+
+            <ProgressBar
+                android:id="@+id/news_pbar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@+id/rvNews"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvHintNews"
+                android:visibility="gone"/>
 
             <TextView
                 android:id="@+id/tvHintNews"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="News"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:textSize="15sp"
+                android:text="News"
                 android:textColor="@color/colorBlack"
-                app:layout_constraintTop_toBottomOf="@id/rvUsers"
-                app:layout_constraintStart_toStartOf="@id/guideVertStart"/>
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="@id/guideVertStart"
+                app:layout_constraintTop_toBottomOf="@id/rvUsers" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvNews"
                 android:layout_width="0dp"
                 android:layout_height="150dp"
-                android:paddingLeft="20dp"
                 android:orientation="horizontal"
+                android:paddingLeft="20dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintTop_toBottomOf="@id/tvHintNews"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@id/tvHintNews" />
 
             <TextView
                 android:id="@+id/tvHintVideo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Suggested Videos"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:textSize="15sp"
+                android:text="Suggested Videos"
                 android:textColor="@color/colorBlack"
-                app:layout_constraintTop_toBottomOf="@id/rvNews"
-                app:layout_constraintStart_toStartOf="@id/guideVertStart"/>
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="@id/guideVertStart"
+                app:layout_constraintTop_toBottomOf="@id/rvNews" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvVideo"
                 android:layout_width="0dp"
                 android:layout_height="140dp"
-                android:paddingLeft="20dp"
                 android:orientation="horizontal"
+                android:paddingLeft="20dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintTop_toBottomOf="@id/tvHintVideo"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@id/tvHintVideo" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -267,19 +278,18 @@
         android:id="@+id/fabTakeImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Crop Doctor"
-        app:icon="@drawable/ic_camera"
-        app:iconTint="@color/colorWhite"
-        android:textColor="@color/colorWhite"
+        android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/margin_xsmall"
+        android:text="Crop Doctor"
+        android:textColor="@color/colorWhite"
         app:backgroundTint="@color/colorPrimary"
-        android:layout_gravity="bottom|end"/>
+        app:icon="@drawable/ic_camera"
+        app:iconTint="@color/colorWhite" />
 
-  <androidx.fragment.app.FragmentContainerView
-      android:id="@+id/locationListFragmentContainer"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center"
-      />
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/locationListFragmentContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
