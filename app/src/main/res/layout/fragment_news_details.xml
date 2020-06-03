@@ -65,11 +65,14 @@
         <TextView
             android:padding="8dp"
             android:id="@+id/tvNewsDesc"
-
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Description"
             android:textSize="16sp"/>
+        <WebView
+            android:id="@+id/webview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
     </ScrollView>
 
     <com.google.android.material.card.MaterialCardView
