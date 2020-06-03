@@ -53,4 +53,5 @@ class NewsDetailsFragment : Fragment() {
     companion object {
         const val TAG = "newsDetailFragment"
     }
+
 }
