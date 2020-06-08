@@ -49,15 +49,6 @@ class ModelRequest {
         VERSION_ID = version
     }
 
-    fun formatInput(resources: Resources): String {
-        val bitmap = BitmapFactory.decodeResource(resources, R.raw.lb1)
-        val os = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, os)
-        val byteArray = os.toByteArray()
-//        return android.util.Base64.encodeToString(byteArray, android.util.Base64.DEFAULT)
-        return Base64.encodeBase64String(byteArray)
-    }
-
     fun setCredentials(credential: GoogleAccountCredential) {
         this.credential = credential
     }

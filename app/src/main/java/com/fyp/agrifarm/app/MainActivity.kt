@@ -9,8 +9,6 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
@@ -28,12 +26,11 @@ import com.fyp.agrifarm.R
 import com.fyp.agrifarm.app.HomeFragment.OnFragmentInteractionListener
 import com.fyp.agrifarm.app.weather.ui.WeatherFragment
 import com.fyp.agrifarm.app.youtube.VideoRecyclerAdapter
-import com.fyp.agrifarm.app.youtube.YoutubeDataRequest
 import com.fyp.agrifarm.app.youtube.YoutubeFragment
 import com.fyp.agrifarm.app.youtube.db.ExtendedVideo
-import com.fyp.agrifarm.app.youtube.db.ShortVideo
 import com.fyp.agrifarm.app.youtube.viewmodel.VideoSharedViewModel
 import com.fyp.agrifarm.utils.FirebaseUtils
+import com.fyp.agrifarm.utils.PicassoUtils
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.navigation.NavigationView
@@ -41,6 +38,7 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.youtube.YouTubeScopes
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.android.synthetic.main.activity_user_registration.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import pub.devrel.easypermissions.EasyPermissions.PermissionCallbacks
@@ -93,16 +91,13 @@ class MainActivity : AppCompatActivity(),
         val tvUserOccupation = headerView.findViewById<TextView>(R.id.tvDrawerOccupation)
         val uProfilePhoto = headerView.findViewById<ImageView>(R.id.ivDrawerProfile)
 
-        // Turned off for debugging purpose
-//        FirebaseUtils.fetchCurrentUserFromFirebase { user: User ->
-//            tvUserFullName.text = user.fullname
-//            tvUserOccupation.text = user.occupation
-//            //            uAge.setText(userAge);
-////            uLocation.setText(userLocation);
-//            // TODO: The image is returned with a bit margin in left, TO FIX, ScaleType: CenterCrop clips the image instead
-//            PicassoUtils.loadCropAndSetImage(user.photoUri, uProfilePhoto, resources)
-//            resultsFromApi()
-//        }
+
+        FirebaseUtils.fetchCurrentUserFromFirebase { user ->
+            tvUserFullName.text = user.fullname
+            tvUserOccupation.text = user.occupation
+            // TODO: The image is returned with a bit margin in left, TO FIX, ScaleType: CenterCrop clips the image instead
+            PicassoUtils.loadCropAndSetImage(user.photoUri, uProfilePhoto, resources)
+        }
         val fm = supportFragmentManager
         var fragment = fm.findFragmentByTag(HomeFragment.TAG)
         if (fragment == null) {
@@ -113,7 +108,9 @@ class MainActivity : AppCompatActivity(),
                     .replace(R.id.fragmentHolder, fragment!!, HomeFragment.TAG)
                     .commit()
         }
+
         videoViewModel = ViewModelProvider(this).get(VideoSharedViewModel::class.java)
+
         mCredential = GoogleAccountCredential.usingOAuth2(this, Arrays.asList(*SCOPES))
                 .setBackOff(ExponentialBackOff())
 
@@ -137,12 +134,8 @@ class MainActivity : AppCompatActivity(),
             log("Calling choose account")
         } else if (!isDeviceOnline) {
             toast("No network connection available")
-        } else {
-            // finally
-//            YoutubeDataRequest.setCredentials(mCredential)
-//            MakeRequestTask( WeakReference(application), mCredential,
-//                    object : ResponseListener {
-
+        }
+//        else {
 //                        override fun onCancelled(mLastError: Exception) {
 //                            when (mLastError) {
 //                                is GooglePlayServicesAvailabilityIOException -> {
@@ -157,18 +150,7 @@ class MainActivity : AppCompatActivity(),
 //                                else -> {
 //                                    toast("The following error occurred: ${mLastError.message}")
 //                                }
-//                            }
-//                        }
-//
-//                        override fun onVideosFetched(videoList: List<ShortVideo>) {
-//                            // Cache into the database for ROOM
-//                            val videoArr = videoList.shuffled().toTypedArray()
-//                            log("Items got:: ${videoArr.size}")
-//                            videoViewModel.insert(*videoArr)
-//                        }
-//                    }
-//            ).execute()
-        }
+//        }
     }
 
     private val isDeviceOnline: Boolean
@@ -270,49 +252,18 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        val id = item.itemId
-        if (id == R.id.action_delete) {
-            FirebaseUtils.deleteAccount({ o: Any? ->
-                Log.i(TAG, "onOptionsItemSelected: Deleted")
-                Toast.makeText(this, "Account Deleted!", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, UserRegistrationActivity::class.java))
-                finish()
-            }
-            ) { e: Exception? -> Toast.makeText(this, "Account could not be deleted!", Toast.LENGTH_SHORT).show() }
-            return true
-        } else if (id == R.id.action_sign_out) {
-            FirebaseUtils.signOut(this) {
-                startActivity(Intent(this@MainActivity, UserRegistrationActivity::class.java))
-                finish()
-            }
-            return true
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
-        val id = item.itemId
-        when (id) {
+        when (item.itemId) {
 
-            R.id.nav_slideshow -> {
+            R.id.nav_signout -> {
                 FirebaseUtils.signOut(this) {
                     startActivity(Intent(this@MainActivity, UserRegistrationActivity::class.java))
                     finish()
                 }
 
             }
-            R.id.nav_manage -> {
+            R.id.nav_settings -> {
                 supportFragmentManager
                         .beginTransaction()
                         .replace(R.id.fragmentHolder, SettingsFragment())

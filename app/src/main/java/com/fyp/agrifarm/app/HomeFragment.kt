@@ -4,14 +4,10 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -39,24 +35,11 @@ import com.fyp.agrifarm.app.youtube.VideoRecyclerAdapter
 import com.fyp.agrifarm.app.youtube.viewmodel.VideoSharedViewModel
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.ml.common.FirebaseMLException
-import com.google.firebase.ml.common.modeldownload.FirebaseModelDownloadConditions
-import com.google.firebase.ml.common.modeldownload.FirebaseModelManager
-import com.google.firebase.ml.custom.*
-import com.squareup.picasso.Picasso
-import com.squareup.picasso.Picasso.LoadedFrom
-import com.squareup.picasso.Target
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
-import java.util.concurrent.atomic.AtomicReference
 
 const val KEY_LOCATION_SET = "userDistrict"
 
@@ -65,8 +48,6 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
 
     private val db = FirebaseFirestore.getInstance()
     private val userRef = db.collection("users")
-    private var cloudSource: FirebaseCustomRemoteModel? = null
-    private var downloadConditions: FirebaseModelDownloadConditions? = null
 
     private lateinit var pricesViewModel: PricesViewModel
     private lateinit var videoViewModel: VideoSharedViewModel
@@ -79,17 +60,10 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
 
 
     companion object {
-        @JvmField
-        val TAG = "HomeFragment"
-        val REQUEST_PICK_IMAGE = 1111
-        val RC_LOCATION = 1021
+        const val TAG = "HomeFragment"
+        const val RC_LOCATION = 1021
         const val RC_LOCATION_DIALOG = 1002
-        val KEY_MODEL_DOWNLOAD = "downloaded"
-        val KEY_SHARED_PREFS_NAME = "agriFarm"
-        private val OUTPUT_LABELS_FILE = "output_labels.txt"
-        private val IMG_WIDTH = 256
-        private val IMG_HEIGHT = 256
-        private val OUTPUT_CLASSES = 15
+        const val KEY_SHARED_PREFS_NAME = "agriFarm"
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -168,9 +142,6 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
 
         videoRecyclerAdapter = VideoRecyclerAdapter(context)
         rvVideo.adapter = videoRecyclerAdapter
-
-        // TODO: Remove unused MLKit
-//        initMLKit()
 
         // First load update required
         pricesViewModel.location.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
@@ -298,128 +269,13 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
         }
     }
 
-    private fun initMLKit() {
-        cloudSource = FirebaseCustomRemoteModel.Builder(
-                "PlantDisease-Detector").build()
-
-//        FirebaseCustomLocalModel localModel = new FirebaseCustomLocalModel.Builder()
-//                .setAssetFilePath("model.tflite")
-//                .build();
-        downloadConditions = FirebaseModelDownloadConditions.Builder()
-                .requireWifi()
-                .build()
-        FirebaseModelManager.getInstance().download(cloudSource!!, downloadConditions!!)
-                .addOnCompleteListener {
-                    requireContext().getSharedPrefs().edit()
-                            .putBoolean(KEY_MODEL_DOWNLOAD, true).apply()
-                }
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         when (requestCode) {
             RC_LOCATION_DIALOG -> getLocation()
-            REQUEST_PICK_IMAGE -> if (data != null) {
-//                    try {
-//                        InputStream inputStream = getContext().getContentResolver().openInputStream(data.getData());
-//                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                Picasso.get().load(data.data).into(object : Target {
-                    override fun onBitmapLoaded(bitmap: Bitmap, from: LoadedFrom) {
-
-                        // Before initialzing intreperator, confirm model is downloaded
-                        FirebaseModelManager.getInstance().isModelDownloaded((cloudSource)!!)
-                                .addOnSuccessListener { isDownloaded: Boolean ->
-                                    var options: FirebaseModelInterpreterOptions? = null
-                                    if (isDownloaded) {
-                                        options = FirebaseModelInterpreterOptions.Builder((cloudSource)!!).build()
-                                    } else {
-                                        return@addOnSuccessListener
-                                        // At this point we don't have local model in assets
-//                                      options = new FirebaseModelInterpreterOptions.Builder(localModel).build();
-                                    }
-                                    try {
-                                        val interpreter: FirebaseModelInterpreter? = FirebaseModelInterpreter.getInstance(options)
-                                        val inputOutputOptions: FirebaseModelInputOutputOptions = FirebaseModelInputOutputOptions.Builder()
-                                                .setInputFormat(0, FirebaseModelDataType.FLOAT32, intArrayOf(1, IMG_HEIGHT, IMG_WIDTH, 3))
-                                                .setOutputFormat(0, FirebaseModelDataType.FLOAT32, intArrayOf(1, OUTPUT_CLASSES))
-                                                .build()
-                                        val inputs: FirebaseModelInputs = FirebaseModelInputs.Builder()
-                                                .add(imgToArray(bitmap)) // add() as many input arrays as your model requires
-                                                .build()
-                                        assert(interpreter != null)
-                                        interpreter!!.run(inputs, inputOutputOptions)
-                                                .addOnSuccessListener(OnSuccessListener { result: FirebaseModelOutputs ->
-                                                    // We are interested in just the first row for single input
-                                                    val output: Array<FloatArray> = result.getOutput(0)
-                                                    val probabilities: FloatArray = output.get(0)
-                                                    val outputLabel: String? = mapOutputToLabel(probabilities)
-                                                    Toast.makeText(getContext(), "Result: " + outputLabel, Toast.LENGTH_LONG).show()
-                                                })
-                                                .addOnFailureListener(OnFailureListener { e: Exception? -> log("getImagePrediction: Couldn't identify") })
-                                    } catch (e: FirebaseMLException) {
-                                        e.printStackTrace()
-                                    }
-                                }
-                    }
-
-                    override fun onBitmapFailed(e: Exception, errorDrawable: Drawable) {}
-                    override fun onPrepareLoad(placeHolderDrawable: Drawable) {}
-                })
-                //                } catch (FileNotFoundException e) {
-//                        e.printStackTrace();
-//                    }
-            }
         }
-    }
-
-    fun getImagePrediction(bitmap: Bitmap?): String {
-        val outputLabel = AtomicReference("Couldn't Identify")
-        return outputLabel.get()
-    }
-
-    fun imgToArray(img: Bitmap): Array<Array<Array<FloatArray>>> {
-        val image = Bitmap.createScaledBitmap(img, IMG_WIDTH, IMG_HEIGHT, true)
-        val batchNum = 0
-        val input = Array(1) { Array(IMG_HEIGHT) { Array(IMG_WIDTH) { FloatArray(3) } } }
-        for (x in 0..223) {
-            for (y in 0..223) {
-                val pixel = image.getPixel(x, y)
-                // Normalize channel values to [-1.0, 1.0]. This requirement varies by
-                // model. For example, some models might require values to be normalized
-                // to the range [0.0, 1.0] instead.
-//                input[batchNum][x][y][0] = (Color.red(pixel) - 127) / 128.0f;
-//                input[batchNum][x][y][1] = (Color.green(pixel) - 127) / 128.0f;
-//                input[batchNum][x][y][2] = (Color.blue(pixel) - 127) / 128.0f;
-                input[batchNum][x][y][0] = Color.red(pixel).toFloat()
-                input[batchNum][x][y][1] = Color.green(pixel).toFloat()
-                input[batchNum][x][y][2] = Color.blue(pixel).toFloat()
-            }
-        }
-        return input
-    }
-
-    private fun mapOutputToLabel(probabilities: FloatArray): String? {
-        val sb = StringBuilder()
-        for (probability: Float in probabilities) {
-            sb.append("$probability, ")
-        }
-        log("Probs are : $sb")
-        var label: String? = null
-        try {
-            requireContext().resources.openRawResource(R.raw.output_labels).use { inputStream ->
-                BufferedReader(InputStreamReader(inputStream)).use { reader ->
-                    for (probability: Float in probabilities) {
-                        label = reader.readLine()
-                        if (probability.toDouble() == 1.0) break
-                    }
-                }
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        log("MLKit $label")
-        return label
     }
 
     private fun saveLocationToSharedPrefs(loc: LocationListItem) {
