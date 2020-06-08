@@ -6,81 +6,38 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".app.DetailsActivity">
 
-
-    <ImageView
-        android:id="@+id/detailNewsImage"
+    <ProgressBar
+        android:id="@+id/webProgressBar"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:scaleType="centerCrop"
-        android:foreground="@drawable/news_detail_title_bg"
+        android:layout_height="4dp"
+        android:background="#0084FFFF"
+        android:indeterminate="false"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/guidelineDetailNews"/>
-
-    <TextView
-        android:id="@+id/tvNewsDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Date"
-        android:paddingBottom="10dp"
-        android:paddingLeft="10dp"
-        android:layout_alignParentBottom="true"
-        android:textColor="#ffff"
-        android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="@id/tvNewsTitleDetail"
-        app:layout_constraintBottom_toBottomOf="@id/detailNewsImage"/>
-
-
-    <TextView
-        android:id="@+id/tvNewsTitleDetail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Title"
-        android:paddingLeft="10dp"
-        android:paddingBottom="5dp"
-        android:textColor="#ffff"
-        android:layout_above="@id/tvNewsDate"
-        android:textSize="16sp"
-        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/tvNewsDate"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineDetailNews"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.3"/>
-
-    <ScrollView
-        android:id="@+id/SCROLLER_ID"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:scrollbars="vertical"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guidelineDetailNews"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:padding="5dp"
-        android:fillViewport="true">
-        <TextView
-            android:padding="8dp"
-            android:id="@+id/tvNewsDesc"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Description"
-            android:textSize="16sp"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/webProgressBar">
+
         <WebView
-            android:id="@+id/webview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-    </ScrollView>
+            android:id="@+id/newsWebView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.card.MaterialCardView
 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="-10dp"
-        app:cardCornerRadius="10dp"
+        app:cardElevation="50dp"
         app:shapeAppearance="@style/NewsDetailsFragmentBottomSheet"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -99,56 +56,24 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="17dp"
                 android:layout_marginTop="10dp"
-                android:text="Featured News"
-                android:textSize="18sp"
+                android:text="News Topics"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/black"/>
 
-            <LinearLayout
+            <HorizontalScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="12dp">
+                android:layout_height="wrap_content" >
 
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/newsCategoryChipGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:singleLine="true"
+                    android:padding="10dp"
+                    app:chipSpacingHorizontal="5dp" />
 
-                <Button
-                    android:layout_width="75dp"
-                    android:layout_height="25dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/btn_rounded_corner"
-                    android:text="#GDP"
-                    android:layout_marginRight="3dp"
-                    android:textColor="@color/colorWhite"
-
-                    />
-                <Button
-                    android:layout_width="75dp"
-                    android:layout_height="25dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/btn_rounded_corner"
-                    android:text="#GDP"
-                    android:textColor="@color/colorWhite"
-                    android:layout_marginRight="3dp"/>
-                <Button
-                    android:layout_width="75dp"
-                    android:layout_height="25dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/btn_rounded_corner"
-                    android:text="#GDP"
-                    android:layout_marginRight="3dp"
-                    android:textColor="@color/colorWhite"/>
-                <Button
-                    android:layout_width="75dp"
-                    android:layout_height="25dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/btn_rounded_corner"
-                    android:text="#GDP"
-                    android:layout_marginRight="3dp"
-                    android:textColor="@color/colorWhite"/>
-
-
-            </LinearLayout>
-
+            </HorizontalScrollView>
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>

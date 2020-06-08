@@ -71,7 +71,6 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:3.1.0'
 
     implementation 'com.firebaseui:firebase-ui-auth:6.2.0'
-    implementation 'com.facebook.android:facebook-android-sdk:5.0.0'
 
     // For downloading, managing images
     implementation 'com.squareup.picasso:picasso:2.71828'
@@ -137,7 +136,9 @@ dependencies {
     implementation 'com.google.apis:google-api-services-discovery:v1-rev134-1.25.0'
     implementation 'com.google.apis:google-api-services-tasks:v1-rev71-1.25.0'
 
-    def preference_version = "1.1.1"
+    implementation "androidx.preference:preference-ktx:1.1.1"
 
-    implementation "androidx.preference:preference-ktx:$preference_version"
+    def retrofit_version = "2.9.0"
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
 }

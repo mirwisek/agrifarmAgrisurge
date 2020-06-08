@@ -2,7 +2,6 @@ package com.fyp.agrifarm.app.crops.ui
 
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,21 +15,20 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.transition.TransitionInflater
 import com.fyp.agrifarm.R
-import com.fyp.agrifarm.app.MainActivity
 import com.fyp.agrifarm.app.crops.CropsViewModel
+import com.fyp.agrifarm.app.crops.ModelRequest
+import com.fyp.agrifarm.app.crops.ModelResultState
+import com.fyp.agrifarm.app.gone
 import com.fyp.agrifarm.app.log
-import com.fyp.agrifarm.app.toastFrag
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.fragment_crops_result.*
-import kotlinx.android.synthetic.main.fragment_crops_result.view.*
-import org.json.JSONObject
 import java.io.File
 import java.lang.Exception
 
 class CropsResultFragment : Fragment() {
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -52,6 +50,8 @@ class CropsResultFragment : Fragment() {
         progress = view.findViewById(R.id.progressCropDiagnosis)
         labelFeedback = view.findViewById(R.id.tvCropFeedback)
 
+
+
         val imageView = view.findViewById<ImageView>(R.id.ivCropSubject)
         arguments?.let {
             val args = it ?: return
@@ -62,11 +62,32 @@ class CropsResultFragment : Fragment() {
                 override fun onSuccess() {
 
                     uploadImageToFirebase(file)
-                    cropViewModel.getModelOutput().observe(viewLifecycleOwner, Observer {
-                        log("Output ${it}")
-                        labelFeedback.text = it
+
+                    cropViewModel.currentState.observe(viewLifecycleOwner, Observer { model ->
+                        model?.let {  state ->
+                            when(state) {
+                                ModelResultState.ERROR -> {
+                                    progress.gone()
+                                    labelFeedback.text = "Sorry couldn't process your request (Server Error)"
+                                }
+                                ModelResultState.SUCCESS -> {
+                                    cropViewModel.getModelOutput().observe(viewLifecycleOwner, Observer { out ->
+                                        out?.let { output ->
+                                            progress.visibility = View.GONE
+                                            labelFeedback.text = output
+
+                                            log("Output ${output}")
+                                            val modelResultBottomSheet = ModelResultBottomSheet(output)
+                                            modelResultBottomSheet.show(parentFragmentManager, modelResultBottomSheet.tag)
+                                        }
+                                    })
+                                }
+                                else -> { }
+                            }
+                        }
                     })
 
+                    // Add a little animation
                     Handler().postDelayed({
                         labelFeedback.visibility = View.VISIBLE
                         Handler().postDelayed({
@@ -100,13 +121,6 @@ class CropsResultFragment : Fragment() {
                         path = "${file.lastPathSegment}"
                         ModelRequest.getInstance().writeInputFile(requireContext(), path!!)
                         cropViewModel.setPrediction()
-
-                        cropViewModel.getModelOutput().observe(viewLifecycleOwner, Observer {
-                            it?.let { output ->
-                                progress.visibility = View.GONE
-                                labelFeedback.text = output
-                            }
-                        })
                     }
                 }
 

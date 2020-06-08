@@ -24,7 +24,7 @@
         android:layout_height="70dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/com_facebook_profile_picture_blank_square" />
+        app:srcCompat="@drawable/profile_default_user" />
 
     <Button
         android:id="@+id/removebutton"

@@ -49,12 +49,26 @@
         <item name="android:textColor">@color/colorSecondary</item>
     </style>
 
-    <style name="NewsDetailsFragmentBottomSheet" parent="ShapeAppearance.MaterialComponents.SmallComponent">
-        <item name="android:topLeftRadius">20dp</item>
-        <item name="android:topRightRadius">20dp</item>
-        <item name="android:bottomLeftRadius">0dp</item>
-        <item name="android:bottomRightRadius">0dp</item>
+    <style name="NewsDetailsFragmentBottomSheet" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cardBackgroundColor">#f2c2d1</item>
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">25dp</item>
+        <item name="cornerSizeTopRight">25dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
     </style>
 
+    <!-- Style for BOTTOM_MODAL_SHEET -->
 
+    <!-- set the rounded drawable as background to your bottom sheet -->
+    <style name="BottomSheet" parent="@style/Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/bg_bottom_sheet</item>
+    </style>
+
+    <style name="BaseBottomSheetDialog" parent="@style/Theme.Design.Light.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="bottomSheetStyle">@style/BottomSheet</item>
+    </style>
+
+    <style name="BottomSheetDialogTheme" parent="BaseBottomSheetDialog" />
 </resources>

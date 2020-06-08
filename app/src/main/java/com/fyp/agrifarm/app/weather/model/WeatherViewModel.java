@@ -41,8 +41,8 @@ public class WeatherViewModel extends AndroidViewModel {
     public WeatherViewModel(@NonNull Application application) {
         super(application);
         this.context = application;
-        FindDailyandHourlyforcast();
-        FindDailyWeather();
+//        FindDailyandHourlyforcast();
+//        FindDailyWeather();
 
     }
 
@@ -133,12 +133,7 @@ public class WeatherViewModel extends AndroidViewModel {
                         }
 
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        });
+                }, error -> error.printStackTrace());
         dailyforcastlist.postValue(listfordaily);
         hourlyforcastlist.postValue(listforhourly);
         RequestQueue queue = Volley.newRequestQueue(context);

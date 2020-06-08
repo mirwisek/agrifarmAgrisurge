@@ -1,30 +1,42 @@
 package com.fyp.agrifarm.app.news.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
+import com.fyp.agrifarm.app.log
+import com.fyp.agrifarm.app.news.NewsFactory
+import com.fyp.agrifarm.app.news.NewsItem
 import com.fyp.agrifarm.app.news.NewsRepository
-import com.fyp.agrifarm.app.news.db.FakeNewsEnitity
-
-import com.fyp.agrifarm.app.news.db.NewsEntity
+import com.fyp.agrifarm.app.toast
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 class NewsSharedViewModel(application: Application) : AndroidViewModel(application) {
 
-    val newsList: LiveData<List<NewsEntity>> = NewsRepository.getInstance(application).newsList
+    private val newsRepository = NewsRepository.getInstance(application).apply {
+        getNewsFromApi(application)
+    }
+    val newsList = Transformations.map(newsRepository.newsList) {
+        it.shuffled()
+    }
 
-    private val selectedNews = MutableLiveData<NewsEntity>()
+    private val selectedNews = MutableLiveData<NewsItem>().apply {
+        application.baseContext.toast("Executin right now")
+        log("EXECUTING NOW")
+    }
 
-    fun selectNews(newsEntity: NewsEntity) {
+    fun selectNews(newsEntity: NewsItem) {
         selectedNews.value = newsEntity
     }
 
-    fun selectNews(newsId: Int) {
-        val news = NewsRepository.getInstance(getApplication()).getNewsById(newsId)
-        selectedNews.postValue(news)
+    fun selectNews(newsId: String) {
+        selectedNews.postValue(newsRepository.getNewsById(newsId))
     }
 
-    fun getSelectedNews(): LiveData<NewsEntity> {
+    fun getSelectedNews(): LiveData<NewsItem> {
         return selectedNews
     }
+
 }

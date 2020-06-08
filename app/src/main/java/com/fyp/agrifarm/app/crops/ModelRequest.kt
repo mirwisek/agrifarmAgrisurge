@@ -1,14 +1,11 @@
-package com.fyp.agrifarm.app.crops.ui
+package com.fyp.agrifarm.app.crops
 
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Environment
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
 import com.fyp.agrifarm.R
-import com.fyp.agrifarm.app.crops.CropsViewModel
 import com.fyp.agrifarm.app.log
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.http.*
@@ -87,7 +84,7 @@ class ModelRequest {
         val api = discovery.apis().getRest("ml", "v1").execute()
         val method = api.resources["projects"]!!.methods["predict"]
         val param = JsonSchema()
-        param["name"] = "projects/${PROJECT_ID}/models/${MODEL_ID}/versions/${VERSION_ID}"
+        param["name"] = "projects/$PROJECT_ID/models/$MODEL_ID/versions/$VERSION_ID"
         val url = GenericUrl(UriTemplate.expand(api.baseUrl + method!!.path, param, true))
         println(url)
         val contentType = "application/json"

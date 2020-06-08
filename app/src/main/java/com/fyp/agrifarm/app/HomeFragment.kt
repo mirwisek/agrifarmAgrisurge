@@ -8,7 +8,6 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,10 +20,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.fyp.agrifarm.R
 import com.fyp.agrifarm.app.crops.CameraActivity
 import com.fyp.agrifarm.app.crops.CropsViewModel
-import com.fyp.agrifarm.app.crops.ui.ModelRequest
-import com.fyp.agrifarm.app.news.db.NewsEntity
-import com.fyp.agrifarm.app.news.db.FakeNewsEnitity
-import com.fyp.agrifarm.app.news.db.NewsObject
+import com.fyp.agrifarm.app.crops.ModelRequest
 import com.fyp.agrifarm.app.news.ui.NewsRecyclerAdapter
 import com.fyp.agrifarm.app.news.ui.NewsRecyclerAdapter.OnNewsClinkListener
 import com.fyp.agrifarm.app.news.viewmodel.NewsSharedViewModel
@@ -56,7 +52,6 @@ import com.squareup.picasso.Picasso
 import com.squareup.picasso.Picasso.LoadedFrom
 import com.squareup.picasso.Target
 import kotlinx.android.synthetic.main.content_main.*
-import kotlinx.android.synthetic.main.content_weather.*
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -108,7 +103,7 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
         pricesViewModel = ViewModelProvider(this).get(PricesViewModel::class.java)
         newsSharedViewModel = ViewModelProvider(this).get(NewsSharedViewModel::class.java)
         videoViewModel = ViewModelProvider(this).get(VideoSharedViewModel::class.java)
-        weatherViewModel = ViewModelProvider(this).get(WeatherViewModel::class.java)
+//        weatherViewModel = ViewModelProvider(this).get(WeatherViewModel::class.java)
 
         // Just initialize to get the values inside of it ready
         val cropViewModel = ViewModelProvider(this).get(CropsViewModel::class.java)
@@ -159,12 +154,12 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
         val priceAdapter = PricesRecyclerAdapter(context, priceList)
         rvPrices.adapter = priceAdapter
 
-        newsRecyclerAdapter = NewsRecyclerAdapter(context, OnNewsClinkListener { selectedNews: FakeNewsEnitity? ->
+        newsRecyclerAdapter = NewsRecyclerAdapter(context, OnNewsClinkListener { selectedNews ->
             // SharedViewModel instance isn't shared across activities
             // That is why passing the attributes over intent for now
             val intent = Intent(activity, DetailsActivity::class.java)
             intent.putExtra(DetailsActivity.MODE, DetailsActivity.MODE_NEWS)
-            intent.putExtra(DetailsActivity.KEY_ID, selectedNews.id)
+            intent.putExtra(DetailsActivity.KEY_ID, selectedNews.guid)
             startActivity(intent)
         })
         rvNews.adapter = newsRecyclerAdapter
@@ -216,95 +211,65 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
 
         tvWeatherForecast.setOnClickListener { v: View? -> mListener?.onForecastClick(v) }
 
-        getweatherinformation()
+//        getweatherinformation()
 
-        val collectionReference = FirebaseFirestore.getInstance().collection("static").document("newsSources")
-        collectionReference.get().addOnSuccessListener { querySnapshot ->
-            val datasources = querySnapshot["sources"] as ArrayList<String>
-            for (sources in datasources) {
-                getNewsFromSource(datasources.get(0))
-            }
-        }
-
-    }
-
-    private fun getNewsFromSource(collectionName: String): ArrayList<NewsObject> {
-        val arrayList = ArrayList<NewsObject>()
-        FirebaseFirestore.getInstance().collection("newsFetch").document("2020_05_17").collection(collectionName).document("newsDetails").get()
-                .addOnSuccessListener { querySnapshot ->
-
-                    val data: ArrayList<HashMap<String, Any>> = querySnapshot["news"] as ArrayList<HashMap<String, Any>>
-                    for (x in 1 until data.size) {
-                        val sample = data[x]
-                        val newsObject = NewsObject()
-                        newsObject.guid = sample.get("guid").toString()
-                        newsObject.link = sample.get("link").toString()
-                        newsObject.image = sample.get("image").toString()
-                        val categorieslist: ArrayList<String> = sample.get("categories") as ArrayList<String>
-                        newsObject.categories = categorieslist
-                        arrayList.add(newsObject)
-
-                    }
-
-                    Log.d("Sourcec", " " + arrayList.size)
-                }
-
-        return arrayList
     }
 
 
     private fun getweatherinformation() {
-        val weatherViewModel = ViewModelProvider(activity!!).get(WeatherViewModel::class.java)
+        val weatherViewModel = ViewModelProvider(requireActivity()).get(WeatherViewModel::class.java)
         weatherViewModel.dailyforcast.observe(viewLifecycleOwner, Observer { weatherDailyForecast ->
+
             val temperatue = weatherDailyForecast.temperature + "°C"
             tvWeatherTemp.text = temperatue
             tvWeatherDescription.text = weatherDailyForecast.description
             tvWeatherDay.text = weatherDailyForecast.day
             tvWeatherHumidity.text = weatherDailyForecast.humidity
-            var WeatherIconMap: Map<String, Int>? = null
-            WeatherIconMap = HashMap()
-            WeatherIconMap.put("01d", R.drawable.ic_wi_day_sunny)
-            WeatherIconMap.put("02d", R.drawable.ic_wi_day_cloudy)
-            WeatherIconMap.put("03d", R.drawable.ic_wi_cloud)
-            WeatherIconMap.put("04d", R.drawable.ic_wi_cloudy)
-            WeatherIconMap.put("09d", R.drawable.ic_wi_showers)
-            WeatherIconMap.put("10d", R.drawable.ic_wi_day_rain_mix)
-            WeatherIconMap.put("11d", R.drawable.ic_wi_thunderstorm)
-            WeatherIconMap.put("13d", R.drawable.ic_wi_snow)
-            WeatherIconMap.put("50d", R.drawable.ic_wi_fog)
-            WeatherIconMap.put("04n", R.drawable.ic_wi_cloudy)
+
+            var weatherIconMap: Map<String, Int>? = null
+            weatherIconMap = HashMap()
+            weatherIconMap.put("01d", R.drawable.ic_wi_day_sunny)
+            weatherIconMap.put("02d", R.drawable.ic_wi_day_cloudy)
+            weatherIconMap.put("03d", R.drawable.ic_wi_cloud)
+            weatherIconMap.put("04d", R.drawable.ic_wi_cloudy)
+            weatherIconMap.put("09d", R.drawable.ic_wi_showers)
+            weatherIconMap.put("10d", R.drawable.ic_wi_day_rain_mix)
+            weatherIconMap.put("11d", R.drawable.ic_wi_thunderstorm)
+            weatherIconMap.put("13d", R.drawable.ic_wi_snow)
+            weatherIconMap.put("50d", R.drawable.ic_wi_fog)
+            weatherIconMap.put("04n", R.drawable.ic_wi_cloudy)
 
 
             val iconurl = weatherDailyForecast.iconurl
             if (weatherDailyForecast.iconurl == "01d") {
-                ivWeatherIcon.setImageResource(WeatherIconMap.get("01d")!!)
+                ivWeatherIcon.setImageResource(weatherIconMap.get("01d")!!)
             }
             if (weatherDailyForecast.iconurl == "02d") {
-                ivWeatherIcon.setImageResource(WeatherIconMap.get("02d")!!)
+                ivWeatherIcon.setImageResource(weatherIconMap.get("02d")!!)
             }
             if (weatherDailyForecast.iconurl == "03d") {
-                ivWeatherIcon.setImageResource(WeatherIconMap.get("03d")!!)
+                ivWeatherIcon.setImageResource(weatherIconMap.get("03d")!!)
             }
             if (weatherDailyForecast.iconurl == "04d") {
-                ivWeatherIcon.setImageResource(WeatherIconMap.get("04d")!!)
+                ivWeatherIcon.setImageResource(weatherIconMap.get("04d")!!)
             }
             if (weatherDailyForecast.iconurl == "04n") {
-                ivWeatherIcon.setImageResource(WeatherIconMap.get("04n")!!)
+                ivWeatherIcon.setImageResource(weatherIconMap.get("04n")!!)
             }
             if (weatherDailyForecast.iconurl == "50d") {
-                ivWeatherIcon.setImageResource(WeatherIconMap.get("50d")!!)
+                ivWeatherIcon.setImageResource(weatherIconMap.get("50d")!!)
             }
             if (weatherDailyForecast.iconurl == "09d") {
-                ivWeatherIcon.setImageResource(WeatherIconMap.get("09d")!!)
+                ivWeatherIcon.setImageResource(weatherIconMap.get("09d")!!)
             }
             if (weatherDailyForecast.iconurl == "10d") {
-                ivWeatherIcon.setImageResource(WeatherIconMap.get("10d")!!)
+                ivWeatherIcon.setImageResource(weatherIconMap.get("10d")!!)
             }
             if (weatherDailyForecast.iconurl == "11d") {
-                ivWeatherIcon.setImageResource(WeatherIconMap.get("11d")!!)
+                ivWeatherIcon.setImageResource(weatherIconMap.get("11d")!!)
             }
             if (weatherDailyForecast.iconurl == "13d") {
-                ivWeatherIcon.setImageResource(WeatherIconMap.get("13d")!!)
+                ivWeatherIcon.setImageResource(weatherIconMap.get("13d")!!)
             }
 
 //            Picasso.get().load(iconurl).into(ivWeatherIcon)

@@ -12,4 +12,19 @@
     <color name="icActive">#FFFFFFFF</color>
     <color name="icFocused">#DDFFFFFF</color>
     <color name="icPressed">#AAFFFFFF</color>
+    <color name="tagBlue">#4275F5</color>
+
+    <color name="bottom_sheet_handle">#D5D5D5</color>
+    <!-- Chip Random Colors -->
+
+    <color name="chip_00">#66000000</color>
+    <color name="chip_01">#08b9ad</color>
+    <color name="chip_02">#bc0ccc</color>
+    <color name="chip_03">#fa1079</color>
+    <color name="chip_04">#f6ce03</color>
+    <color name="chip_05">#00a99d</color>
+    <color name="chip_06">#018abd</color>
+    <color name="chip_07">#f15a24</color>
+    <color name="chip_08">#004581</color>
+    <color name="chip_09">#ed1c24</color>
 </resources>

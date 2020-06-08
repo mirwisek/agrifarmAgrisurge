@@ -17,7 +17,7 @@ class DetailsActivity : AppCompatActivity() {
         val intent = intent
         when (intent.getStringExtra(MODE)) {
             MODE_NEWS -> {
-                val newsId = intent.getIntExtra(KEY_ID, -1)
+                val newsId = intent.getStringExtra(KEY_ID)
                 val newsSharedViewModel = ViewModelProvider(this).get(NewsSharedViewModel::class.java)
                 newsSharedViewModel.selectNews(newsId)
 

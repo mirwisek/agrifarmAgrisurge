@@ -99,15 +99,15 @@ class MainActivity : AppCompatActivity(),
         val uProfilePhoto = headerView.findViewById<ImageView>(R.id.ivDrawerProfile)
 
         // Turned off for debugging purpose
-        FirebaseUtils.fetchCurrentUserFromFirebase { user: User ->
-            tvUserFullName.text = user.fullname
-            tvUserOccupation.text = user.occupation
-            //            uAge.setText(userAge);
-//            uLocation.setText(userLocation);
-            // TODO: The image is returned with a bit margin in left, TO FIX, ScaleType: CenterCrop clips the image instead
-            PicassoUtils.loadCropAndSetImage(user.photoUri, uProfilePhoto, resources)
-            resultsFromApi()
-        }
+//        FirebaseUtils.fetchCurrentUserFromFirebase { user: User ->
+//            tvUserFullName.text = user.fullname
+//            tvUserOccupation.text = user.occupation
+//            //            uAge.setText(userAge);
+////            uLocation.setText(userLocation);
+//            // TODO: The image is returned with a bit margin in left, TO FIX, ScaleType: CenterCrop clips the image instead
+//            PicassoUtils.loadCropAndSetImage(user.photoUri, uProfilePhoto, resources)
+//            resultsFromApi()
+//        }
         val fm = supportFragmentManager
         var fragment = fm.findFragmentByTag(HomeFragment.TAG)
         if (fragment == null) {
@@ -139,6 +139,7 @@ class MainActivity : AppCompatActivity(),
             acquireGooglePlayServices()
         } else if (mCredential.selectedAccountName == null) {
             chooseAccount()
+            log("Calling choose account")
         } else if (!isDeviceOnline) {
             toast("No network connection available")
         } else {

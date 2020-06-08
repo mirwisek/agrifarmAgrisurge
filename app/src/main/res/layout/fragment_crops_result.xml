@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:text="Finding disease..."
         android:textAlignment="center"
-        android:textSize="12sp"
+        android:textSize="18sp"
         android:layout_marginTop="50dp"
         app:layout_constraintEnd_toEndOf="@id/cardViewCrop"
         app:layout_constraintStart_toStartOf="@+id/cardViewCrop"

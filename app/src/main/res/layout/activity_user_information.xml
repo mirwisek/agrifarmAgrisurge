@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".UserInformationActivity">
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/imageView2"
@@ -25,7 +24,7 @@
         android:layout_height="88dp"
         android:elevation="3dp"
         android:scaleType="centerInside"
-        android:src="@drawable/com_facebook_profile_picture_blank_portrait"
+        android:src="@drawable/profile_default_user"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
