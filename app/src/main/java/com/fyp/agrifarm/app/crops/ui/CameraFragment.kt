@@ -149,6 +149,7 @@ class CameraFragment : Fragment() {
             inflater.inflate(R.layout.fragment_camera, container, false)
 
 
+
     /** Define callback that will be triggered after a photo has been taken and saved to disk */
     private val imageSavedListener = object : ImageCapture.OnImageSavedCallback {
         override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
@@ -271,6 +272,7 @@ class CameraFragment : Fragment() {
                     .setTargetAspectRatio(screenAspectRatio)
                     // Set initial target rotation
                     .setTargetRotation(rotation)
+                    .setDefaultResolution(Size(1280, 1080))
                     .build()
 
             // Default PreviewSurfaceProvider
@@ -283,9 +285,11 @@ class CameraFragment : Fragment() {
                     // We request aspect ratio but no resolution to match preview config, but letting
                     // CameraX optimize for whatever specific resolution best fits requested capture mode
                     .setTargetAspectRatio(screenAspectRatio)
+
                     // Set initial target rotation, we will have to call this again if rotation changes
                     // during the lifecycle of this use case
                     .setTargetRotation(rotation)
+                    .setDefaultResolution(Size(1280, 1080))
                     .build()
 
             // Must unbind the use-cases before rebinding them.
