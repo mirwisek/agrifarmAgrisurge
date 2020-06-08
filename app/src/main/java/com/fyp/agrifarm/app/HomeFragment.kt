@@ -52,15 +52,15 @@ import com.squareup.picasso.Picasso
 import com.squareup.picasso.Picasso.LoadedFrom
 import com.squareup.picasso.Target
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
-import java.util.*
 import java.util.concurrent.atomic.AtomicReference
-import kotlin.collections.ArrayList
 
 const val KEY_LOCATION_SET = "userDistrict"
 
+@ExperimentalCoroutinesApi
 class HomeFragment : Fragment(), OnLocationItemClickListener {
 
     private val db = FirebaseFirestore.getInstance()
@@ -102,8 +102,9 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
 
         pricesViewModel = ViewModelProvider(this).get(PricesViewModel::class.java)
         newsSharedViewModel = ViewModelProvider(this).get(NewsSharedViewModel::class.java)
+
         videoViewModel = ViewModelProvider(this).get(VideoSharedViewModel::class.java)
-//        weatherViewModel = ViewModelProvider(this).get(WeatherViewModel::class.java)
+        weatherViewModel = ViewModelProvider(this).get(WeatherViewModel::class.java)
 
         // Just initialize to get the values inside of it ready
         val cropViewModel = ViewModelProvider(this).get(CropsViewModel::class.java)
@@ -211,13 +212,13 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
 
         tvWeatherForecast.setOnClickListener { v: View? -> mListener?.onForecastClick(v) }
 
-//        getweatherinformation()
+        getWeatherInformation()
 
     }
 
 
-    private fun getweatherinformation() {
-        val weatherViewModel = ViewModelProvider(requireActivity()).get(WeatherViewModel::class.java)
+    private fun getWeatherInformation() {
+
         weatherViewModel.dailyforcast.observe(viewLifecycleOwner, Observer { weatherDailyForecast ->
 
             val temperatue = weatherDailyForecast.temperature + "°C"
@@ -226,77 +227,14 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
             tvWeatherDay.text = weatherDailyForecast.day
             tvWeatherHumidity.text = weatherDailyForecast.humidity
 
-            var weatherIconMap: Map<String, Int>? = null
-            weatherIconMap = HashMap()
-            weatherIconMap.put("01d", R.drawable.ic_wi_day_sunny)
-            weatherIconMap.put("02d", R.drawable.ic_wi_day_cloudy)
-            weatherIconMap.put("03d", R.drawable.ic_wi_cloud)
-            weatherIconMap.put("04d", R.drawable.ic_wi_cloudy)
-            weatherIconMap.put("09d", R.drawable.ic_wi_showers)
-            weatherIconMap.put("10d", R.drawable.ic_wi_day_rain_mix)
-            weatherIconMap.put("11d", R.drawable.ic_wi_thunderstorm)
-            weatherIconMap.put("13d", R.drawable.ic_wi_snow)
-            weatherIconMap.put("50d", R.drawable.ic_wi_fog)
-            weatherIconMap.put("04n", R.drawable.ic_wi_cloudy)
 
-
-            val iconurl = weatherDailyForecast.iconurl
-            if (weatherDailyForecast.iconurl == "01d") {
-                ivWeatherIcon.setImageResource(weatherIconMap.get("01d")!!)
+            // Wrapped with catch incase resource ID not found
+            try {
+                val id = weatherDailyForecast.iconurl
+                ivWeatherIcon.setImageResource(weatherViewModel.weatherIconsMap[id]!!)
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
             }
-            if (weatherDailyForecast.iconurl == "02d") {
-                ivWeatherIcon.setImageResource(weatherIconMap.get("02d")!!)
-            }
-            if (weatherDailyForecast.iconurl == "03d") {
-                ivWeatherIcon.setImageResource(weatherIconMap.get("03d")!!)
-            }
-            if (weatherDailyForecast.iconurl == "04d") {
-                ivWeatherIcon.setImageResource(weatherIconMap.get("04d")!!)
-            }
-            if (weatherDailyForecast.iconurl == "04n") {
-                ivWeatherIcon.setImageResource(weatherIconMap.get("04n")!!)
-            }
-            if (weatherDailyForecast.iconurl == "50d") {
-                ivWeatherIcon.setImageResource(weatherIconMap.get("50d")!!)
-            }
-            if (weatherDailyForecast.iconurl == "09d") {
-                ivWeatherIcon.setImageResource(weatherIconMap.get("09d")!!)
-            }
-            if (weatherDailyForecast.iconurl == "10d") {
-                ivWeatherIcon.setImageResource(weatherIconMap.get("10d")!!)
-            }
-            if (weatherDailyForecast.iconurl == "11d") {
-                ivWeatherIcon.setImageResource(weatherIconMap.get("11d")!!)
-            }
-            if (weatherDailyForecast.iconurl == "13d") {
-                ivWeatherIcon.setImageResource(weatherIconMap.get("13d")!!)
-            }
-
-//            Picasso.get().load(iconurl).into(ivWeatherIcon)
-
-//        val c = Calendar.getInstance().time
-//
-//        val df = SimpleDateFormat("yyyy_MM_dd")
-//        val formattedDate = df.format(c)
-//
-//        val newsref = FirebaseFirestore.getInstance().collection("news").document("2020").collection(formattedDate).orderBy("date", Query.Direction.DESCENDING)
-//        newsref.get().addOnSuccessListener { documentSnapshot ->
-//            if (documentSnapshot.isEmpty) {
-//                Toast.makeText(context, "No News for this data ", Toast.LENGTH_SHORT)
-//            } else {
-//                for (document in documentSnapshot.documents) {
-//                    val newsarray = document.get("news") as List<Map<String, Any>>?
-//                    val map = newsarray?.get(0)
-//                    val data = document.data
-//                    Log.d("MSIS",""+data)
-//                }
-//
-//            }
-//
-//        }.addOnFailureListener { exception ->
-//            exception.printStackTrace()
-//        }
-//
 
         })
     }

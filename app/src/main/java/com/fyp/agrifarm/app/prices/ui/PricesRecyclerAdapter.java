@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.fyp.agrifarm.R;
 import com.fyp.agrifarm.app.prices.model.PriceItem;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,12 +27,6 @@ public class PricesRecyclerAdapter extends RecyclerView.Adapter<PricesRecyclerAd
     public PricesRecyclerAdapter(Context context, List<PriceItem> priceItems){
         this.context = context;
         priceList = priceItems;
-//        if (context instanceof PricesRecyclerAdapter.OnItemClickListener) {
-//            mListener = (PricesRecyclerAdapter.OnItemClickListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnItemClickListener");
-//        }
     }
 
     @NonNull
@@ -44,12 +39,14 @@ public class PricesRecyclerAdapter extends RecyclerView.Adapter<PricesRecyclerAd
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PricesViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull PricesViewHolder holder, int i) {
         PriceItem priceItem = priceList.get(i);
 
-        PricesViewHolder holder = (PricesViewHolder) viewHolder;
+//        holder.itemView.setOnClickListener(v -> mListener.onPriceItemClicked(priceItem));
 
-        holder.itemView.setOnClickListener(v -> mListener.onPriceItemClicked(priceItem));
+        holder.itemView.setOnClickListener(view -> {
+            Snackbar.make(view, priceItem.getName(), Snackbar.LENGTH_SHORT).show();
+        });
 
         holder.tvPriceValue.setText(priceItem.getPrice());
         holder.tvName.setText(priceItem.getName());
@@ -65,7 +62,7 @@ public class PricesRecyclerAdapter extends RecyclerView.Adapter<PricesRecyclerAd
         return priceList.size();
     }
 
-    class PricesViewHolder extends RecyclerView.ViewHolder {
+    static class PricesViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvName, tvPriceValue;
         ImageView ivSymbol, ivPricePace;

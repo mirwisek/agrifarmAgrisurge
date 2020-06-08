@@ -23,7 +23,6 @@ public class WeatherFragment extends Fragment {
 
     public static final String TAG = "WeatherFragment";
     private WeatherViewModel weatherViewModel;
-    Map<String, Integer> WeatherIconMap;
 
 
     public WeatherFragment() {
@@ -39,17 +38,7 @@ public class WeatherFragment extends Fragment {
 
 //        parent.findViewById(R.id.layout_rel).setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         weatherViewModel = new ViewModelProvider(getActivity()).get(WeatherViewModel.class);
-        WeatherIconMap = new HashMap<>();
-        WeatherIconMap.put("01d", R.drawable.ic_wi_day_sunny);
-        WeatherIconMap.put("02d", R.drawable.ic_wi_day_cloudy);
-        WeatherIconMap.put("03d", R.drawable.ic_wi_cloud);
-        WeatherIconMap.put("04d", R.drawable.ic_wi_cloudy);
-        WeatherIconMap.put("09d", R.drawable.ic_wi_showers);
-        WeatherIconMap.put("10d", R.drawable.ic_wi_day_rain_mix);
-        WeatherIconMap.put("11d", R.drawable.ic_wi_thunderstorm);
-        WeatherIconMap.put("13d", R.drawable.ic_wi_snow);
-        WeatherIconMap.put("50d", R.drawable.ic_wi_fog);
-        WeatherIconMap.put("04n", R.drawable.ic_wi_cloudy);
+
 
 
         RecyclerView rvHourlyForecast = parent.findViewById(R.id.rvHourlyForecast);
@@ -73,46 +62,20 @@ public class WeatherFragment extends Fragment {
         ImageView weatherIcon = parent.findViewById(R.id.wfivWeatherIcon);
 
         weatherViewModel.getDailyforcast().observe(getViewLifecycleOwner(), weatherDailyForecast -> {
+
             String temperatue = weatherDailyForecast.getTemperature() + "°C";
             wftemperatute.setText(temperatue);
             wfdescription.setText(weatherDailyForecast.getDescription());
             wfday.setText(weatherDailyForecast.getDay());
             wfhumidity.setText(weatherDailyForecast.getHumidity());
             wfwindpressure.setText(weatherDailyForecast.getWindPressure());
-            if (weatherDailyForecast.getIconurl().equals("01d")) {
-                weatherIcon.setImageResource(WeatherIconMap.get("01d"));
-            }
-            if (weatherDailyForecast.getIconurl().equals("02d")) {
-                weatherIcon.setImageResource(WeatherIconMap.get("02d"));
-            }
-            if (weatherDailyForecast.getIconurl().equals("03d")) {
-                weatherIcon.setImageResource(WeatherIconMap.get("03d"));
-            }
-            if (weatherDailyForecast.getIconurl().equals("04d")) {
-                weatherIcon.setImageResource(WeatherIconMap.get("04d"));
-            }
-            if (weatherDailyForecast.getIconurl().equals("04n")) {
-                weatherIcon.setImageResource(WeatherIconMap.get("04n"));
-            }
-            if (weatherDailyForecast.getIconurl().equals("50d"))
-            {
-                weatherIcon.setImageResource(WeatherIconMap.get("50d"));
-            }
-            if (weatherDailyForecast.getIconurl().equals("09d"))
-            {
-                weatherIcon.setImageResource(WeatherIconMap.get("09d"));
-            }
-            if (weatherDailyForecast.getIconurl().equals("10d"))
-            {
-                weatherIcon.setImageResource(WeatherIconMap.get("10d"));
-            }
-            if (weatherDailyForecast.getIconurl().equals("11d"))
-            {
-                weatherIcon.setImageResource(WeatherIconMap.get("11d"));
-            }
-            if (weatherDailyForecast.getIconurl().equals("13d"))
-            {
-                weatherIcon.setImageResource(WeatherIconMap.get("13d"));
+
+            // Wrapped with catch incase resource ID not found
+            try {
+                String id = weatherDailyForecast.getIconurl();
+                weatherIcon.setImageResource(weatherViewModel.weatherIconsMap.get(id));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
         });

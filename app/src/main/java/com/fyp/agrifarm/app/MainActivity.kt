@@ -26,29 +26,24 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.fyp.agrifarm.R
 import com.fyp.agrifarm.app.HomeFragment.OnFragmentInteractionListener
-import com.fyp.agrifarm.app.profile.model.User
 import com.fyp.agrifarm.app.weather.ui.WeatherFragment
 import com.fyp.agrifarm.app.youtube.VideoRecyclerAdapter
+import com.fyp.agrifarm.app.youtube.YoutubeDataRequest
 import com.fyp.agrifarm.app.youtube.YoutubeFragment
-import com.fyp.agrifarm.app.youtube.YoutubeMakeRequest.MakeRequestTask
-import com.fyp.agrifarm.app.youtube.YoutubeMakeRequest.MakeRequestTask.ResponseListener
+import com.fyp.agrifarm.app.youtube.db.ExtendedVideo
 import com.fyp.agrifarm.app.youtube.db.ShortVideo
 import com.fyp.agrifarm.app.youtube.viewmodel.VideoSharedViewModel
 import com.fyp.agrifarm.utils.FirebaseUtils
-import com.fyp.agrifarm.utils.PicassoUtils
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.navigation.NavigationView
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
-import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.youtube.YouTubeScopes
 import com.google.firebase.auth.FirebaseAuth
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import pub.devrel.easypermissions.EasyPermissions.PermissionCallbacks
-import java.lang.ref.WeakReference
 import java.util.*
 
 class MainActivity : AppCompatActivity(),
@@ -143,30 +138,36 @@ class MainActivity : AppCompatActivity(),
         } else if (!isDeviceOnline) {
             toast("No network connection available")
         } else {
-            MakeRequestTask(
-                    WeakReference(application), mCredential,
-                    object : ResponseListener {
-                        override fun onCancelled(mLastError: Exception) {
-                            if (mLastError is GooglePlayServicesAvailabilityIOException) {
-                                showGooglePlayServicesAvailabilityErrorDialog(
-                                        mLastError
-                                                .connectionStatusCode)
-                            } else if (mLastError is UserRecoverableAuthIOException) {
-                                startActivityForResult(
-                                        mLastError.intent,
-                                        REQUEST_AUTHORIZATION)
-                            } else {
-                                toast("The following error occurred: ${mLastError.message}")
-                            }
-                        }
+            // finally
+//            YoutubeDataRequest.setCredentials(mCredential)
+//            MakeRequestTask( WeakReference(application), mCredential,
+//                    object : ResponseListener {
 
-                        override fun onVideosFetched(videoList: List<ShortVideo>) {
-                            // Cache into the database for ROOM
-                            val videoArr = videoList.toTypedArray()
-                            videoViewModel.insert(*videoArr)
-                        }
-                    }
-            ).execute()
+//                        override fun onCancelled(mLastError: Exception) {
+//                            when (mLastError) {
+//                                is GooglePlayServicesAvailabilityIOException -> {
+//                                    showGooglePlayServicesAvailabilityErrorDialog(
+//                                            mLastError.connectionStatusCode)
+//                                }
+//                                is UserRecoverableAuthIOException -> {
+//                                    startActivityForResult(
+//                                            mLastError.intent,
+//                                            REQUEST_AUTHORIZATION)
+//                                }
+//                                else -> {
+//                                    toast("The following error occurred: ${mLastError.message}")
+//                                }
+//                            }
+//                        }
+//
+//                        override fun onVideosFetched(videoList: List<ShortVideo>) {
+//                            // Cache into the database for ROOM
+//                            val videoArr = videoList.shuffled().toTypedArray()
+//                            log("Items got:: ${videoArr.size}")
+//                            videoViewModel.insert(*videoArr)
+//                        }
+//                    }
+//            ).execute()
         }
     }
 
@@ -333,7 +334,7 @@ class MainActivity : AppCompatActivity(),
         // Do nothing
     }
 
-    override fun onVideoClicked(video: ShortVideo) {
+    override fun onVideoClicked(video: ExtendedVideo) {
         videoViewModel.selectVideo(video)
         supportFragmentManager
                 .beginTransaction()

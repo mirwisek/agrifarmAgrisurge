@@ -1,6 +1,7 @@
 package com.fyp.agrifarm.app.youtube;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fyp.agrifarm.R;
+import com.fyp.agrifarm.app.youtube.db.ExtendedVideo;
 import com.fyp.agrifarm.app.youtube.db.ShortVideo;
 import com.squareup.picasso.Picasso;
 
@@ -20,7 +22,7 @@ import java.util.List;
 public class VideoRecyclerAdapter extends RecyclerView.Adapter {
 
     private Context context;
-    private List<ShortVideo> videoList;
+    private List<ExtendedVideo> videoList;
 
     private VideoRecyclerAdapter.OnItemClickListener mListener;
 
@@ -45,7 +47,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-        ShortVideo video = videoList.get(i);
+        ExtendedVideo video = videoList.get(i);
 
         VideoListViewHolder holder = (VideoListViewHolder) viewHolder;
 
@@ -55,7 +57,8 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter {
         holder.tvDuration.setText(video.getDuration());
         holder.tvChannelTitle.setText(video.getChannelTitle());
         Picasso.get().load(video.getThumbnail()).into(holder.ivVideoThumb);
-//        holder.ivVideoThumb.setImageBitmap(video.getThumbnail());
+
+        Log.i("ffnet", "onbind: " + video.getTitle());
     }
 
     @Override
@@ -80,10 +83,10 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter {
     }
 
     public interface OnItemClickListener {
-        void onVideoClicked(ShortVideo video);
+        void onVideoClicked(ExtendedVideo video);
     }
 
-    public void updateList(List<ShortVideo> list){
+    public void updateList(List<ExtendedVideo> list){
         videoList = new ArrayList<>(list);
         notifyDataSetChanged();
     }

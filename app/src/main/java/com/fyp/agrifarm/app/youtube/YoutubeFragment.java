@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.fyp.agrifarm.R;
 import com.fyp.agrifarm.api.DeveloperKey;
-import com.fyp.agrifarm.app.youtube.db.ShortVideo;
+import com.fyp.agrifarm.app.youtube.db.ExtendedVideo;
 import com.fyp.agrifarm.app.youtube.viewmodel.VideoSharedViewModel;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
@@ -37,6 +37,12 @@ public class YoutubeFragment extends Fragment implements RecommendedVideosRecycl
     TextView tvPublisher;
     @BindView(R.id.tvPlayerVideoTags)
     TextView tvTags;
+    @BindView(R.id.tvPlayerVideoLikes)
+    TextView tvLikes;
+    @BindView(R.id.tvPlayerVideoDislikes)
+    TextView tvDislikes;
+    @BindView(R.id.tvPlayerVideoViews)
+    TextView tvViewsCount;
     RecommendedVideosRecyclerViewAdapter recommendedVideosRecyclerViewAdapter;
     RecyclerView RecommendedVideoRecyclerView;
 //    private OnFragmentInteractionListener mListener;
@@ -71,7 +77,10 @@ public class YoutubeFragment extends Fragment implements RecommendedVideosRecycl
 
             tvTitle.setText(video.getTitle());
             tvPublisher.setText(video.getChannelTitle());
-            tvPublishDate.setText("Published: " + video.getPublishedDateString());
+            tvPublishDate.setText("Published: " + video.getFormattedPublishDate());
+            tvLikes.setText(String.valueOf(video.getLikesCount()));
+            tvDislikes.setText(String.valueOf(video.getDislikesCount()));
+            tvViewsCount.setText(String.valueOf(video.getViewsCount()));
 //            Log.i(TAG, "onCreateView: " + video.getPublishedDate() == null ? "NO" : video.getPublishedDate().toString());
 
             youFragment.initialize(DeveloperKey.YOUTUBE_KEY, new YouTubePlayer.OnInitializedListener() {
@@ -106,7 +115,7 @@ public class YoutubeFragment extends Fragment implements RecommendedVideosRecycl
 
 
     @Override
-    public void onVideoClicked(ShortVideo video) {
+    public void onVideoClicked(ExtendedVideo video) {
         videoViewModel.selectVideo(video);
         getChildFragmentManager()
                 .beginTransaction()

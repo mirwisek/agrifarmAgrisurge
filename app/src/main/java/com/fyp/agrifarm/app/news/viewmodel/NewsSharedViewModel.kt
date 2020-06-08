@@ -22,14 +22,8 @@ class NewsSharedViewModel(application: Application) : AndroidViewModel(applicati
         it.shuffled()
     }
 
-    private val selectedNews = MutableLiveData<NewsItem>().apply {
-        application.baseContext.toast("Executin right now")
-        log("EXECUTING NOW")
-    }
+    private val selectedNews = MutableLiveData<NewsItem>()
 
-    fun selectNews(newsEntity: NewsItem) {
-        selectedNews.value = newsEntity
-    }
 
     fun selectNews(newsId: String) {
         selectedNews.postValue(newsRepository.getNewsById(newsId))

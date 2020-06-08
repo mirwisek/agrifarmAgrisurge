@@ -10,15 +10,23 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fyp.agrifarm.R;
-import com.fyp.agrifarm.app.youtube.db.ShortVideo;
+import com.fyp.agrifarm.app.youtube.db.ExtendedVideo;
 import com.google.android.youtube.player.YouTubeThumbnailView;
+import com.google.api.client.util.DateTime;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
+import java.time.chrono.Chronology;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.FormatStyle;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class RecommendedVideosRecyclerViewAdapter extends RecyclerView.Adapter<RecommendedVideosRecyclerViewAdapter.VideosViewHolder>{
-    private List<ShortVideo> rvVideoDetailsList ;
+    private List<ExtendedVideo> rvVideoDetailsList ;
     private Context context;
 
     private OnItemClickListener mListener;
@@ -39,10 +47,13 @@ public class RecommendedVideosRecyclerViewAdapter extends RecyclerView.Adapter<R
 
     @Override
     public void onBindViewHolder(@NonNull VideosViewHolder holder, int position) {
-        ShortVideo video = rvVideoDetailsList.get(position);
-        holder.Videotitle.setText(video.getTitle());
-        holder.Channelname.setText(video.getChannelTitle());
-        holder.Videoiews.setText(video.getId());
+        ExtendedVideo video = rvVideoDetailsList.get(position);
+
+        holder.title.setText(video.getTitle());
+        holder.channelName.setText(video.getChannelTitle());
+        holder.viewsCount.setText(String.valueOf(video.getViewsCount()));
+
+        holder.publishedDate.setText(video.getFormattedPublishDate());
         Picasso.get().load(video.getThumbnail()).into(holder.thumbnailView);
 
 
@@ -57,20 +68,20 @@ public class RecommendedVideosRecyclerViewAdapter extends RecyclerView.Adapter<R
 
     public class VideosViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public YouTubeThumbnailView thumbnailView;
-        public TextView Videotitle;
-        public TextView Channelname;
-        public TextView Videoiews;
-        public TextView UploadTime;
+        public TextView title;
+        public TextView channelName;
+        public TextView viewsCount;
+        public TextView publishedDate;
         OnItemClickListener onItemClickListener;
 
         public VideosViewHolder(@NonNull View itemView , OnItemClickListener onItemClickListener) {
             super(itemView);
-            Videotitle = itemView.findViewById(R.id.rvVideoTitle);
-            Channelname = itemView.findViewById(R.id.rvChanelName);
-            Videoiews = itemView.findViewById(R.id.rvVideoViews);
-            UploadTime = itemView.findViewById(R.id.rvVideoUploadTime);
+            title = itemView.findViewById(R.id.rvVideoTitle);
+            channelName = itemView.findViewById(R.id.rvChanelName);
+            viewsCount = itemView.findViewById(R.id.rvVideoViews);
+            publishedDate = itemView.findViewById(R.id.rvPublishedDate);
             thumbnailView = itemView.findViewById(R.id.youTubeThumbnailView);
-            itemView.setOnClickListener(this::onClick);
+            itemView.setOnClickListener(this);
             this.onItemClickListener = onItemClickListener ;
         }
 
@@ -81,10 +92,10 @@ public class RecommendedVideosRecyclerViewAdapter extends RecyclerView.Adapter<R
     }
 
     public interface OnItemClickListener {
-        void onVideoClicked(ShortVideo video);
+        void onVideoClicked(ExtendedVideo video);
     }
 
-    public void updateList(List<ShortVideo> list){
+    public void updateList(List<ExtendedVideo> list){
         rvVideoDetailsList = new ArrayList<>(list);
         notifyDataSetChanged();
     }

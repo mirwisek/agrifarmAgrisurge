@@ -1,7 +1,6 @@
 package com.fyp.agrifarm.app.weather.model;
 
 import android.app.Application;
-import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -10,9 +9,9 @@ import androidx.lifecycle.MutableLiveData;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.fyp.agrifarm.R;
 import com.fyp.agrifarm.app.ExtensionsKt;
 import com.google.type.LatLng;
 
@@ -23,8 +22,10 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class WeatherViewModel extends AndroidViewModel {
 
@@ -32,17 +33,20 @@ public class WeatherViewModel extends AndroidViewModel {
     private static final String VERSION = "2.5";
     private static final String BASE_URL = "https://api.openweathermap.org/";
 
-    private Context context;
+    private Application app;
     private MutableLiveData<WeatherDailyForecast> dailyforcast = new MutableLiveData<>();
     private MutableLiveData<List<WeatherHourlyForecast>> hourlyforcastlist = new MutableLiveData<>();
     private MutableLiveData<List<WeatherDailyForecast>> dailyforcastlist = new MutableLiveData<>();
+    public Map<String, Integer> weatherIconsMap = new HashMap<>();
 
 
     public WeatherViewModel(@NonNull Application application) {
         super(application);
-        this.context = application;
-//        FindDailyandHourlyforcast();
-//        FindDailyWeather();
+        app = application;
+
+        loadMapIcons();
+        FindDailyandHourlyforcast();
+        FindDailyWeather();
 
     }
 
@@ -58,18 +62,18 @@ public class WeatherViewModel extends AndroidViewModel {
                 "&units=metric&exclude=current&appid=" + APP_ID;
     }
 
-    private String getCureentPostfix() {
+    private String getCurrentPostfix() {
         LatLng location = getLocation();
         if (location == null) return null;
         return "lat=" +
                 location.getLatitude() + "&lon=" + location.getLongitude() +
-                "&units=metric&appid=" + APP_ID + "&units=metric";
+                "&appid=" + APP_ID + "&units=metric";
 
     }
 
     private LatLng getLocation() {
-        String latitude = ExtensionsKt.getSharedPrefs(context).getString("lat", null);
-        String longitude = ExtensionsKt.getSharedPrefs(context).getString("lon", null);
+        String latitude = ExtensionsKt.getSharedPrefs(app.getApplicationContext()).getString("lat", null);
+        String longitude = ExtensionsKt.getSharedPrefs(app.getApplicationContext()).getString("lon", null);
         try {
             double lat = Double.parseDouble(latitude);
             double lng = Double.parseDouble(longitude);
@@ -81,62 +85,61 @@ public class WeatherViewModel extends AndroidViewModel {
 
 
     private void FindDailyandHourlyforcast() {
+
         List<WeatherHourlyForecast> listforhourly = new ArrayList<>();
         List<WeatherDailyForecast> listfordaily = new ArrayList<>();
+
         // Get location now from SharedPreferences
         String postfix = getPostfix();
         if (postfix == null)
             return;
         String url = getPrefix() + "onecall?" + postfix;
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONArray hourlyarray = response.getJSONArray("hourly");
-                            for (int i = 1; i < hourlyarray.length(); i++) {
-                                JSONObject hourlyobject = hourlyarray.getJSONObject(i);
-                                String temperature = String.valueOf(hourlyobject.getDouble("temp"));
-                                temperature = temperature.substring(0, 2);
-                                long dt = hourlyobject.getLong("dt");
-                                String hour = new java.text.SimpleDateFormat("h a").format(new java.util.Date(dt * 1000));
-                                WeatherHourlyForecast weatherHourlyForecast = new WeatherHourlyForecast(hour, temperature);
-                                listforhourly.add(weatherHourlyForecast);
-                            }
-
-                            //For dailyforcast
-                            JSONArray daily = response.getJSONArray("daily");
-                            for (int i = 1; i < daily.length(); i++) {
-                                JSONObject dailobject = daily.getJSONObject(i);
-
-                                long epoch = dailobject.getLong("dt");
-                                String day = new java.text.SimpleDateFormat("EEEE").format(new java.util.Date(epoch * 1000));
-                                JSONObject temp = dailobject.getJSONObject("temp");
-                                String temperature = String.valueOf(temp.getDouble("day"));
-                                temperature = temperature.substring(0, 2);
-                                JSONArray des = dailobject.getJSONArray("weather");
-                                JSONObject desobj = des.getJSONObject(0);
-                                String description = desobj.getString("description");
-
-                                String icon = desobj.getString("icon");
-                                String iconUrl = "http://openweathermap.org/img/w/" + icon + ".png";
-
-                                WeatherDailyForecast weatherDailyForecast = new WeatherDailyForecast(day, temperature, description,null,null,icon);
-                                listfordaily.add(weatherDailyForecast);
-
-
-
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                response -> {
+                    try {
+                        JSONArray hourlyarray = response.getJSONArray("hourly");
+                        for (int i = 1; i < hourlyarray.length(); i++) {
+                            JSONObject hourlyobject = hourlyarray.getJSONObject(i);
+                            String temperature = String.valueOf(hourlyobject.getDouble("temp"));
+                            temperature = temperature.substring(0, 2);
+                            long dt = hourlyobject.getLong("dt");
+                            String hour = new SimpleDateFormat("h a").format(new Date(dt * 1000));
+                            WeatherHourlyForecast weatherHourlyForecast = new WeatherHourlyForecast(hour, temperature);
+                            listforhourly.add(weatherHourlyForecast);
                         }
 
+                        //For dailyforcast
+                        JSONArray daily = response.getJSONArray("daily");
+                        for (int i = 1; i < daily.length(); i++) {
+                            JSONObject dailobject = daily.getJSONObject(i);
+
+                            long epoch = dailobject.getLong("dt");
+                            String day = new SimpleDateFormat("EEEE").format(new Date(epoch * 1000));
+                            JSONObject temp = dailobject.getJSONObject("temp");
+                            String temperature = String.valueOf(temp.getDouble("day"));
+                            temperature = temperature.substring(0, 2);
+                            JSONArray des = dailobject.getJSONArray("weather");
+                            JSONObject desobj = des.getJSONObject(0);
+                            String description = desobj.getString("description");
+
+                            String icon = desobj.getString("icon");
+                            String iconUrl = "http://openweathermap.org/img/w/" + icon + ".png";
+
+                            WeatherDailyForecast weatherDailyForecast = new WeatherDailyForecast(day, temperature, description,null,null,icon);
+                            listfordaily.add(weatherDailyForecast);
+
+
+
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
+
                 }, error -> error.printStackTrace());
         dailyforcastlist.postValue(listfordaily);
         hourlyforcastlist.postValue(listforhourly);
-        RequestQueue queue = Volley.newRequestQueue(context);
+        RequestQueue queue = Volley.newRequestQueue(app.getApplicationContext());
         queue.add(request);
     }
 
@@ -150,7 +153,7 @@ public class WeatherViewModel extends AndroidViewModel {
 
     private void FindDailyWeather() {
 
-        String postfix = getCureentPostfix();
+        String postfix = getCurrentPostfix();
         if (postfix == null)
             return;
         String url = getPrefix() + "weather?" + postfix;
@@ -185,13 +188,26 @@ public class WeatherViewModel extends AndroidViewModel {
                         e.printStackTrace();
                     }
                 }, Throwable::printStackTrace);
-        RequestQueue queue = Volley.newRequestQueue(context);
+        RequestQueue queue = Volley.newRequestQueue(app.getApplicationContext());
         queue.add(request);
     }
 
 
     public MutableLiveData<WeatherDailyForecast> getDailyforcast() {
         return dailyforcast;
+    }
+
+    private void loadMapIcons() {
+        weatherIconsMap.put("01d", R.drawable.ic_wi_day_sunny);
+        weatherIconsMap.put("02d", R.drawable.ic_wi_day_cloudy);
+        weatherIconsMap.put("03d", R.drawable.ic_wi_cloud);
+        weatherIconsMap.put("04d", R.drawable.ic_wi_cloudy);
+        weatherIconsMap.put("09d", R.drawable.ic_wi_showers);
+        weatherIconsMap.put("10d", R.drawable.ic_wi_day_rain_mix);
+        weatherIconsMap.put("11d", R.drawable.ic_wi_thunderstorm);
+        weatherIconsMap.put("13d", R.drawable.ic_wi_snow);
+        weatherIconsMap.put("50d", R.drawable.ic_wi_fog);
+        weatherIconsMap.put("04n", R.drawable.ic_wi_cloudy);
     }
 
 }
