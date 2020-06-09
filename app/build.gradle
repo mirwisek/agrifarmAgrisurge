@@ -7,13 +7,22 @@ apply plugin: "androidx.navigation.safeargs"
 googleServices { disableVersionCheck = true }
 
 android {
+    signingConfigs {
+        release {
+            storeFile file(RELEASE_STORE_FILE)
+            storePassword RELEASE_STORE_PASSWORD
+            keyAlias RELEASE_KEY_ALIAS
+            keyPassword RELEASE_KEY_PASSWORD
+        }
+    }
     compileSdkVersion 29
     defaultConfig {
         applicationId "com.fyp.agrifarm"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.0.1"
+        signingConfig signingConfigs.release
     }
     buildTypes {
         release {

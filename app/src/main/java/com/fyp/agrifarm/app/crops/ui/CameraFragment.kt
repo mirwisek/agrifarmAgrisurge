@@ -76,6 +76,8 @@ class CameraFragment : Fragment() {
     private lateinit var displayManager: DisplayManager
     private lateinit var mainExecutor: Executor
 
+    private val RESOLUTION = Size(720,1280)
+
 
     private lateinit var photoFile: File
 
@@ -247,6 +249,7 @@ class CameraFragment : Fragment() {
     }
 
     /** Declare and bind preview, capture and analysis use cases */
+    @SuppressLint("RestrictedApi")
     private fun bindCameraUseCases() {
 
         // Get screen metrics used to setup camera for full screen resolution
@@ -269,10 +272,11 @@ class CameraFragment : Fragment() {
             // Preview
             preview = Preview.Builder()
                     // We request aspect ratio but no resolution
-                    .setTargetAspectRatio(screenAspectRatio)
+//                    .setTargetAspectRatio(screenAspectRatio)
                     // Set initial target rotation
                     .setTargetRotation(rotation)
-                    .setDefaultResolution(Size(1280, 1080))
+                    .setTargetResolution(RESOLUTION)
+                    .setDefaultResolution(RESOLUTION)
                     .build()
 
             // Default PreviewSurfaceProvider
@@ -284,12 +288,13 @@ class CameraFragment : Fragment() {
                     .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
                     // We request aspect ratio but no resolution to match preview config, but letting
                     // CameraX optimize for whatever specific resolution best fits requested capture mode
-                    .setTargetAspectRatio(screenAspectRatio)
+//                    .setTargetAspectRatio(screenAspectRatio)
 
                     // Set initial target rotation, we will have to call this again if rotation changes
                     // during the lifecycle of this use case
                     .setTargetRotation(rotation)
-                    .setDefaultResolution(Size(1280, 1080))
+                    .setTargetResolution(RESOLUTION)
+                    .setDefaultResolution(RESOLUTION)
                     .build()
 
             // Must unbind the use-cases before rebinding them.

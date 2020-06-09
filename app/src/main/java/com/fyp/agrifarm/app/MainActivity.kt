@@ -117,12 +117,8 @@ class MainActivity : AppCompatActivity(),
         // Set Youtube account to be that of the one logged in with
         val user = FirebaseAuth.getInstance().currentUser
         // Also make sure if user signs in through phone then don't set account without an email
-        if (user != null && user.email != null && !user.email!!.isEmpty()) {
+        if (user != null && user.email != null && user.email!!.isNotEmpty())
             mCredential.selectedAccountName = user.email
-        } else {
-            // Not called in OTP Login, so we have to call it to configure YouTube account
-            resultsFromApi()
-        }
     }
 
     // Cache into the database for ROOM
@@ -131,26 +127,9 @@ class MainActivity : AppCompatActivity(),
             acquireGooglePlayServices()
         } else if (mCredential.selectedAccountName == null) {
             chooseAccount()
-            log("Calling choose account")
         } else if (!isDeviceOnline) {
             toast("No network connection available")
         }
-//        else {
-//                        override fun onCancelled(mLastError: Exception) {
-//                            when (mLastError) {
-//                                is GooglePlayServicesAvailabilityIOException -> {
-//                                    showGooglePlayServicesAvailabilityErrorDialog(
-//                                            mLastError.connectionStatusCode)
-//                                }
-//                                is UserRecoverableAuthIOException -> {
-//                                    startActivityForResult(
-//                                            mLastError.intent,
-//                                            REQUEST_AUTHORIZATION)
-//                                }
-//                                else -> {
-//                                    toast("The following error occurred: ${mLastError.message}")
-//                                }
-//        }
     }
 
     private val isDeviceOnline: Boolean
@@ -195,16 +174,21 @@ class MainActivity : AppCompatActivity(),
                         this, Manifest.permission.GET_ACCOUNTS)) {
             val accountName = getPreferences(Context.MODE_PRIVATE)
                     .getString(PREF_ACCOUNT_NAME, null)
+            log("ffnet in accoutn branch")
             if (accountName != null) {
+                log("ffnet Accoutn wanst null ${accountName}")
                 mCredential.selectedAccountName = accountName
                 resultsFromApi()
             } else {
+                log("ffnet starting intent now")
                 // Start a dialog from which the user can choose an account
                 startActivityForResult(
                         mCredential.newChooseAccountIntent(),
                         REQUEST_ACCOUNT_PICKER)
             }
         } else {
+            log("ffnet asking permission")
+
             // Request the GET_ACCOUNTS permission via a user dialog
             EasyPermissions.requestPermissions(
                     this,
@@ -217,23 +201,32 @@ class MainActivity : AppCompatActivity(),
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
+        log("ffnet:; REQUEST CODE $requestCode and res $resultCode")
+        log("ffnet:; REQUEST CODE ${Activity.RESULT_OK}")
         when (requestCode) {
-            REQUEST_GOOGLE_PLAY_SERVICES -> if (resultCode != Activity.RESULT_OK) {
-                toast("This app requires Google Play Services. Please install " +
-                        "Google Play Services on your device and relaunch this app.", Toast.LENGTH_LONG)
-            } else {
-                resultsFromApi()
-            }
-            REQUEST_ACCOUNT_PICKER -> if (resultCode == Activity.RESULT_OK && data != null &&
-                    data.extras != null) {
-                val accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
-                if (accountName != null) {
-                    val settings = getPreferences(Context.MODE_PRIVATE)
-                    val editor = settings.edit()
-                    editor.putString(PREF_ACCOUNT_NAME, accountName)
-                    editor.apply()
-                    mCredential.selectedAccountName = accountName
+            REQUEST_GOOGLE_PLAY_SERVICES -> {
+                if (resultCode != Activity.RESULT_OK) {
+                    toast("This app requires Google Play Services. Please install " +
+                            "Google Play Services on your device and relaunch this app.", Toast.LENGTH_LONG)
+                } else {
                     resultsFromApi()
+                }
+            }
+            REQUEST_ACCOUNT_PICKER -> {
+                log("ffnet :: one")
+                if (resultCode == Activity.RESULT_OK && data != null &&
+                        data.extras != null) {
+                    log("ffnet :: REQUEST_ACC_PICKER")
+                    val accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
+                    if (accountName != null) {
+                        val settings = getPreferences(Context.MODE_PRIVATE)
+                        val editor = settings.edit()
+                        editor.putString(PREF_ACCOUNT_NAME, accountName)
+                        editor.apply()
+                        mCredential.selectedAccountName = accountName
+                        log("ffnet:: Inside REQUEST_ACC_PICKER:: $accountName")
+                        resultsFromApi()
+                    }
                 }
             }
             REQUEST_AUTHORIZATION -> if (resultCode == Activity.RESULT_OK) resultsFromApi()

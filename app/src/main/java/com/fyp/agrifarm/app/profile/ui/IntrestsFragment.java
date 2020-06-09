@@ -26,13 +26,13 @@ public class IntrestsFragment extends Fragment {
         FrameLayout parent = (FrameLayout) inflater.inflate(R.layout.fragment_intrests, container, false);
         userintrestrv = parent.findViewById(R.id.userintrestrv);
         list = new ArrayList<>();
-        list.add(new UserIntrestData(R.drawable.ic_apple,"Apple"));
-        list.add(new UserIntrestData(R.drawable.ic_carrot,"Carrot"));
-        list.add(new UserIntrestData(R.drawable.ic_grape,"Grape"));
-        list.add(new UserIntrestData(R.drawable.ic_guava,"Gauva"));
-        list.add(new UserIntrestData(R.drawable.ic_orange,"Orange"));
-        list.add(new UserIntrestData(R.drawable.ic_bringle,"Brinjal"));
-        list.add(new UserIntrestData(R.drawable.ic_wmelon,"Watermelon"));
+        list.add(new UserIntrestData(R.drawable.sym_apple,"Apple"));
+        list.add(new UserIntrestData(R.drawable.sym_carrot,"Carrot"));
+        list.add(new UserIntrestData(R.drawable.sym_grapes,"Grape"));
+        list.add(new UserIntrestData(R.drawable.sym_guava,"Gauva"));
+        list.add(new UserIntrestData(R.drawable.sym_orange,"Orange"));
+        list.add(new UserIntrestData(R.drawable.sym_brinjal,"Brinjal"));
+        list.add(new UserIntrestData(R.drawable.sym_wmelon,"Watermelon"));
         adapter = new UserIntrestRecyclerViewAdapter(getContext(),list);
         userintrestrv.setAdapter(adapter);
 

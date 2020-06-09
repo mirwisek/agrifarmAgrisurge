@@ -10,9 +10,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="196dp"
-        android:layout_height="52dp"
-
-        >
+        android:layout_height="52dp">
 
         <ImageView
             android:id="@+id/userintresticon"
@@ -23,8 +21,7 @@
             app:layout_constraintEnd_toStartOf="@+id/icontitle"
             app:layout_constraintHorizontal_bias="0.6"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_guava" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/icontitle"

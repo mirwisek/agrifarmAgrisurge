@@ -70,22 +70,6 @@ public class UserRegistrationActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        try {
-//            PackageInfo info = getPackageManager().getPackageInfo(
-//                    "com.fyp.agrifarm",
-//                    PackageManager.GET_SIGNATURES);
-//            for (Signature signature : info.signatures) {
-//                MessageDigest md = MessageDigest.getInstance("SHA");
-//                md.update(signature.toByteArray());
-//                Toast.makeText(this, "SHA " + Base64.encodeToString(md.digest(), Base64.DEFAULT), Toast.LENGTH_SHORT).show();
-//                Log.i("mKeyHash", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-//            }
-//        } catch (PackageManager.NameNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (NoSuchAlgorithmException e) {
-//            e.printStackTrace();
-//        }
-
         setContentView(R.layout.activity_registration_container);
         ButterKnife.bind(this);
 
@@ -160,7 +144,7 @@ public class UserRegistrationActivity extends AppCompatActivity {
                         launchMainActivity();
                         finish();
                     }
-                    if(user.getDisplayName() != null) {
+                    if (user.getDisplayName() != null) {
                         uFullName.setText(user.getDisplayName());
                     }
                     // Downloads and Sets up the profile picture in the ImageView
@@ -193,15 +177,18 @@ public class UserRegistrationActivity extends AppCompatActivity {
     private void launchLoginActivity() {
         List<AuthUI.IdpConfig> providers = Arrays.asList(
 //                new AuthUI.IdpConfig.EmailBuilder().build(),
-                new AuthUI.IdpConfig.PhoneBuilder().build(),
+//                new AuthUI.IdpConfig.PhoneBuilder().build(),
                 new AuthUI.IdpConfig.GoogleBuilder().build()
 //                new AuthUI.IdpConfig.FacebookBuilder().build()
         );
+
         startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
                         .setIsSmartLockEnabled(false)
                         .setAvailableProviders(providers)
                         .setLogo(R.drawable.ic_logo)
                         .setTheme(R.style.LoginTheme)
+                        .setTosAndPrivacyPolicyUrls("https://mirwisek.github.io/",
+                                "https://mirwisek.github.io/")
                         .build(),
                 RC_SIGN_IN);
     }

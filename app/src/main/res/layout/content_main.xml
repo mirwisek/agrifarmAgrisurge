@@ -185,6 +185,8 @@
                 android:background="@color/colorPrimary"
                 android:text="Turn on location"
                 android:textColor="#fff"
+                app:icon="@drawable/ic_location"
+                app:iconGravity="textStart"
                 app:layout_constraintBottom_toBottomOf="@id/rvPrices"
                 app:layout_constraintEnd_toEndOf="@id/guideVertEnd"
                 app:layout_constraintStart_toStartOf="@+id/guideVertStart"
@@ -269,7 +271,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvHintVideo" />
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
