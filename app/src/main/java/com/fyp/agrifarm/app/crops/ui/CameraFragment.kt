@@ -6,15 +6,17 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
+import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.ImageFormat
 import android.graphics.drawable.ColorDrawable
 import android.hardware.display.DisplayManager
 import android.media.MediaScannerConnection
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
+import android.util.Rational
 import android.util.Size
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -25,6 +27,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.camera.core.*
+import androidx.camera.core.impl.utils.CameraOrientationUtil
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -38,23 +41,19 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.fyp.agrifarm.R
-import com.fyp.agrifarm.app.crops.CameraActivity
-import com.fyp.agrifarm.app.crops.KEY_EVENT_ACTION
-import com.fyp.agrifarm.app.crops.KEY_EVENT_EXTRA
-import com.fyp.agrifarm.app.crops.PermissionsFragment
+import com.fyp.agrifarm.app.*
+import com.fyp.agrifarm.app.crops.*
 import com.fyp.agrifarm.app.crops.utils.ANIMATION_FAST_MILLIS
 import com.fyp.agrifarm.app.crops.utils.ANIMATION_SLOW_MILLIS
 import com.fyp.agrifarm.app.crops.utils.simulateClick
-import com.fyp.agrifarm.app.log
-import com.fyp.agrifarm.app.toastFrag
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.camera_ui_container.*
 import kotlinx.android.synthetic.main.camera_ui_container.view.*
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executor
@@ -80,6 +79,7 @@ class CameraFragment : Fragment() {
 
 
     private lateinit var photoFile: File
+    private val COMPRESS_QUALITY = 60
 
     private var displayId: Int = -1
     private var preview: Preview? = null
@@ -152,53 +152,97 @@ class CameraFragment : Fragment() {
 
 
 
-    /** Define callback that will be triggered after a photo has been taken and saved to disk */
-    private val imageSavedListener = object : ImageCapture.OnImageSavedCallback {
-        override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+    private val imageCroppedAndSavedListener = object : ImageCapture.OnImageCapturedCallback() {
 
-//            Because the outputFileResults.savedUri returns null, we as a work around
-//            I've stored the file as gloabal variable  `photoFile` which will be retrieved when
-//            savedUri is null
+        @SuppressLint("UnsafeExperimentalUsageError")
+        override fun onCaptureSuccess(imageProxy: ImageProxy) {
+            try {
+                val bitmap = CameraUtils.jpegImageToBitmap(imageProxy.image!!)
 
-//            val fileUri = outputFileResults.savedUri ?: return
-            val fileUri = outputFileResults.savedUri ?: photoFile.toUri()
+                val croppedBitmap = CameraUtils.cropCenter(bitmap)
 
+                // TODO: Urgent Image will crop twice on thrid retry it will throw exception
 
-            Picasso.get().load(fileUri).into(imgPreview, object : Callback {
-                override fun onSuccess() {
-                    log("Success")
-                    imgPreview?.visibility = View.VISIBLE
-                    progress?.visibility = View.GONE
-                    fabCheck?.visibility = View.VISIBLE
-                    retry_capture_button?.visibility = View.VISIBLE
+                FileOutputStream(photoFile).use { fout ->
+                    croppedBitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESS_QUALITY, fout)
+
+                    imgPreview?.setImageBitmap(croppedBitmap)
+                    imgPreview?.visible()
+                    progress?.gone()
+                    fabCheck?.visible()
+                    retry_capture_button?.visible()
+                    fout.flush()
+                    fout.close()
                 }
 
-                override fun onError(e: java.lang.Exception?) {
-                    log("Error")
-                    e?.printStackTrace()
-                }
+                // If the folder selected is an external media directory, this is unnecessary
+                // but otherwise other apps will not be able to access our images unless we
+                // scan them using [MediaScannerConnection]
+                // To get extension
+                val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+                        context?.contentResolver?.getType(photoFile.toUri()))
+                MediaScannerConnection.scanFile(
+                        context, arrayOf(photoFile.toUri().path), arrayOf(mimeType), null
+                )
 
-            })
-
-
-            // If the folder selected is an external media directory, this is unnecessary
-            // but otherwise other apps will not be able to access our images unless we
-            // scan them using [MediaScannerConnection]
-            // To get extension
-            val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
-                    context?.contentResolver?.getType(fileUri))
-            MediaScannerConnection.scanFile(
-                    context, arrayOf(fileUri.path), arrayOf(mimeType), null
-            )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
         override fun onError(exception: ImageCaptureException) {
             exception.printStackTrace()
-            toastFrag("Error")
-            Log.e(TAG, "Photo capture failed: ${exception.message}", exception)
         }
 
     }
+
+    /** Define callback that will be triggered after a photo has been taken and saved to disk */
+//    private val imageSavedListener = object : ImageCapture.OnImageSavedCallback {
+//        override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+//
+////            Because the outputFileResults.savedUri returns null, we as a work around
+////            I've stored the file as gloabal variable  `photoFile` which will be retrieved when
+////            savedUri is null
+//
+////            val fileUri = outputFileResults.savedUri ?: return
+//            val fileUri = outputFileResults.savedUri ?: photoFile.toUri()
+//
+//
+//            Picasso.get().load(fileUri).into(imgPreview, object : Callback {
+//                override fun onSuccess() {
+//                    log("Success")
+//                    imgPreview?.visible()
+//                    progress?.gone()
+//                    fabCheck?.visible()
+//                    retry_capture_button?.visible()
+//                }
+//
+//                override fun onError(e: java.lang.Exception?) {
+//                    log("Error")
+//                    e?.printStackTrace()
+//                }
+//
+//            })
+//
+//
+//            // If the folder selected is an external media directory, this is unnecessary
+//            // but otherwise other apps will not be able to access our images unless we
+//            // scan them using [MediaScannerConnection]
+//            // To get extension
+//            val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+//                    context?.contentResolver?.getType(fileUri))
+//            MediaScannerConnection.scanFile(
+//                    context, arrayOf(fileUri.path), arrayOf(mimeType), null
+//            )
+//        }
+//
+//        override fun onError(exception: ImageCaptureException) {
+//            exception.printStackTrace()
+//            toastFrag("Error")
+//            Log.e(TAG, "Photo capture failed: ${exception.message}", exception)
+//        }
+//
+//    }
 
     @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -272,29 +316,29 @@ class CameraFragment : Fragment() {
             // Preview
             preview = Preview.Builder()
                     // We request aspect ratio but no resolution
-//                    .setTargetAspectRatio(screenAspectRatio)
+                    .setTargetAspectRatio(screenAspectRatio)
                     // Set initial target rotation
                     .setTargetRotation(rotation)
-                    .setTargetResolution(RESOLUTION)
-                    .setDefaultResolution(RESOLUTION)
                     .build()
 
             // Default PreviewSurfaceProvider
             preview?.setSurfaceProvider(viewFinder.previewSurfaceProvider)
 //            preview?.previewSurfaceProvider = viewFinder.previewSurfaceProvider
 
+            // Default ImageBufferFormat is JPEG
+            // can be changed with imageCapture.Builder().setBufferFormat(ImageFormat.YUV_420_888)
+            // YUV has high file size
+
             // ImageCapture
             imageCapture = ImageCapture.Builder()
                     .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
                     // We request aspect ratio but no resolution to match preview config, but letting
                     // CameraX optimize for whatever specific resolution best fits requested capture mode
-//                    .setTargetAspectRatio(screenAspectRatio)
+                    .setTargetAspectRatio(screenAspectRatio)
 
                     // Set initial target rotation, we will have to call this again if rotation changes
                     // during the lifecycle of this use case
                     .setTargetRotation(rotation)
-                    .setTargetResolution(RESOLUTION)
-                    .setDefaultResolution(RESOLUTION)
                     .build()
 
             // Must unbind the use-cases before rebinding them.
@@ -347,15 +391,15 @@ class CameraFragment : Fragment() {
         imgPreview = controls.img_preview
 
         /* Reset Controls when Retry is clicked
-         * =========================
-         * Start
-         */
+        * =========================
+        * Start
+        */
 
         imgPreview?.setImageResource(0)
-        imgPreview?.visibility = View.GONE
-        retry_capture_button?.visibility = View.GONE
-        fabCheck?.visibility = View.GONE
-        captureButton?.visibility = View.VISIBLE
+        imgPreview?.gone()
+//        retry_capture_button?.gone()
+        fabCheck?.gone()
+        captureButton?.visible()
 
         /* Reset Controls when Retry is clicked
          * =========================
@@ -368,19 +412,18 @@ class CameraFragment : Fragment() {
         captureButton?.setOnClickListener { captureButton ->
             // Get a stable reference of the modifiable image capture use case
 
-            progress?.visibility = View.VISIBLE
-            captureButton.visibility = View.GONE
+            progress?.visible()
+            captureButton.gone()
             imageCapture?.let { imageCapture ->
 
-                val outputFileOptions = ImageCapture.OutputFileOptions.Builder(photoFile)
-//                        .setMetadata(metadata)
-                        .build()
+//                imageCapture.setCropAspectRatio(Rational(300,300))
+                val outputFileOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+
                 // Setup image capture listener which is triggered after photo has been taken
                 try {
-
-                    imageCapture.takePicture(outputFileOptions, mainExecutor, imageSavedListener)
+//                    imageCapture.takePicture(outputFileOptions, mainExecutor, imageSavedListener)
+                    imageCapture.takePicture(mainExecutor, imageCroppedAndSavedListener)
                 } catch (e: Exception) {
-                    log("Errror exception")
                     e.printStackTrace()
                 }
 
@@ -398,7 +441,6 @@ class CameraFragment : Fragment() {
 
                 }
             }
-//            uploadImageToFirebase(photoFile)
         }
 
         // Listener for button used to retake image

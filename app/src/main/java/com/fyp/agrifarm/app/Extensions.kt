@@ -34,7 +34,7 @@ fun Fragment.toastFrag(msg: String, len: Int = Toast.LENGTH_SHORT) {
 }
 
 fun log(msg: String) {
-    Log.i("😎💕🌀👀😉😘", msg)
+    Log.i("😎💕🌀👀😉😘 ffnet:: ", msg)
 }
 
 fun AppCompatActivity.fragTransaction(fragment: Fragment): FragmentTransaction {
