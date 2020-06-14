@@ -32,9 +32,10 @@
 
     </PreferenceCategory>
     <PreferenceCategory android:title="Weather Settings">
-        <MultiSelectListPreference
+        <ListPreference
             android:title="Choose Temperature Unit"
             android:key="weatherUnit"
+            android:defaultValue="Celsius"
             android:entries="@array/temperatureUnit"
             android:entryValues="@array/tselection"/>
     </PreferenceCategory>

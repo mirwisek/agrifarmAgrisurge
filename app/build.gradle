@@ -45,6 +45,8 @@ android {
 }
 
 dependencies {
+    implementation 'androidx.preference:preference:1.1.1'
+
     // The following two are used by room library
     def lifecycle_version = "1.1.1"
     def room_version = "1.1.1"

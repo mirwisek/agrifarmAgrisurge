@@ -1,14 +1,16 @@
 package com.fyp.agrifarm.app.weather.model;
 
 import android.app.Application;
+import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
+import androidx.preference.PreferenceManager;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.fyp.agrifarm.R;
@@ -43,12 +45,19 @@ public class WeatherViewModel extends AndroidViewModel {
     public WeatherViewModel(@NonNull Application application) {
         super(application);
         app = application;
-
         loadMapIcons();
         FindDailyandHourlyforcast();
         FindDailyWeather();
 
     }
+
+    private String getWeatherUnit() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(app.getApplicationContext());
+        String WeatherPref = sharedPref
+                .getString("weatherUnit", "-1");
+        return WeatherPref;
+    }
+
 
     private String getPrefix() {
         return BASE_URL + "data/" + VERSION + "/";
@@ -56,18 +65,39 @@ public class WeatherViewModel extends AndroidViewModel {
 
     private String getPostfix() {
         LatLng location = getLocation();
+        String unit = getWeatherUnit();
+
+        if (unit.equals("Celsius")) {
+            unit = "metric";
+
+        } else {
+            unit = "imperial";
+
+        }
+        Log.d("viewala1st", " " + unit);
         if (location == null) return null;
         return "lat=" +
                 location.getLatitude() + "&lon=" + location.getLongitude() +
-                "&units=metric&exclude=current&appid=" + APP_ID;
+                "&units=" + unit + "&exclude=current&appid=" + APP_ID;
+
     }
 
     private String getCurrentPostfix() {
+        String unit = getWeatherUnit();
+        if (unit.equals("Celsius")) {
+            unit = "metric";
+
+        } else {
+            unit = "imperial";
+
+        }
+        Log.d("viewala2st", " " + unit);
+
         LatLng location = getLocation();
         if (location == null) return null;
         return "lat=" +
                 location.getLatitude() + "&lon=" + location.getLongitude() +
-                "&appid=" + APP_ID + "&units=metric";
+                "&appid=" + APP_ID + "&units=" + unit;
 
     }
 
@@ -125,9 +155,8 @@ public class WeatherViewModel extends AndroidViewModel {
                             String icon = desobj.getString("icon");
                             String iconUrl = "http://openweathermap.org/img/w/" + icon + ".png";
 
-                            WeatherDailyForecast weatherDailyForecast = new WeatherDailyForecast(day, temperature, description,null,null,icon);
+                            WeatherDailyForecast weatherDailyForecast = new WeatherDailyForecast(day, temperature, description, null, null, icon);
                             listfordaily.add(weatherDailyForecast);
-
 
 
                         }

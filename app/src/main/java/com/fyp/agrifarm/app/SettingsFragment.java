@@ -1,13 +1,16 @@
 package com.fyp.agrifarm.app;
 
+import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.fyp.agrifarm.R;
+import com.fyp.agrifarm.app.weather.model.WeatherViewModel;
 import com.fyp.agrifarm.utils.FirebaseUtils;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
@@ -30,6 +33,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 return true;
             }
         });
+
 
     }
 

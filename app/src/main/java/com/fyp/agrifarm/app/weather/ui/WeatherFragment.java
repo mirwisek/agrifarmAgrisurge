@@ -1,5 +1,6 @@
 package com.fyp.agrifarm.app.weather.ui;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fyp.agrifarm.R;
@@ -23,6 +25,7 @@ public class WeatherFragment extends Fragment {
 
     public static final String TAG = "WeatherFragment";
     private WeatherViewModel weatherViewModel;
+    private String temperatue;
 
 
     public WeatherFragment() {
@@ -63,7 +66,21 @@ public class WeatherFragment extends Fragment {
 
         weatherViewModel.getDailyforcast().observe(getViewLifecycleOwner(), weatherDailyForecast -> {
 
-            String temperatue = weatherDailyForecast.getTemperature() + "°C";
+            SharedPreferences sharedPref = PreferenceManager
+                    .getDefaultSharedPreferences(getContext());
+            String WeatherPref = sharedPref
+                    .getString("weatherUnit", "-1");
+            if (WeatherPref.equals("Celsius"))
+            {
+                temperatue = weatherDailyForecast.getTemperature() + "°C";
+
+            }
+            else
+            {
+                temperatue = weatherDailyForecast.getTemperature() + "°F";
+
+            }
+
             wftemperatute.setText(temperatue);
             wfdescription.setText(weatherDailyForecast.getDescription());
             wfday.setText(weatherDailyForecast.getDay());

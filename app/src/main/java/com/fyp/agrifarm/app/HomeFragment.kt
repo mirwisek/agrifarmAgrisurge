@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.preference.PreferenceManager
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.fyp.agrifarm.R
 import com.fyp.agrifarm.app.crops.CameraActivity
@@ -83,10 +85,12 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
         // Just initialize to get the values inside of it ready
         val cropViewModel = ViewModelProvider(this).get(CropsViewModel::class.java)
 
-        cropViewModel.modelMetadata.observe(viewLifecycleOwner, androidx.lifecycle.Observer { it ?.let { map ->
-            ModelRequest.getInstance().init(map["name"]!!, map["version"]!!)
-            cropViewModel.modelMetadata.removeObservers(this)
-        }})
+        cropViewModel.modelMetadata.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            it?.let { map ->
+                ModelRequest.getInstance().init(map["name"]!!, map["version"]!!)
+                cropViewModel.modelMetadata.removeObservers(this)
+            }
+        })
 
         newsSharedViewModel.newsList.observe(viewLifecycleOwner, androidx.lifecycle.Observer { list ->
             newsRecyclerAdapter.changeDataSource(list)
@@ -174,7 +178,7 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
         })
 
         btnLocation.setOnClickListener {
-            if(hasPermissions(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            if (hasPermissions(Manifest.permission.ACCESS_FINE_LOCATION)) {
                 getLocation()
             } else {
                 requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), RC_LOCATION)
@@ -185,15 +189,28 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
 
         getWeatherInformation()
 
+
     }
 
 
     private fun getWeatherInformation() {
 
         weatherViewModel.dailyforcast.observe(viewLifecycleOwner, Observer { weatherDailyForecast ->
+            val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
+            val WeatherPref = sharedPref.getString("weatherUnit", "-1")
 
-            val temperatue = weatherDailyForecast.temperature + "°C"
-            tvWeatherTemp.text = temperatue
+            if (WeatherPref.equals("Celsius")) {
+
+                tvWeatherTemp.text = weatherDailyForecast.temperature + "°C"
+
+
+            } else {
+
+                tvWeatherTemp.text = weatherDailyForecast.temperature + "°F"
+
+
+            }
+//            tvWeatherTemp.text = temperatue
             tvWeatherDescription.text = weatherDailyForecast.description
             tvWeatherDay.text = weatherDailyForecast.day
             tvWeatherHumidity.text = weatherDailyForecast.humidity
