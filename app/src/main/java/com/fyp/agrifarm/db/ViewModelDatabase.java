@@ -7,15 +7,14 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
-import com.fyp.agrifarm.app.news.NewsItem;
+import com.fyp.agrifarm.app.news.NewsEntity;
 import com.fyp.agrifarm.app.news.db.Converter;
 import com.fyp.agrifarm.app.news.db.NewsDoa;
 import com.fyp.agrifarm.app.youtube.db.ExtendedVideo;
-import com.fyp.agrifarm.app.youtube.db.ShortVideo;
 import com.fyp.agrifarm.app.youtube.db.VideoDao;
 import com.fyp.agrifarm.app.youtube.db.converter.DateConverter;
 
-@Database(entities = {NewsItem.class, ExtendedVideo.class}, version = 6, exportSchema = false)
+@Database(entities = {NewsEntity.class, ExtendedVideo.class}, version = 6, exportSchema = false)
 @TypeConverters({DateConverter.class, Converter.class})
 public abstract class ViewModelDatabase extends RoomDatabase {
 

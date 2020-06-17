@@ -1,11 +1,12 @@
 package com.fyp.agrifarm.app
 
 import android.Manifest
+import android.animation.Animator
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,8 +18,6 @@ import androidx.preference.PreferenceManager
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.fyp.agrifarm.R
 import com.fyp.agrifarm.app.crops.CameraActivity
-import com.fyp.agrifarm.app.crops.CropsViewModel
-import com.fyp.agrifarm.app.crops.ModelRequest
 import com.fyp.agrifarm.app.news.ui.NewsRecyclerAdapter
 import com.fyp.agrifarm.app.news.ui.NewsRecyclerAdapter.OnNewsClinkListener
 import com.fyp.agrifarm.app.news.viewmodel.NewsSharedViewModel
@@ -76,21 +75,13 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        fabTakeImage.shrink()
+
         pricesViewModel = ViewModelProvider(this).get(PricesViewModel::class.java)
         newsSharedViewModel = ViewModelProvider(this).get(NewsSharedViewModel::class.java)
 
         videoViewModel = ViewModelProvider(this).get(VideoSharedViewModel::class.java)
         weatherViewModel = ViewModelProvider(this).get(WeatherViewModel::class.java)
-
-        // Just initialize to get the values inside of it ready
-        val cropViewModel = ViewModelProvider(this).get(CropsViewModel::class.java)
-
-        cropViewModel.modelMetadata.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            it?.let { map ->
-                ModelRequest.getInstance().init(map["name"]!!, map["version"]!!)
-                cropViewModel.modelMetadata.removeObservers(this)
-            }
-        })
 
         newsSharedViewModel.newsList.observe(viewLifecycleOwner, androidx.lifecycle.Observer { list ->
             newsRecyclerAdapter.changeDataSource(list)
@@ -99,8 +90,6 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
         videoViewModel.allVideos.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             videoRecyclerAdapter.updateList(it)
         })
-
-        ModelRequest.getInstance().setCredentials(MainActivity.mCredential)
 
         fabTakeImage.setOnClickListener { startAnActivity(CameraActivity::class.java) }
 
@@ -189,6 +178,9 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
 
         getWeatherInformation()
 
+        Handler().postDelayed( {
+            fabTakeImage.extend()
+        }, 3000L)
 
     }
 

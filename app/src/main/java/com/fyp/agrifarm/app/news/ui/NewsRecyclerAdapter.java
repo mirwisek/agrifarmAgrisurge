@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fyp.agrifarm.R;
-import com.fyp.agrifarm.app.news.NewsItem;
+import com.fyp.agrifarm.app.news.NewsEntity;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
 public class NewsRecyclerAdapter extends RecyclerView.Adapter<NewsRecyclerAdapter.NewsListViewHolder> {
 
     private Context context;
-    private List<NewsItem> newsList;
+    private List<NewsEntity> newsList;
     private OnNewsClinkListener onNewsClinkListener;
 
     public NewsRecyclerAdapter(Context context, OnNewsClinkListener newsClickListener){
@@ -39,7 +39,7 @@ public class NewsRecyclerAdapter extends RecyclerView.Adapter<NewsRecyclerAdapte
 
     @Override
     public void onBindViewHolder(@NonNull NewsListViewHolder viewHolder, int i) {
-        NewsItem record = newsList.get(i);
+        NewsEntity record = newsList.get(i);
         Log.d("DASASA","" + record.toString());
         NewsListViewHolder holder = (NewsListViewHolder) viewHolder;
         holder.itemView.setOnClickListener(v -> onNewsClinkListener.onNewsClick(record));
@@ -68,13 +68,13 @@ public class NewsRecyclerAdapter extends RecyclerView.Adapter<NewsRecyclerAdapte
         }
     }
 
-    public void changeDataSource(List<NewsItem> list){
+    public void changeDataSource(List<NewsEntity> list){
         newsList = list;
         notifyDataSetChanged();
     }
 
     public interface OnNewsClinkListener{
-        void onNewsClick(NewsItem selectedNews);
+        void onNewsClick(NewsEntity selectedNews);
     }
 }
 

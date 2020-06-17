@@ -11,7 +11,7 @@ import retrofit2.Response
 import retrofit2.http.GET
 
 @Entity(tableName = "tableNews")
-data class NewsItem(
+data class NewsEntity(
         @PrimaryKey
         @ColumnInfo(name = "guid")
         val guid: String,
@@ -27,8 +27,3 @@ data class NewsItem(
         @ColumnInfo(name = "image")
         val image: String
 )
-
-interface ApiRequest {
-    @GET("news/fetch")
-    fun getNews(): Call<List<NewsItem>>
-}
