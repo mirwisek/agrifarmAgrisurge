@@ -18,7 +18,7 @@ import com.fyp.agrifarm.app.youtube.db.ShortVideo;
 import com.fyp.agrifarm.app.youtube.db.VideoDao;
 import com.fyp.agrifarm.app.youtube.db.converter.DateConverter;
 
-@Database(entities = {NewsItem.class, ExtendedVideo.class , HourlyObject.class}, version = 7, exportSchema = false)
+@Database(entities = {NewsEntity.class,  ExtendedVideo.class , HourlyObject.class}, version = 6, exportSchema = false)
 @TypeConverters({DateConverter.class, Converter.class})
 public abstract class ViewModelDatabase extends RoomDatabase {
 

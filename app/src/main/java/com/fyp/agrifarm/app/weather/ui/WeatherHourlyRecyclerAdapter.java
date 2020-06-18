@@ -9,7 +9,6 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fyp.agrifarm.R;
-import com.fyp.agrifarm.app.news.NewsItem;
 import com.fyp.agrifarm.app.weather.model.HourlyObject;
 
 import java.text.SimpleDateFormat;

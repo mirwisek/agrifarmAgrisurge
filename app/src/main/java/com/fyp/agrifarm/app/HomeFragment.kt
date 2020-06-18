@@ -33,7 +33,6 @@ import com.fyp.agrifarm.app.profile.ui.FirestoreUserRecyclerAdapter
 import com.fyp.agrifarm.app.profile.ui.UserInformationActivity
 import com.fyp.agrifarm.app.weather.model.WeatherSharedViewModel
 import com.fyp.agrifarm.app.weather.model.CurrentWeatherObject
-import com.fyp.agrifarm.app.weather.model.WeatherSharedViewModel
 import com.fyp.agrifarm.app.youtube.VideoRecyclerAdapter
 import com.fyp.agrifarm.app.youtube.viewmodel.VideoSharedViewModel
 import com.google.android.gms.common.api.ResolvableApiException

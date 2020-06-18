@@ -12,8 +12,6 @@ interface NewsDoa {
     @Query("DELETE FROM tableNews")
     fun deleteAllNews()
 
-
-
     @get:Query("SELECT * FROM tableNews")
     val allNews: List<NewsEntity>
 }
