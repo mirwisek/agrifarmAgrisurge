@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.fyp.agrifarm.R
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.bottomsheet_model_content.view.*
 
 
 fun Bitmap.getResizedBitmap(maxSize: Int): Bitmap {
@@ -23,6 +25,14 @@ fun Bitmap.getResizedBitmap(maxSize: Int): Bitmap {
         width = (height * bitmapRatio).toInt()
     }
     return Bitmap.createScaledBitmap(this, width, height, true)
+}
+
+fun Fragment.safeSnackbar(msg: String, duration: Int = Snackbar.LENGTH_SHORT) {
+    view?.let {
+        Snackbar.make(it, msg, duration).show()
+        return
+    }
+    toastFrag(msg, duration)
 }
 
 fun Context.toast(msg: String, len: Int = Toast.LENGTH_SHORT) {

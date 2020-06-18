@@ -1,14 +1,13 @@
 package com.fyp.agrifarm.app.news.db
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.fyp.agrifarm.app.news.NewsItem
+import com.fyp.agrifarm.app.news.NewsEntity
 
 @Dao
 interface NewsDoa {
     // If primary keys clash occurs, replace with latest data
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(vararg news: NewsItem)
+    fun insert(vararg news: NewsEntity)
 
     @Query("DELETE FROM tableNews")
     fun deleteAllNews()
@@ -16,5 +15,5 @@ interface NewsDoa {
 
 
     @get:Query("SELECT * FROM tableNews")
-    val allNews: List<NewsItem>
+    val allNews: List<NewsEntity>
 }

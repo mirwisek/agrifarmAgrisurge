@@ -1,11 +1,8 @@
 package com.fyp.agrifarm.app.news
 
 import android.app.Application
-import android.os.AsyncTask
-import android.view.animation.Transformation
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
+import com.fyp.agrifarm.api.NetworkFactory
 import com.fyp.agrifarm.app.log
 import com.fyp.agrifarm.app.news.db.NewsDoa
 import com.fyp.agrifarm.app.toast
@@ -16,7 +13,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
-import retrofit2.HttpException
 import retrofit2.Response
 import kotlin.coroutines.CoroutineContext
 
@@ -31,7 +27,7 @@ class NewsRepository : CoroutineScope {
         get() = parentJob + Dispatchers.Default
     private val scope = CoroutineScope(coroutineContext)
 
-    val newsList = MutableLiveData<List<NewsItem>>()
+    val newsList = MutableLiveData<List<NewsEntity>>()
 
     private constructor()
 
@@ -43,19 +39,20 @@ class NewsRepository : CoroutineScope {
 
     }
 
-    fun getNewsById(id: String) : NewsItem {
+    fun getNewsById(id: String) : NewsEntity {
         return newsList.value?.filter { item -> item.guid == id }?.get(0)!!
     }
 
     fun getNewsFromApi(app: Application) {
         newsDao = ViewModelDatabase.getInstance(app).newsDoa()
-        NewsFactory.getNews(object: Callback<List<NewsItem>> {
-            override fun onFailure(call: Call<List<NewsItem>>, t: Throwable) {
+
+        NetworkFactory.getNews(object: Callback<List<NewsEntity>> {
+            override fun onFailure(call: Call<List<NewsEntity>>, t: Throwable) {
 
                 log("ERROR <RETROFIT>:: ${t.message}")
             }
 
-            override fun onResponse(call: Call<List<NewsItem>>, response: Response<List<NewsItem>>) {
+            override fun onResponse(call: Call<List<NewsEntity>>, response: Response<List<NewsEntity>>) {
                 if(response.isSuccessful) {
                     response.body()?.let {  list ->
                         scope.launch {

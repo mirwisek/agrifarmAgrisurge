@@ -7,7 +7,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
-import com.fyp.agrifarm.app.news.NewsItem;
+import com.fyp.agrifarm.app.news.NewsEntity;
 import com.fyp.agrifarm.app.news.db.Converter;
 import com.fyp.agrifarm.app.news.db.NewsDoa;
 import com.fyp.agrifarm.app.weather.model.HourlyObject;

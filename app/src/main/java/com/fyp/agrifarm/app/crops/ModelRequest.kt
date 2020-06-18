@@ -1,93 +1,46 @@
 package com.fyp.agrifarm.app.crops
 
-import android.content.Context
-import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.os.Environment
-import com.fyp.agrifarm.R
+import com.fyp.agrifarm.api.NetworkFactory
 import com.fyp.agrifarm.app.log
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
-import com.google.api.client.http.*
-import com.google.api.client.http.javanet.NetHttpTransport
-import com.google.api.client.json.JsonFactory
-import com.google.api.client.json.jackson2.JacksonFactory
-import com.google.api.client.util.Base64
-import com.google.api.services.discovery.Discovery
-import com.google.api.services.discovery.model.JsonSchema
-import org.json.JSONArray
-import org.json.JSONObject
-import java.io.ByteArrayOutputStream
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.File
-import java.io.IOException
+import kotlin.coroutines.CoroutineContext
 
-class ModelRequest {
-
-    private lateinit var httpTransport: HttpTransport
-    private lateinit var jsonFactory: JsonFactory
-    private lateinit var credential: GoogleAccountCredential
-    private lateinit var inputFile: File
+class ModelRequest : CoroutineScope {
 
     companion object {
-        private const val PROJECT_ID = "agrifarm-58a88"
-        // Default Values
-        private var MODEL_ID: String = "agrifarmResnet"
-        private var VERSION_ID: String = "v1"
 
-        private val instance = ModelRequest()
+        private val _instance = ModelRequest()
 
-        fun getInstance() : ModelRequest {
-            return instance
-        }
+        val instance: ModelRequest
+            get() = _instance
     }
 
     private constructor()
 
-    // Initialize from Firestore
-    fun init(modelName: String, version: String) {
-        MODEL_ID = modelName
-        VERSION_ID = version
-    }
+    private val parentJob = Job()
 
-    fun setCredentials(credential: GoogleAccountCredential) {
-        this.credential = credential
-    }
-    
-    fun writeInputFile(context: Context, storagePath: String) {
-        val json = JSONObject()
-        val array = JSONArray()
-        array.put(storagePath)
-        json.put("instances", array)
-        log("input json $json")
+    override val coroutineContext: CoroutineContext
+        get() = parentJob + Dispatchers.Default
+    private val scope = CoroutineScope(coroutineContext)
 
-        val file = File(context.getExternalFilesDir(
-                Environment.DIRECTORY_DOCUMENTS)?.absolutePath +  "/jsonInput.txt")
-        file.writeText(json.toString())
-        inputFile = file
-    }
+    fun predict(image: File, callback: Callback<ModelResponse>) {
 
-    @Throws(IOException::class)
-    fun predict(): String? {
-
-        httpTransport = NetHttpTransport()
-        jsonFactory = JacksonFactory.getDefaultInstance()
-        val discovery = Discovery.Builder(httpTransport, jsonFactory, null).build()
-        val api = discovery.apis().getRest("ml", "v1").execute()
-        val method = api.resources["projects"]!!.methods["predict"]
-        val param = JsonSchema()
-        param["name"] = "projects/$PROJECT_ID/models/$MODEL_ID/versions/$VERSION_ID"
-        val url = GenericUrl(UriTemplate.expand(api.baseUrl + method!!.path, param, true))
-        println(url)
-        val contentType = "application/json"
-
-//        File requestBodyFile = new File(is);
-//        FileContent(contentType, input)
-        val content: HttpContent = FileContent(contentType, inputFile)
-//        val scopes = mutableListOf(MainActivity.GCP_ML_SCOPE)
-
-        val requestFactory: HttpRequestFactory = httpTransport.createRequestFactory(credential)
-        val request = requestFactory.buildRequest(method.httpMethod, url, content)
-        return request.execute().parseAsString()
+        val request = MultipartBody.Part.createFormData("file", image.name,
+                image.asRequestBody("image/*".toMediaTypeOrNull()))
+        log("req about to send $request")
+        NetworkFactory.getPrediction(request, callback)
     }
 
 }

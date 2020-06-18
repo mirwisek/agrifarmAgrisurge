@@ -150,8 +150,7 @@ public class UserRegistrationActivity extends AppCompatActivity {
                     // Downloads and Sets up the profile picture in the ImageView
                     FirebaseUtils.downloadUserProfileImage(this, user, imgViewProfile, getResources());
                 } else {
-                    View v = findViewById(R.id.container);
-                    Snackbar.make(v, "Sign in failed!", Snackbar.LENGTH_LONG).show();
+                    Toast.makeText(this, "Sign in Failed!", Toast.LENGTH_SHORT).show();
                 }
 
                 break;

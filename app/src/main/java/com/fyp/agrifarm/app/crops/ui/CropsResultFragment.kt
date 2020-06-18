@@ -1,9 +1,7 @@
 package com.fyp.agrifarm.app.crops.ui
 
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,15 +15,16 @@ import androidx.transition.TransitionInflater
 import com.fyp.agrifarm.R
 import com.fyp.agrifarm.app.crops.CropsViewModel
 import com.fyp.agrifarm.app.crops.ModelRequest
+import com.fyp.agrifarm.app.crops.ModelResponse
 import com.fyp.agrifarm.app.crops.ModelResultState
 import com.fyp.agrifarm.app.gone
 import com.fyp.agrifarm.app.log
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.storage.FirebaseStorage
+import com.fyp.agrifarm.app.safeSnackbar
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
+import retrofit2.Call
+import retrofit2.Response
 import java.io.File
-import java.lang.Exception
 
 class CropsResultFragment : Fragment() {
 
@@ -51,7 +50,6 @@ class CropsResultFragment : Fragment() {
         labelFeedback = view.findViewById(R.id.tvCropFeedback)
 
 
-
         val imageView = view.findViewById<ImageView>(R.id.ivCropSubject)
         arguments?.let {
             val args = it ?: return
@@ -61,7 +59,7 @@ class CropsResultFragment : Fragment() {
 
                 override fun onSuccess() {
 
-                    uploadImageToFirebase(file)
+                    sendPredictionRequest(file)
 
                     cropViewModel.currentState.observe(viewLifecycleOwner, Observer { model ->
                         model?.let {  state ->
@@ -105,25 +103,37 @@ class CropsResultFragment : Fragment() {
 
     }
 
-    private fun uploadImageToFirebase(photoFile: File) {
 
-        val file = Uri.fromFile(photoFile)
-        val uid = FirebaseAuth.getInstance().currentUser?.uid.toString()
+    private fun sendPredictionRequest(image: File) {
 
-        storageReference
-                .child(file.lastPathSegment.toString())
-                .putFile(file)
-                .addOnFailureListener {
-                    Log.d("uploadS", " Done")
-                }.addOnSuccessListener { taskSnap ->
-                    var path: String? = null
-                    taskSnap?.metadata?.let { meta ->
-                        path = "${file.lastPathSegment}"
-                        ModelRequest.getInstance().writeInputFile(requireContext(), path!!)
-                        cropViewModel.setPrediction()
+        ModelRequest.instance.predict(image, object : retrofit2.Callback<ModelResponse> {
+
+            override fun onFailure(call: Call<ModelResponse>, t: Throwable) {
+                log("Unsucessful <RETROFIT>:: ${t.message}")
+                cropViewModel.currentState.postValue(ModelResultState.ERROR)
+                t.printStackTrace()
+                safeSnackbar("[Error] Couldn't find disease, please try again!")
+            }
+
+            override fun onResponse(call: Call<ModelResponse>, response: Response<ModelResponse>) {
+                if (response.isSuccessful) {
+                    response.body()?.let { list ->
+
+                        val sortedList = list.output.sortedByDescending { x -> x.probability }
+
+//                        sortedList.forEach {  log("SORT:: ${it.label} and ${it.probability}") }
+                        cropViewModel.modelOutput.postValue(sortedList[0].label)
+                        cropViewModel.currentState.postValue(ModelResultState.SUCCESS)
                     }
+                } else {
+                    cropViewModel.currentState.postValue(ModelResultState.ERROR)
+                    safeSnackbar("Couldn't find disease, please try again!")
+                    val err = response.errorBody()?.string()
+                    log("Unsucessful <RETROFIT>:: $err")
                 }
 
+            }
+        })
     }
 
     companion object {
@@ -132,7 +142,6 @@ class CropsResultFragment : Fragment() {
         private lateinit var cropViewModel: CropsViewModel
         private lateinit var progress: ProgressBar
         private lateinit var labelFeedback: TextView
-        private var storageReference = FirebaseStorage.getInstance().getReference("cropSamples/")
 
         fun create(photoPath: String) = CropsResultFragment().apply {
             log("Photo path is : $photoPath")

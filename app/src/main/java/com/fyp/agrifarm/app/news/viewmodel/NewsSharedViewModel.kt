@@ -2,16 +2,8 @@ package com.fyp.agrifarm.app.news.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.*
-import com.fyp.agrifarm.app.log
-import com.fyp.agrifarm.app.news.NewsFactory
-import com.fyp.agrifarm.app.news.NewsItem
+import com.fyp.agrifarm.app.news.NewsEntity
 import com.fyp.agrifarm.app.news.NewsRepository
-import com.fyp.agrifarm.app.toast
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 class NewsSharedViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -23,14 +15,14 @@ class NewsSharedViewModel(application: Application) : AndroidViewModel(applicati
         it.shuffled()
     }
 
-    private val selectedNews = MutableLiveData<NewsItem>()
+    private val selectedNews = MutableLiveData<NewsEntity>()
 
 
     fun selectNews(newsId: String) {
         selectedNews.postValue(newsRepository.getNewsById(newsId))
     }
 
-    fun getSelectedNews(): LiveData<NewsItem> {
+    fun getSelectedNews(): LiveData<NewsEntity> {
         return selectedNews
     }
 
