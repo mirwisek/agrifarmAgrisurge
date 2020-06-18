@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,7 +31,8 @@ import com.fyp.agrifarm.app.prices.ui.PricesRecyclerAdapter
 import com.fyp.agrifarm.app.profile.model.User
 import com.fyp.agrifarm.app.profile.ui.FirestoreUserRecyclerAdapter
 import com.fyp.agrifarm.app.profile.ui.UserInformationActivity
-import com.fyp.agrifarm.app.weather.model.WeatherViewModel
+import com.fyp.agrifarm.app.weather.model.CurrentWeatherObject
+import com.fyp.agrifarm.app.weather.model.WeatherSharedViewModel
 import com.fyp.agrifarm.app.youtube.VideoRecyclerAdapter
 import com.fyp.agrifarm.app.youtube.viewmodel.VideoSharedViewModel
 import com.google.android.gms.common.api.ResolvableApiException
@@ -53,7 +53,7 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
 
     private lateinit var pricesViewModel: PricesViewModel
     private lateinit var videoViewModel: VideoSharedViewModel
-    private lateinit var weatherViewModel: WeatherViewModel
+    private lateinit var weatherViewModel: WeatherSharedViewModel
     private lateinit var newsSharedViewModel: NewsSharedViewModel
     private lateinit var videoRecyclerAdapter: VideoRecyclerAdapter
     private lateinit var newsRecyclerAdapter: NewsRecyclerAdapter
@@ -80,7 +80,7 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
         newsSharedViewModel = ViewModelProvider(this).get(NewsSharedViewModel::class.java)
 
         videoViewModel = ViewModelProvider(this).get(VideoSharedViewModel::class.java)
-        weatherViewModel = ViewModelProvider(this).get(WeatherViewModel::class.java)
+        weatherViewModel = ViewModelProvider(this).get(WeatherSharedViewModel::class.java)
 
         // Just initialize to get the values inside of it ready
         val cropViewModel = ViewModelProvider(this).get(CropsViewModel::class.java)
@@ -194,36 +194,30 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
 
 
     private fun getWeatherInformation() {
-
-        weatherViewModel.dailyforcast.observe(viewLifecycleOwner, Observer { weatherDailyForecast ->
-            val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-            val WeatherPref = sharedPref.getString("weatherUnit", "-1")
-
-            if (WeatherPref.equals("Celsius")) {
-
-                tvWeatherTemp.text = weatherDailyForecast.temperature + "°C"
-
-
+        var temperatue : String
+        weatherViewModel.init()
+        weatherViewModel.getCurrentWeather().observe(viewLifecycleOwner, Observer { weatherDailyForecast: CurrentWeatherObject ->
+            val sharedPref = PreferenceManager
+                    .getDefaultSharedPreferences(requireContext())
+            val WeatherPref = sharedPref
+                    .getString("weatherUnit", "-1")
+            if (WeatherPref == "Celsius") {
+                temperatue = weatherDailyForecast.temperature + "°C"
             } else {
-
-                tvWeatherTemp.text = weatherDailyForecast.temperature + "°F"
-
-
+                temperatue = weatherDailyForecast.temperature + "°F"
             }
-//            tvWeatherTemp.text = temperatue
-            tvWeatherDescription.text = weatherDailyForecast.description
-            tvWeatherDay.text = weatherDailyForecast.day
-            tvWeatherHumidity.text = weatherDailyForecast.humidity
-
+            tvWeatherTemp.setText(temperatue)
+            tvWeatherDescription.setText(weatherDailyForecast.description)
+            tvWeatherDay.setText(weatherDailyForecast.day)
+            tvWeatherHumidity.setText(weatherDailyForecast.humidity.subSequence(0,2))
 
             // Wrapped with catch incase resource ID not found
             try {
                 val id = weatherDailyForecast.iconurl
-                ivWeatherIcon.setImageResource(weatherViewModel.weatherIconsMap[id]!!)
-            } catch (e: java.lang.Exception) {
+                ivWeatherIcon.setImageResource(weatherViewModel.weatherIconsMap.get(id)!!)
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
-
         })
     }
 

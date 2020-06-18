@@ -1,7 +1,6 @@
 package com.fyp.agrifarm.app.weather.model;
 
-public class WeatherDailyForecast {
-
+public class CurrentWeatherObject {
     String day;
     String temperature;
     String description;
@@ -9,8 +8,10 @@ public class WeatherDailyForecast {
     String windPressure;
     String iconurl;
 
+    public CurrentWeatherObject() {
+    }
 
-    public WeatherDailyForecast(String day, String temperature, String description, String humidity, String windPressure, String iconurl) {
+    public CurrentWeatherObject(String day, String temperature, String description, String humidity, String windPressure, String iconurl) {
         this.day = day;
         this.temperature = temperature;
         this.description = description;
@@ -19,7 +20,7 @@ public class WeatherDailyForecast {
         this.iconurl = iconurl;
     }
 
-    public WeatherDailyForecast(String day, String temperature, String description, String humidity, String windPressure) {
+    public CurrentWeatherObject(String day, String temperature, String description, String humidity, String windPressure) {
         this.day = day;
         this.temperature = temperature;
         this.description = description;
@@ -27,14 +28,14 @@ public class WeatherDailyForecast {
         this.windPressure = windPressure;
     }
 
-    public WeatherDailyForecast(String day, String temperature, String description, String humidity) {
+    public CurrentWeatherObject(String day, String temperature, String description, String humidity) {
         this.day = day;
         this.temperature = temperature;
         this.description = description;
         this.humidity = humidity;
     }
 
-    public WeatherDailyForecast(String day, String temperature, String description) {
+    public CurrentWeatherObject(String day, String temperature, String description) {
         this.day = day;
         this.temperature = temperature;
         this.description = description;
