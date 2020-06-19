@@ -11,14 +11,17 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.fyp.agrifarm.app.KEY_LOCATION_SET
-import com.fyp.agrifarm.app.getSharedPrefs
 import com.fyp.agrifarm.app.prices.model.LoadState
 import com.fyp.agrifarm.app.prices.model.LocationListItem
+import com.fyp.agrifarm.app.sharedPrefs
 import com.fyp.agrifarm.utils.AssetUtils
+import com.fyp.agrifarm.utils.FirebaseUtils
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -32,7 +35,7 @@ class PricesViewModel(application: Application) : AndroidViewModel(application) 
 
     val location = MutableLiveData<LocationListItem>().apply {
         // If sharedPreferences has a value then initialize the location value accordingly
-        context.getSharedPrefs().getStringSet(KEY_LOCATION_SET, null)?.let { loc ->
+        context.sharedPrefs.getStringSet(KEY_LOCATION_SET, null)?.let { loc ->
             val locItem = LocationListItem(loc.elementAt(0), loc.elementAt(1))
             postValue(locItem)
         }
@@ -81,8 +84,16 @@ class PricesViewModel(application: Application) : AndroidViewModel(application) 
                             val latestLocationIndex = locationResult.locations.size - 1
                             val latitude = locationResult.locations[latestLocationIndex].latitude
                             val longitude = locationResult.locations[latestLocationIndex].longitude
+
+                            FirebaseAuth.getInstance().uid?.let { id ->
+                                FirebaseFirestore.getInstance().collection("locs").document(id)
+                                        .set(hashMapOf(
+                                                "lat" to latitude,
+                                                "lon" to longitude
+                                        ))
+                            }
                             //posting lat and lon values in SharedPeference for WeatherViewModel
-                            context.getSharedPrefs().edit()
+                            context.sharedPrefs.edit()
                                     .putString("lat", latitude.toString())
                                     .putString("lon",longitude.toString())
                                     .apply()

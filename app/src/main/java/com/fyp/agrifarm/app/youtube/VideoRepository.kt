@@ -32,7 +32,7 @@ class VideoRepository(application: Application) : CoroutineScope {
         // Just to remove the warning (Added Dispatchers.IO again)
         scope.launch(Dispatchers.IO) {
             try {
-                val list = YoutubeDataRequest.getInstance().getDataFromApi()
+                val list = YoutubeDataRequest.instance.getDataFromApi()
                 videoList.postValue(list)
                 videoDao.insert(*list.toTypedArray())
             } catch (e: IOException) {

@@ -72,17 +72,5 @@
 
     <style name="BottomSheetDialogTheme" parent="BaseBottomSheetDialog" />
 
-    <style name="CustomWingInner">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">1dp</item>
-        <item name="android:layout_gravity">center_vertical</item>
-        <item name="android:background">#FFFFFF</item>
-    </style>
 
-    <style name="CustomWingOuter">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">0dp</item>
-        <item name="android:layout_marginLeft">16dp</item>
-        <item name="android:layout_marginRight">16dp</item>
-    </style>
 </resources>

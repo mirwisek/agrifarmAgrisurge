@@ -26,11 +26,11 @@ import com.fyp.agrifarm.R
 import com.fyp.agrifarm.app.HomeFragment.OnFragmentInteractionListener
 import com.fyp.agrifarm.app.weather.ui.WeatherFragment
 import com.fyp.agrifarm.app.youtube.VideoRecyclerAdapter
+import com.fyp.agrifarm.app.youtube.YoutubeDataRequest
 import com.fyp.agrifarm.app.youtube.YoutubeFragment
 import com.fyp.agrifarm.app.youtube.db.ExtendedVideo
 import com.fyp.agrifarm.app.youtube.viewmodel.VideoSharedViewModel
 import com.fyp.agrifarm.utils.FirebaseUtils
-import com.fyp.agrifarm.utils.PicassoUtils
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.navigation.NavigationView
@@ -38,7 +38,8 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.youtube.YouTubeScopes
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.android.synthetic.main.activity_user_registration.*
+import com.google.firebase.auth.FirebaseUser
+import kotlinx.android.synthetic.main.drawer_header.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import pub.devrel.easypermissions.EasyPermissions.PermissionCallbacks
@@ -47,7 +48,8 @@ import java.util.*
 class MainActivity : AppCompatActivity(),
         PermissionCallbacks,
         NavigationView.OnNavigationItemSelectedListener,
-        VideoRecyclerAdapter.OnItemClickListener, OnFragmentInteractionListener , PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
+        VideoRecyclerAdapter.OnItemClickListener, OnFragmentInteractionListener,
+        PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
 
     private val apiAvailability = GoogleApiAvailability.getInstance()
     private lateinit var videoViewModel: VideoSharedViewModel
@@ -59,10 +61,8 @@ class MainActivity : AppCompatActivity(),
         const val REQUEST_GOOGLE_PLAY_SERVICES = 1002
         const val REQUEST_PERMISSION_GET_ACCOUNTS = 1003
         private const val PREF_ACCOUNT_NAME = "accountName"
-        const val GCP_ML_SCOPE = "https://www.googleapis.com/auth/cloud-platform"
         private val SCOPES = arrayOf(
-                YouTubeScopes.YOUTUBE_READONLY,
-                GCP_ML_SCOPE
+                YouTubeScopes.YOUTUBE_READONLY
         )
         const val TAG = "MainActivity"
         private var homeFragment: HomeFragment? = null
@@ -87,17 +87,17 @@ class MainActivity : AppCompatActivity(),
         if (headerView == null) {
             headerView = navigationView.inflateHeaderView(R.layout.drawer_header)
         }
+
+        // TODO: Add these to profile
         val tvUserFullName = headerView!!.findViewById<TextView>(R.id.tvDrawerName)
         val tvUserOccupation = headerView.findViewById<TextView>(R.id.tvDrawerOccupation)
         val uProfilePhoto = headerView.findViewById<ImageView>(R.id.ivDrawerProfile)
 
-
-        FirebaseUtils.fetchCurrentUserFromFirebase { user ->
-            tvUserFullName.text = user.fullname
-            tvUserOccupation.text = user.occupation
-            // TODO: The image is returned with a bit margin in left, TO FIX, ScaleType: CenterCrop clips the image instead
-            PicassoUtils.loadCropAndSetImage(user.photoUri, uProfilePhoto, resources)
+        FirebaseAuth.getInstance().currentUser?.let { user ->
+            tvUserFullName.text = user.displayName
+            FirebaseUtils.downloadUserProfileImage(this, user, uProfilePhoto, resources)
         }
+
         val fm = supportFragmentManager
         var fragment = fm.findFragmentByTag(HomeFragment.TAG)
         if (fragment == null) {
@@ -117,8 +117,13 @@ class MainActivity : AppCompatActivity(),
         // Set Youtube account to be that of the one logged in with
         val user = FirebaseAuth.getInstance().currentUser
         // Also make sure if user signs in through phone then don't set account without an email
-        if (user != null && user.email != null && user.email!!.isNotEmpty())
+        if (user != null && user.email != null && user.email!!.isNotEmpty()) {
             mCredential.selectedAccountName = user.email
+        } else {
+            // Not called in OTP Login, so we have to call it to configure YouTube account
+            resultsFromApi()
+        }
+        YoutubeDataRequest.instance.setCredentials(mCredential)
     }
 
     // Cache into the database for ROOM
@@ -174,9 +179,7 @@ class MainActivity : AppCompatActivity(),
                         this, Manifest.permission.GET_ACCOUNTS)) {
             val accountName = getPreferences(Context.MODE_PRIVATE)
                     .getString(PREF_ACCOUNT_NAME, null)
-            log("ffnet in accoutn branch")
             if (accountName != null) {
-                log("ffnet Accoutn wanst null ${accountName}")
                 mCredential.selectedAccountName = accountName
                 resultsFromApi()
             } else {
@@ -187,8 +190,6 @@ class MainActivity : AppCompatActivity(),
                         REQUEST_ACCOUNT_PICKER)
             }
         } else {
-            log("ffnet asking permission")
-
             // Request the GET_ACCOUNTS permission via a user dialog
             EasyPermissions.requestPermissions(
                     this,
@@ -201,8 +202,6 @@ class MainActivity : AppCompatActivity(),
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        log("ffnet:; REQUEST CODE $requestCode and res $resultCode")
-        log("ffnet:; REQUEST CODE ${Activity.RESULT_OK}")
         when (requestCode) {
             REQUEST_GOOGLE_PLAY_SERVICES -> {
                 if (resultCode != Activity.RESULT_OK) {
@@ -213,7 +212,6 @@ class MainActivity : AppCompatActivity(),
                 }
             }
             REQUEST_ACCOUNT_PICKER -> {
-                log("ffnet :: one")
                 if (resultCode == Activity.RESULT_OK && data != null &&
                         data.extras != null) {
                     log("ffnet :: REQUEST_ACC_PICKER")
@@ -224,7 +222,6 @@ class MainActivity : AppCompatActivity(),
                         editor.putString(PREF_ACCOUNT_NAME, accountName)
                         editor.apply()
                         mCredential.selectedAccountName = accountName
-                        log("ffnet:: Inside REQUEST_ACC_PICKER:: $accountName")
                         resultsFromApi()
                     }
                 }
@@ -250,11 +247,9 @@ class MainActivity : AppCompatActivity(),
         when (item.itemId) {
 
             R.id.nav_signout -> {
-                FirebaseUtils.signOut(this) {
-                    startActivity(Intent(this@MainActivity, UserRegistrationActivity::class.java))
-                    finish()
-                }
-
+                FirebaseAuth.getInstance().signOut()
+                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                finish()
             }
             R.id.nav_settings -> {
                 supportFragmentManager

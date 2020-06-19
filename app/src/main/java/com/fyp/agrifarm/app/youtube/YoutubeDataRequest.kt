@@ -1,24 +1,21 @@
 package com.fyp.agrifarm.app.youtube
 
-import android.app.Application
-import com.fyp.agrifarm.app.MainActivity
-import com.fyp.agrifarm.app.news.NewsRepository
+import com.fyp.agrifarm.api.DeveloperKey
+import com.fyp.agrifarm.app.log
 import com.fyp.agrifarm.app.youtube.db.ExtendedVideo
-import com.fyp.agrifarm.app.youtube.db.ShortVideo
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.youtube.YouTube
+import com.google.api.services.youtube.YouTubeRequestInitializer
 import com.google.api.services.youtube.model.SearchListResponse
 import com.google.api.services.youtube.model.VideoListResponse
-import kotlinx.coroutines.*
 import java.io.IOException
-import java.lang.Exception
 
 class YoutubeDataRequest private constructor() {
 
     private var service: YouTube
-    private var credentials: GoogleAccountCredential = MainActivity.mCredential
+    private var credentials: GoogleAccountCredential? = null
     private var lastError: Exception? = null
 
     init {
@@ -26,22 +23,22 @@ class YoutubeDataRequest private constructor() {
                 AndroidHttp.newCompatibleTransport(),
                 JacksonFactory.getDefaultInstance(),
                 credentials
-        ).setApplicationName("AgriFarm").build()
+        )
+        .setYouTubeRequestInitializer(YouTubeRequestInitializer(DeveloperKey.YOUTUBE_DATA_KEY))
+        .setApplicationName("AgriFarm").build()
     }
 
     companion object {
-        private var ourInstance: YoutubeDataRequest? = null
+        private var ourInstance: YoutubeDataRequest = YoutubeDataRequest()
 
-        fun getInstance(): YoutubeDataRequest {
-            if (ourInstance == null) {
-                ourInstance = YoutubeDataRequest()
-            }
-            return ourInstance!!
-        }
+        val instance: YoutubeDataRequest
+            get() = ourInstance
+    }
 
-        fun setCredentials(credential: GoogleAccountCredential) {
-            ourInstance?.credentials = credential
-        }
+
+    fun setCredentials(credential: GoogleAccountCredential) {
+        log("Cred set to ${credential.selectedAccountName}")
+        ourInstance.credentials = credential
     }
 
     @Throws(IOException::class)

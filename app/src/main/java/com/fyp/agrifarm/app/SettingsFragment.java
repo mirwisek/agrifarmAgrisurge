@@ -25,7 +25,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             public boolean onPreferenceClick(Preference preference) {
                 FirebaseUtils.deleteAccount(o -> {
                             Toast.makeText(getContext(), "Account Deleted!", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(getContext(), UserRegistrationActivity.class));
+                            startActivity(new Intent(getContext(), LoginActivity.class));
                         },
                         e -> Toast.makeText(getContext(), "Account could not be deleted!", Toast.LENGTH_SHORT).show()
                 );

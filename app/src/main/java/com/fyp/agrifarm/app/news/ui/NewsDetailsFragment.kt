@@ -49,12 +49,16 @@ class NewsDetailsFragment : Fragment() {
 
         webView.webChromeClient = object: WebChromeClient() {
             override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                if (newProgress < 100 && webProgressBar.visibility == View.GONE)
+                if (newProgress < 100 && webProgressBar?.visibility == View.GONE) {
+                    loading.visible()
                     webProgressBar.visible()
+                }
 
                 webProgressBar.progress = newProgress
-                if (newProgress == 100)
+                if (newProgress == 100) {
+                    loading.gone()
                     webProgressBar.gone()
+                }
             }
 
         }

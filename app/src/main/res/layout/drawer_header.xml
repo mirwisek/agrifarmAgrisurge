@@ -13,6 +13,7 @@
         android:id="@+id/ivDrawerProfile"
         android:layout_width="80dp"
         android:layout_height="80dp"
+        android:tint="@color/colorWhite"
         android:contentDescription="@string/nav_header_desc"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:src="@drawable/profile_default_user" />
@@ -22,13 +23,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="Mirwise Khan"
+        android:text="AgriFarm User"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <TextView
         android:id="@+id/tvDrawerOccupation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:text="Student" />
 
 </LinearLayout>

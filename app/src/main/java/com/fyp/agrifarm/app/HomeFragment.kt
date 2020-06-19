@@ -1,7 +1,6 @@
 package com.fyp.agrifarm.app
 
 import android.Manifest
-import android.animation.Animator
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -15,7 +14,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.fyp.agrifarm.R
 import com.fyp.agrifarm.app.crops.CameraActivity
 import com.fyp.agrifarm.app.news.ui.NewsRecyclerAdapter
@@ -28,27 +26,20 @@ import com.fyp.agrifarm.app.prices.model.PriceItem
 import com.fyp.agrifarm.app.prices.ui.LocationListFragment
 import com.fyp.agrifarm.app.prices.ui.LocationListFragment.OnLocationItemClickListener
 import com.fyp.agrifarm.app.prices.ui.PricesRecyclerAdapter
-import com.fyp.agrifarm.app.profile.model.User
-import com.fyp.agrifarm.app.profile.ui.FirestoreUserRecyclerAdapter
-import com.fyp.agrifarm.app.profile.ui.UserInformationActivity
 import com.fyp.agrifarm.app.weather.model.WeatherViewModel
 import com.fyp.agrifarm.app.youtube.VideoRecyclerAdapter
 import com.fyp.agrifarm.app.youtube.viewmodel.VideoSharedViewModel
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 const val KEY_LOCATION_SET = "userDistrict"
+const val KEY_SHARED_PREFS_NAME = "agriFarm"
 
 @ExperimentalCoroutinesApi
 class HomeFragment : Fragment(), OnLocationItemClickListener {
-
-    private val db = FirebaseFirestore.getInstance()
-    private val userRef = db.collection("users")
 
     private lateinit var pricesViewModel: PricesViewModel
     private lateinit var videoViewModel: VideoSharedViewModel
@@ -56,7 +47,6 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
     private lateinit var newsSharedViewModel: NewsSharedViewModel
     private lateinit var videoRecyclerAdapter: VideoRecyclerAdapter
     private lateinit var newsRecyclerAdapter: NewsRecyclerAdapter
-    private lateinit var adapter: FirestoreUserRecyclerAdapter
     private var mListener: OnFragmentInteractionListener? = null
 
 
@@ -64,7 +54,6 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
         const val TAG = "HomeFragment"
         const val RC_LOCATION = 1021
         const val RC_LOCATION_DIALOG = 1002
-        const val KEY_SHARED_PREFS_NAME = "agriFarm"
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -87,29 +76,26 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
             newsRecyclerAdapter.changeDataSource(list)
         })
 
+        // Listen when network request finish, remove progressbar
+        newsSharedViewModel.newsFetchComplete.observe(viewLifecycleOwner, Observer { isComplete ->
+            if(isComplete) {
+                progressNews.gone()
+                newsSharedViewModel.newsFetchComplete.removeObservers(this)
+            }
+        })
+
+        newsSharedViewModel.isOfflineResult.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            it?.let {  isOffline ->
+                tvHintNews.text = if(isOffline) "News - Offline Results" else "News"
+            }
+        })
+
         videoViewModel.allVideos.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             videoRecyclerAdapter.updateList(it)
         })
 
         fabTakeImage.setOnClickListener { startAnActivity(CameraActivity::class.java) }
 
-        // Inflating users
-        val options = FirestoreRecyclerOptions.Builder<User>()
-                .setQuery(userRef, User::class.java)
-                .build()
-        adapter = FirestoreUserRecyclerAdapter(options, context)
-        rvUsers.setHasFixedSize(true)
-        rvUsers.adapter = adapter
-        adapter.notifyDataSetChanged()
-
-        adapter.setOnItemClickListener { snap: DocumentSnapshot, position: Int ->
-            val user = snap.toObject(User::class.java)
-            val intent = Intent(context, UserInformationActivity::class.java)
-            intent.putExtra("username", user!!.fullname)
-            intent.putExtra("userphoto", user.getPhotoUri())
-            intent.putExtra("docid", snap.id)
-            startActivityForResult(intent, 20)
-        }
 
         val priceList: MutableList<PriceItem> = ArrayList()
         priceList.add(PriceItem("Cherry", "97.22", PriceItem.CHERRY, PriceItem.ARROW_DOWN))
@@ -139,7 +125,10 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
         // First load update required
         pricesViewModel.location.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
 
-            it?.let { pricesViewModel.currentState.postValue(LoadState.LOADED) }
+            it?.let { loc ->
+                pricesViewModel.currentState.postValue(LoadState.LOADED)
+                tvHintPrices.text = "Latest market prices for ${loc.areaName}"
+            }
             pricesViewModel.location.removeObservers(this)
         })
 
@@ -180,7 +169,7 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
 
         Handler().postDelayed( {
             fabTakeImage.extend()
-        }, 3000L)
+        }, 1500L)
 
     }
 
@@ -289,7 +278,7 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
 
     private fun saveLocationToSharedPrefs(loc: LocationListItem) {
         val location = setOf(loc.areaCode, loc.areaName)
-        requireContext().getSharedPrefs().edit()
+        requireContext().sharedPrefs.edit()
                 .putStringSet(KEY_LOCATION_SET, location).apply()
     }
 
@@ -327,16 +316,6 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
     override fun onDetach() {
         super.onDetach()
         mListener = null
-    }
-
-    override fun onStart() {
-        super.onStart()
-        adapter.startListening()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        adapter.stopListening()
     }
 
     override fun onLocationSelected(item: LocationListItem) {

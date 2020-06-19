@@ -14,6 +14,9 @@ class NewsSharedViewModel(application: Application) : AndroidViewModel(applicati
         it.shuffled()
     }
 
+    var isOfflineResult = Transformations.map(newsRepository.isOfflineResult) { it }
+    var newsFetchComplete = Transformations.map(newsRepository.newsFetchComplete) {it}
+
     private val selectedNews = MutableLiveData<NewsEntity>()
 
 

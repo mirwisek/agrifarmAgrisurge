@@ -27,21 +27,24 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Your personal farming assistant..."
-        android:textSize="20sp"
         android:layout_marginTop="10dp"
+        android:text="Your personal farming assistant..."
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/logo"
         app:layout_constraintStart_toStartOf="@id/logo"
-        app:layout_constraintTop_toTopOf="@id/guide"/>
+        app:layout_constraintTop_toTopOf="@id/guide" />
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+    <com.google.android.gms.common.SignInButton
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="45dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="16dp"
         android:text="Sign In"
         android:gravity="center"
         app:backgroundTint="@color/colorWhite"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/custom_tos_pp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -50,7 +53,9 @@
         android:id="@+id/custom_tos_pp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="10dp"
         android:gravity="center_horizontal"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -27,12 +27,20 @@ fun Bitmap.getResizedBitmap(maxSize: Int): Bitmap {
     return Bitmap.createScaledBitmap(this, width, height, true)
 }
 
-fun Fragment.safeSnackbar(msg: String, duration: Int = Snackbar.LENGTH_SHORT) {
+fun Fragment.snackbarFallback(msg: String, duration: Int = Snackbar.LENGTH_SHORT) {
     view?.let {
         Snackbar.make(it, msg, duration).show()
         return
     }
     toastFrag(msg, duration)
+}
+
+fun Context.snackbarFallback(view: View?, msg: String, duration: Int = Snackbar.LENGTH_SHORT) {
+    view?.let {
+        Snackbar.make(it, msg, duration).show()
+        return
+    }
+    toast(msg, duration)
 }
 
 fun Context.toast(msg: String, len: Int = Toast.LENGTH_SHORT) {
@@ -74,8 +82,8 @@ fun View.gone() {
     visibility = View.GONE
 }
 
-fun Context.getSharedPrefs(): SharedPreferences {
-    return getSharedPreferences(HomeFragment.KEY_SHARED_PREFS_NAME, Context.MODE_PRIVATE)
-}
+val Context.sharedPrefs: SharedPreferences
+    get() = getSharedPreferences(KEY_SHARED_PREFS_NAME, Context.MODE_PRIVATE)
+
 
 // endregion

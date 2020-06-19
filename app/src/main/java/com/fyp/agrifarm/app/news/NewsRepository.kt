@@ -28,6 +28,11 @@ class NewsRepository : CoroutineScope {
     private val scope = CoroutineScope(coroutineContext)
 
     val newsList = MutableLiveData<List<NewsEntity>>()
+    var isOfflineResult = MutableLiveData<Boolean>()
+            .apply { postValue(false) }
+
+    var newsFetchComplete = MutableLiveData<Boolean>()
+            .apply { postValue(false) }
 
     private constructor()
 
@@ -50,6 +55,8 @@ class NewsRepository : CoroutineScope {
             override fun onFailure(call: Call<List<NewsEntity>>, t: Throwable) {
 
                 log("ERROR <RETROFIT>:: ${t.message}")
+                app.toast("Error fetching news")
+                newsFetchComplete.postValue(true)
             }
 
             override fun onResponse(call: Call<List<NewsEntity>>, response: Response<List<NewsEntity>>) {
@@ -62,13 +69,24 @@ class NewsRepository : CoroutineScope {
                     }
                 } else {
                     // Show cached results
-                    if(response.code() == 503) {
-                        loadDbCachedNews()
-                    } else {
-                        log("Unsucessful <RETROFIT>:: ${response.errorBody()?.string()}")
-                        app.applicationContext.toast("Couldn't retrieve latest news")
+                    when(response.code()) {
+                        // Gateway TimeOut
+                        505 -> {
+                            log("Unsuccessful <RETROFIT> [${response.code()}:: ${response.errorBody()}")
+                        }
+                        // Network unavailable
+                        503 -> {
+                            log("Unsuccessful <RETROFIT> [${response.code()}:: ${response.errorBody()}")
+                        }
+                        else -> {
+                            log("Unsucessful <RETROFIT>:: ${response.errorBody()?.string()}")
+                            app.toast("Couldn't retrieve latest news")
+                        }
                     }
+                    loadDbCachedNews()
+                    isOfflineResult.postValue(true)
                 }
+                newsFetchComplete.postValue(true)
             }
 
         })

@@ -7,8 +7,7 @@ package com.fyp.agrifarm.api;
  */
 public class DeveloperKey {
 
-    public static final String DEVELOPER_KEY = "AIzaSyAeJwF2aJlAGFUDyELfxnjV2FTA8lsTWFE";
-
+    public static final String YOUTUBE_DATA_KEY = "AIzaSyB4eCIBH7sbB1mURTfTHarKfgKcw523i7k";
     public static final String YOUTUBE_KEY="AIzaSyBZ0eiSHnkOmfMHkkyaGYW3SFR4qivSh_A";
 
 }

@@ -19,15 +19,18 @@ import com.fyp.agrifarm.app.crops.ModelResponse
 import com.fyp.agrifarm.app.crops.ModelResultState
 import com.fyp.agrifarm.app.gone
 import com.fyp.agrifarm.app.log
-import com.fyp.agrifarm.app.safeSnackbar
+import com.fyp.agrifarm.app.snackbarFallback
+import com.fyp.agrifarm.app.visible
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.fragment_crops_result.*
 import retrofit2.Call
 import retrofit2.Response
 import java.io.File
 
 class CropsResultFragment : Fragment() {
 
+    private var modelResultBottomSheet: ModelResultBottomSheet? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -48,6 +51,12 @@ class CropsResultFragment : Fragment() {
 
         progress = view.findViewById(R.id.progressCropDiagnosis)
         labelFeedback = view.findViewById(R.id.tvCropFeedback)
+
+        cardResult.setOnClickListener {
+            modelResultBottomSheet?.let { sheet ->
+                sheet.show(parentFragmentManager, sheet.tag)
+            }
+        }
 
 
         val imageView = view.findViewById<ImageView>(R.id.ivCropSubject)
@@ -74,9 +83,10 @@ class CropsResultFragment : Fragment() {
                                             progress.visibility = View.GONE
                                             labelFeedback.text = output
 
-                                            log("Output ${output}")
-                                            val modelResultBottomSheet = ModelResultBottomSheet(output)
-                                            modelResultBottomSheet.show(parentFragmentManager, modelResultBottomSheet.tag)
+                                            modelResultBottomSheet = ModelResultBottomSheet(output)
+                                            modelResultBottomSheet?.show(parentFragmentManager, modelResultBottomSheet?.tag)
+                                            cropDiseaseName.text = output
+                                            cardResult.visible()
                                         }
                                     })
                                 }
@@ -112,7 +122,7 @@ class CropsResultFragment : Fragment() {
                 log("Unsucessful <RETROFIT>:: ${t.message}")
                 cropViewModel.currentState.postValue(ModelResultState.ERROR)
                 t.printStackTrace()
-                safeSnackbar("[Error] Couldn't find disease, please try again!")
+                snackbarFallback("[Error] Couldn't find disease, please try again!")
             }
 
             override fun onResponse(call: Call<ModelResponse>, response: Response<ModelResponse>) {
@@ -127,7 +137,7 @@ class CropsResultFragment : Fragment() {
                     }
                 } else {
                     cropViewModel.currentState.postValue(ModelResultState.ERROR)
-                    safeSnackbar("Couldn't find disease, please try again!")
+                    snackbarFallback("Couldn't find disease, please try again!")
                     val err = response.errorBody()?.string()
                     log("Unsucessful <RETROFIT>:: $err")
                 }

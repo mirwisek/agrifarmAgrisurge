@@ -8,7 +8,6 @@
     tools:context=".app.MainActivity">
 
     <ScrollView
-        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -88,6 +87,7 @@
                 android:layout_width="90dp"
                 android:layout_height="70dp"
                 android:layout_marginEnd="20dp"
+                android:tint="@color/colorWhite"
                 android:src="@drawable/ic_w_partly_cloudy"
                 app:layout_constraintEnd_toStartOf="@id/guideVertEnd"
                 app:layout_constraintTop_toTopOf="@id/tvWeatherTemp" />
@@ -98,6 +98,7 @@
                 android:layout_height="wrap_content"
                 android:text="Agrifarm Day"
                 android:textAllCaps="true"
+                android:textStyle="bold"
                 android:textColor="@color/colorWhite"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="@id/ivWeatherIcon"
@@ -145,7 +146,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.22" />
+                app:layout_constraintGuide_percent="0.27" />
 
             <TextView
                 android:id="@+id/tvHintPrices"
@@ -194,28 +195,36 @@
                 app:layout_constraintTop_toTopOf="@id/rvPrices" />
 
             <TextView
-                android:id="@+id/tvHintPeople"
+                android:id="@+id/tvHintNews"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:text="People you may know"
+                android:text="News"
                 android:textColor="@color/colorBlack"
                 android:textSize="15sp"
                 app:layout_constraintStart_toStartOf="@id/guideVertStart"
                 app:layout_constraintTop_toBottomOf="@id/rvPrices" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvUsers"
+                android:id="@+id/rvNews"
                 android:layout_width="0dp"
-                android:layout_height="120dp"
+                android:layout_height="150dp"
                 android:orientation="horizontal"
-                android:paddingLeft="20dp"
+                android:paddingStart="20dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvHintPeople">
-            </androidx.recyclerview.widget.RecyclerView>
+                app:layout_constraintTop_toBottomOf="@id/tvHintNews" />
+
+            <ProgressBar
+                android:id="@+id/progressNews"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@id/rvNews"
+                app:layout_constraintEnd_toStartOf="@id/guideVertEnd"
+                app:layout_constraintStart_toStartOf="@id/guideVertStart"
+                app:layout_constraintTop_toTopOf="@id/rvNews" />
 
             <ProgressBar
                 android:id="@+id/news_pbar"
@@ -226,29 +235,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvHintNews"
                 android:visibility="gone"/>
-
-            <TextView
-                android:id="@+id/tvHintNews"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:text="News"
-                android:textColor="@color/colorBlack"
-                android:textSize="15sp"
-                app:layout_constraintStart_toStartOf="@id/guideVertStart"
-                app:layout_constraintTop_toBottomOf="@id/rvUsers" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvNews"
-                android:layout_width="0dp"
-                android:layout_height="150dp"
-                android:orientation="horizontal"
-                android:paddingLeft="20dp"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvHintNews" />
 
             <TextView
                 android:id="@+id/tvHintVideo"

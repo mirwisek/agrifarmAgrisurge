@@ -10,13 +10,8 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-
-import com.fyp.agrifarm.app.ExtensionsKt;
-import com.fyp.agrifarm.app.profile.db.UserDataFetchListener;
-import com.fyp.agrifarm.app.profile.db.UserDataUploadListener;
-import com.fyp.agrifarm.app.profile.model.User;
-import com.fyp.agrifarm.app.profile.db.UserSignOutListener;
+import com.fyp.agrifarm.app.profile.UserDataUploadListener;
+import com.fyp.agrifarm.app.profile.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -24,7 +19,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -53,15 +47,6 @@ public class FirebaseUtils {
     public static final String USER_FULLNAME = "fullname";
     public static final String USER_PHOTO_URI = "photoUri";
 
-    public static void signOut(Context context, @NonNull UserSignOutListener userSignOutListener){
-        FirebaseAuth.getInstance().signOut();
-//        AuthUI.getInstance().signOut(context).addOnCompleteListener(
-//                task -> {
-                    Toast.makeText(context, "Signed Out", Toast.LENGTH_SHORT).show();
-                    userSignOutListener.onUserSignedOut();
-//                }
-//        );
-    }
 
     public static void downloadUserProfileImage(Context ctx, FirebaseUser user, ImageView targetImageView, Resources resources){
         try {
@@ -116,29 +101,6 @@ public class FirebaseUtils {
 //        });
     }
 
-    public static void fetchCurrentUserFromFirebase(@NonNull UserDataFetchListener userDataFetchListener){
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if(firebaseUser == null){
-            try {
-                throw new Exception("Firebase user is null", new Throwable("FetchCurrentUserFromFirebase"));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return;
-        }
-        String userUid = firebaseUser.getUid();
-        firestoreUsers.document(userUid).get().addOnSuccessListener(documentSnapshot -> {
-            if(documentSnapshot.exists()){
-                User user = documentSnapshot.toObject(User.class);
-                userDataFetchListener.onUserDataFetched(user);
-            }else {
-                Log.d(TAG, "Data could not be fetched!");
-            }
-        }).addOnFailureListener(e -> {
-            Log.d(TAG, "Data fetching, failed!");
-        });
-
-    }
 
     public static void uploadUserData(Activity activity, User user, ImageView targetImageView, UserDataUploadListener userDataUploadListener){
         Target mTarget = new Target() {
@@ -173,7 +135,7 @@ public class FirebaseUtils {
             Picasso.get().load(ourInstance.image)
                     .resize(300,300)
                     .centerCrop().into(mTarget);
-        }else{
+        } else{
             // Good practice: Don't use Anonymous Interface for Target, doing so will make it a victim of garbage collection
             Picasso.get().load(user.getPhotoUri())
                     .resize(300,300)
@@ -209,19 +171,21 @@ public class FirebaseUtils {
         });
     }
 
-    private static void storeUserDetails(Context context, Task<Uri> task, User user, String userUid, UserDataUploadListener userDataUploadListener){
-        Uri downloadUri = task.getResult();
+    public static void storeUserDetails(Context context, Task<Uri> task, User user, String userUid, UserDataUploadListener userDataUploadListener){
+//        Uri downloadUri = task.getResult();
 //        if(task != null)
 //            downloadUri = task.getResult();
 //        else
 //            downloadUri = userProfileUri;
+
+
         Log.i(TAG, "storeUserDetails: online" );
         Map<String, Object> userData = new HashMap<>();
         userData.put(USER_FULLNAME, user.getFullname());
         userData.put(USER_OCCUPATION, user.getOccupation());
         userData.put(USER_AGE, user.getAge());
         userData.put(USER_LOCATION, user.getLocation());
-        userData.put(USER_PHOTO_URI, downloadUri.toString());
+        userData.put(USER_PHOTO_URI, user.getPhotoUri());
 
         firestoreUsers.document(userUid).set(userData)
                 .addOnSuccessListener(aVoid -> {

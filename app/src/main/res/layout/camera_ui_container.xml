@@ -80,15 +80,17 @@
         android:id="@+id/retry_capture_button"
         android:layout_width="@dimen/round_button_medium"
         android:layout_height="@dimen/round_button_medium"
-        android:layout_marginBottom="@dimen/margin_xlarge"
         android:layout_marginStart="@dimen/margin_small"
+        android:background="@android:color/transparent"
         android:padding="@dimen/spacing_small"
         android:scaleType="fitCenter"
         android:tint="@color/colorWhite"
-        android:background="@android:color/transparent"
-        app:srcCompat="@drawable/ic_switch"
+        app:layout_constraintBottom_toBottomOf="@id/container_shutter"
+        app:layout_constraintEnd_toStartOf="@id/container_shutter"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/container_shutter"
+        app:srcCompat="@drawable/ic_switch" />
 
     <ImageButton
         android:visibility="gone"

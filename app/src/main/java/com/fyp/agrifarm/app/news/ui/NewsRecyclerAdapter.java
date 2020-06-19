@@ -1,11 +1,15 @@
 package com.fyp.agrifarm.app.news.ui;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,7 +17,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.fyp.agrifarm.R;
 import com.fyp.agrifarm.app.news.NewsEntity;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.List;
 
@@ -46,7 +52,35 @@ public class NewsRecyclerAdapter extends RecyclerView.Adapter<NewsRecyclerAdapte
         holder.tvNewsTitle.setText(record.getTitle());
         // Picasso will run the task Asynchronously and load into the targeted view upon download complete
         // You can resize thumbnails with resize method
-        Picasso.get().load(record.getImage()).into(holder.ivNewsThumb);
+        Picasso.get().load(record.getImage()).into(holder.ivNewsThumb, new Callback() {
+            @Override
+            public void onSuccess() {
+                holder.rvNewsShadeItem.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
+//        Picasso.get().load(record.getImage()).into(new Target() {
+//            @Override
+//            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+//                holder.ivNewsThumb.setImageBitmap(bitmap);
+//                holder.rvNewsShadeItem.setVisibility(View.VISIBLE);
+////                holder.background.setBackgroundResource(0);
+//            }
+//
+//            @Override
+//            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+//
+//            }
+//
+//            @Override
+//            public void onPrepareLoad(Drawable placeHolderDrawable) {
+//
+//            }
+//        });
     }
 
     @Override
@@ -60,9 +94,13 @@ public class NewsRecyclerAdapter extends RecyclerView.Adapter<NewsRecyclerAdapte
 
         TextView tvNewsTitle;
         ImageView ivNewsThumb;
+        LinearLayout rvNewsShadeItem;
+        View background;
 
         NewsListViewHolder(View view) {
             super(view);
+            background = view.findViewById(R.id.background);
+            rvNewsShadeItem = view.findViewById(R.id.rvNewsShadeItem);
             tvNewsTitle = view.findViewById(R.id.tvNewsTitle);
             ivNewsThumb = view.findViewById(R.id.ivNewsThumb);
         }

@@ -21,28 +21,18 @@ import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class YoutubeFragment extends Fragment implements RecommendedVideosRecyclerViewAdapter.OnItemClickListener {
 
     public static final String TAG = "YoutubeFragment";
     private VideoSharedViewModel videoViewModel;
 
-    @BindView(R.id.tvPlayerVideoTitle)
-    TextView tvTitle;
-    @BindView(R.id.tvPlayerVideoPublishDate)
-    TextView tvPublishDate;
-    @BindView(R.id.tvPlayerVideoPublisher)
-    TextView tvPublisher;
-    @BindView(R.id.tvPlayerVideoTags)
-    TextView tvTags;
-    @BindView(R.id.tvPlayerVideoLikes)
-    TextView tvLikes;
-    @BindView(R.id.tvPlayerVideoDislikes)
-    TextView tvDislikes;
-    @BindView(R.id.tvPlayerVideoViews)
-    TextView tvViewsCount;
+    private TextView tvTitle;
+    private TextView tvPublishDate;
+    private TextView tvPublisher;
+    private TextView tvTags;
+    private TextView tvLikes;
+    private TextView tvDislikes;
+    private TextView tvViewsCount;
     RecommendedVideosRecyclerViewAdapter recommendedVideosRecyclerViewAdapter;
     RecyclerView RecommendedVideoRecyclerView;
 //    private OnFragmentInteractionListener mListener;
@@ -57,7 +47,17 @@ public class YoutubeFragment extends Fragment implements RecommendedVideosRecycl
         ConstraintLayout parent = (ConstraintLayout) inflater.inflate(R.layout.content_youtube, container,
                 false);
 
-        ButterKnife.bind(this, parent);
+        tvTitle = parent.findViewById(R.id.tvPlayerVideoTitle);
+        tvPublishDate = parent.findViewById(R.id.tvPlayerVideoPublishDate);
+
+        tvPublisher = parent.findViewById(R.id.tvPlayerVideoPublisher);
+
+        tvTags = parent.findViewById(R.id.tvPlayerVideoTags);
+
+        tvLikes = parent.findViewById(R.id.tvPlayerVideoLikes);
+
+        tvDislikes = parent.findViewById(R.id.tvPlayerVideoDislikes);
+        tvViewsCount = parent.findViewById(R.id.tvPlayerVideoViews);
 
         YouTubePlayerSupportFragment youFragment = YouTubePlayerSupportFragment.newInstance();
 //        YoutubeFragment youtubeFragment = YoutubeFragment.newInstance(videoUrl,"none");
