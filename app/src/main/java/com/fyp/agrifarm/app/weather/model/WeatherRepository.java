@@ -3,11 +3,11 @@ package com.fyp.agrifarm.app.weather.model;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.preference.PreferenceManager;
 
-import com.fyp.agrifarm.app.ExtensionsKt;
 import com.google.type.LatLng;
 
 import java.text.SimpleDateFormat;
@@ -22,9 +22,11 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class WeatherRepository {
-    private static WeatherRepository instance;
+import static com.fyp.agrifarm.app.ExtensionsKt.getSharedPrefs;
 
+public class WeatherRepository {
+
+    private static WeatherRepository instance;
     private static final String APP_ID = "e1f236cb66f5933607fd7905b42b39c9";
     private static final String BASE_URL = "https://api.openweathermap.org/";
     private List<HourlyObject> hourlyObject = new ArrayList<>();
@@ -42,14 +44,13 @@ public class WeatherRepository {
 
     private String getWeatherUnit(Application application) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(application.getApplicationContext());
-        String WeatherPref = sharedPref
-                .getString("weatherUnit", "-1");
+        String WeatherPref = sharedPref.getString("weatherUnit", "-1");
         return WeatherPref;
     }
 
     private LatLng getLocation(Application application) {
-        String latitude = ExtensionsKt.getSharedPrefs(application.getApplicationContext()).getString("lat", null);
-        String longitude = ExtensionsKt.getSharedPrefs(application.getApplicationContext()).getString("lon", null);
+        String latitude = getSharedPrefs(application.getApplicationContext()).getString("lat", null);
+        String longitude = getSharedPrefs(application.getApplicationContext()).getString("lon", null);
         try {
             double lat = Double.parseDouble(latitude);
             double lng = Double.parseDouble(longitude);
@@ -73,7 +74,7 @@ public class WeatherRepository {
 
         if (unit.equals("Celsius")) {
             unit = "metric";
-        } else {
+        } else if (unit.equals("imperial")) {
             unit = "imperial";
 
         }
@@ -87,15 +88,18 @@ public class WeatherRepository {
         call.enqueue(new Callback<WeatherHourlyResponse>() {
             @Override
             public void onResponse(Call<WeatherHourlyResponse> call, Response<WeatherHourlyResponse> response) {
-                WeatherHourlyResponse weatherHourlyResponse = response.body();
-                hourlyObject = weatherHourlyResponse.weatherHourly;
-                hourlyList.postValue(hourlyObject);
-
+                if (response.isSuccessful()) {
+                    WeatherHourlyResponse weatherHourlyResponse = response.body();
+                    hourlyObject = weatherHourlyResponse.weatherHourly;
+                    hourlyList.postValue(hourlyObject);
+                } else {
+                    //TODO Implement LocalCache
+                }
             }
 
             @Override
             public void onFailure(Call<WeatherHourlyResponse> call, Throwable t) {
-
+                Toast.makeText(application, "Failed", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -118,7 +122,6 @@ public class WeatherRepository {
             unit = "imperial";
 
         }
-
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -128,15 +131,18 @@ public class WeatherRepository {
         call.enqueue(new Callback<WeatherHourlyResponse>() {
             @Override
             public void onResponse(Call<WeatherHourlyResponse> call, Response<WeatherHourlyResponse> response) {
-                WeatherHourlyResponse weatherHourlyResponse = response.body();
-                dailyObject = weatherHourlyResponse.weatherDaily;
-                dailyList.postValue(dailyObject);
-
+                if (response.isSuccessful()) {
+                    WeatherHourlyResponse weatherHourlyResponse = response.body();
+                    dailyObject = weatherHourlyResponse.weatherDaily;
+                    dailyList.postValue(dailyObject);
+                } else {
+                    //TODO Implement LocalCache
+                }
             }
 
             @Override
             public void onFailure(Call<WeatherHourlyResponse> call, Throwable t) {
-
+                Toast.makeText(application, "Failed", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -167,22 +173,30 @@ public class WeatherRepository {
         call.enqueue(new Callback<WeatherDailyResponse>() {
             @Override
             public void onResponse(Call<WeatherDailyResponse> call, Response<WeatherDailyResponse> response) {
-                WeatherDailyResponse weatherDailyResponse = response.body();
-                Weather weather = weatherDailyResponse.weather.get(0);
-                SimpleDateFormat sdf = new SimpleDateFormat("EEEE", Locale.ENGLISH);
-                Date d = new Date();
-                String dayOfTheWeek = sdf.format(d);
-                String description = weather.description;
-                String tempertaure = String.valueOf(weatherDailyResponse.main.temp);
-                tempertaure = tempertaure.substring(0, 2);
-                String humidity = String.valueOf(weatherDailyResponse.main.humidity);
-                String icon = weather.icon;
-                double windvalue = weatherDailyResponse.wind.speed * 3.6;
-                String windpressure = String.valueOf(windvalue);
-                windpressure = windpressure.substring(0, 3);
-                CurrentWeatherObject currentWeatherObject = new CurrentWeatherObject(dayOfTheWeek,
-                        tempertaure, description, humidity, windpressure, icon);
-                currentWeather.postValue(currentWeatherObject);
+                if (response.isSuccessful()) {
+                    WeatherDailyResponse weatherDailyResponse = response.body();
+//                Log.d("FSDSF","" + response.body().main.temp);
+                    Weather weather = weatherDailyResponse.weather.get(0);
+                    SimpleDateFormat sdf = new SimpleDateFormat("EEEE", Locale.ENGLISH);
+                    Date d = new Date();
+                    String dayOfTheWeek = sdf.format(d);
+                    String description = weather.description;
+                    String tempertaure = String.valueOf(weatherDailyResponse.main.temp);
+                    tempertaure = tempertaure.substring(0, 2);
+                    String humidity = String.valueOf(weatherDailyResponse.main.humidity);
+                    String icon = weather.icon;
+                    double windvalue = weatherDailyResponse.wind.speed * 3.6;
+                    String windpressure = String.valueOf(windvalue);
+                    windpressure = windpressure.substring(0, 3);
+                    CurrentWeatherObject currentWeatherObject = new CurrentWeatherObject(dayOfTheWeek,
+                            tempertaure, description, humidity, windpressure, icon);
+                    currentWeather.postValue(currentWeatherObject);
+                }
+                else
+                {
+                    //TODO Implement This
+                }
+
             }
 
             @Override

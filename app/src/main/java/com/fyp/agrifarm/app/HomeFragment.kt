@@ -177,14 +177,18 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
 
         tvWeatherForecast.setOnClickListener { v: View? -> mListener?.onForecastClick(v) }
 
-        getWeatherInformation()
+        pricesViewModel.location.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                getWeatherInformation()
+            }
+        })
+
 
         Handler().postDelayed( {
-            fabTakeImage.extend()
+            fabTakeImage?.extend()
         }, 3000L)
 
     }
-
 
     private fun getWeatherInformation() {
         var temperatue : String

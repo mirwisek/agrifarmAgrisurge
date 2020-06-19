@@ -43,7 +43,6 @@ public class WeatherDailyRecyclerAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
         DailyObject record = weatherList.get(i);
         WeatherListViewHolder holder = (WeatherListViewHolder) viewHolder;
-
         String day = new SimpleDateFormat("EEEE").format(new Date(record.getDt() * 1000));
         holder.tvDay.setText(day);
         Weather weather = record.getWeather().get(0);

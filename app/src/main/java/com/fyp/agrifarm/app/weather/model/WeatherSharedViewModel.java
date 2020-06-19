@@ -17,7 +17,7 @@ public class WeatherSharedViewModel extends AndroidViewModel {
     private Application app;
     private MutableLiveData<List<HourlyObject>> hourlyList;
     private MutableLiveData<List<DailyObject>> dailyList;
-    private MutableLiveData<CurrentWeatherObject> currentWeathetObject;
+    private MutableLiveData<CurrentWeatherObject> currentWeatherObject;
     private WeatherRepository weatherRepository;
     public Map<String, Integer> weatherIconsMap = new HashMap<>();
 
@@ -41,7 +41,7 @@ public class WeatherSharedViewModel extends AndroidViewModel {
         dailyList = weatherRepository.dailyList;
 
         weatherRepository.FetchDailyForecast(app);
-        currentWeathetObject = weatherRepository.currentWeather;
+        currentWeatherObject = weatherRepository.currentWeather;
 
     }
 
@@ -55,7 +55,7 @@ public class WeatherSharedViewModel extends AndroidViewModel {
     }
     public LiveData<CurrentWeatherObject> getCurrentWeather()
     {
-        return currentWeathetObject;
+        return currentWeatherObject;
     }
 
     private void loadMapIcons() {
