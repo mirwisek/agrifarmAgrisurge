@@ -168,7 +168,7 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
         getWeatherInformation()
 
         Handler().postDelayed( {
-            fabTakeImage.extend()
+            fabTakeImage?.extend()
         }, 1500L)
 
     }
