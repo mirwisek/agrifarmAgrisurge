@@ -1,6 +1,7 @@
 package com.fyp.agrifarm.app
 
 import android.Manifest
+import android.animation.Animator
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -14,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.fyp.agrifarm.R
 import com.fyp.agrifarm.app.crops.CameraActivity
 import com.fyp.agrifarm.app.news.ui.NewsRecyclerAdapter
@@ -32,6 +34,8 @@ import com.fyp.agrifarm.app.youtube.viewmodel.VideoSharedViewModel
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -165,7 +169,12 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
 
         tvWeatherForecast.setOnClickListener { v: View? -> mListener?.onForecastClick(v) }
 
-        getWeatherInformation()
+        pricesViewModel.location.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                getWeatherInformation()
+            }
+        })
+
 
         Handler().postDelayed( {
             fabTakeImage?.extend()
@@ -175,33 +184,28 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
 
 
     private fun getWeatherInformation() {
-
-        weatherViewModel.dailyforcast.observe(viewLifecycleOwner, Observer { weatherDailyForecast ->
-            val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-            val WeatherPref = sharedPref.getString("weatherUnit", "-1")
-
-            if (WeatherPref.equals("Celsius")) {
-
-                tvWeatherTemp.text = weatherDailyForecast.temperature + "°C"
-
-
+        var temperatue : String
+        weatherViewModel.init()
+        weatherViewModel.getCurrentWeather().observe(viewLifecycleOwner, Observer { weatherDailyForecast: CurrentWeatherObject ->
+            val sharedPref = PreferenceManager
+                    .getDefaultSharedPreferences(requireContext())
+            val WeatherPref = sharedPref
+                    .getString("weatherUnit", "-1")
+            if (WeatherPref == "Celsius") {
+                temperatue = weatherDailyForecast.temperature + "°C"
             } else {
-
-                tvWeatherTemp.text = weatherDailyForecast.temperature + "°F"
-
-
+                temperatue = weatherDailyForecast.temperature + "°F"
             }
-//            tvWeatherTemp.text = temperatue
-            tvWeatherDescription.text = weatherDailyForecast.description
-            tvWeatherDay.text = weatherDailyForecast.day
-            tvWeatherHumidity.text = weatherDailyForecast.humidity
-
+            tvWeatherTemp.setText(temperatue)
+            tvWeatherDescription.setText(weatherDailyForecast.description)
+            tvWeatherDay.setText(weatherDailyForecast.day)
+            tvWeatherHumidity.setText(weatherDailyForecast.humidity.subSequence(0,2))
 
             // Wrapped with catch incase resource ID not found
             try {
                 val id = weatherDailyForecast.iconurl
-                ivWeatherIcon.setImageResource(weatherViewModel.weatherIconsMap[id]!!)
-            } catch (e: java.lang.Exception) {
+                ivWeatherIcon.setImageResource(weatherViewModel.weatherIconsMap.get(id)!!)
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
 

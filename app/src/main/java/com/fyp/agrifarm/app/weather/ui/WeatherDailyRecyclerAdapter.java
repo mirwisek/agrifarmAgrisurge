@@ -10,10 +10,12 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fyp.agrifarm.R;
-import com.fyp.agrifarm.app.weather.model.WeatherDailyForecast;
-import com.squareup.picasso.Picasso;
+import com.fyp.agrifarm.app.weather.model.DailyObject;
+import com.fyp.agrifarm.app.weather.model.Weather;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +23,7 @@ import java.util.Map;
 public class WeatherDailyRecyclerAdapter extends RecyclerView.Adapter {
     private Map<String, Integer> WeatherIconMap;
     private Context context;
-    private List<WeatherDailyForecast> weatherList;
+    private List<DailyObject> weatherList;
 
 
     public WeatherDailyRecyclerAdapter(Context context){
@@ -39,48 +41,48 @@ public class WeatherDailyRecyclerAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
-        WeatherDailyForecast record = weatherList.get(i);
-
+        DailyObject record = weatherList.get(i);
         WeatherListViewHolder holder = (WeatherListViewHolder) viewHolder;
+        String day = new SimpleDateFormat("EEEE").format(new Date(record.getDt() * 1000));
+        holder.tvDay.setText(day);
+        Weather weather = record.getWeather().get(0);
+        holder.tvDescription.setText(weather.getDescription());
+        String temperature = record.getTemp().toString();
+        temperature = temperature.substring(0,2);
+        holder.tvTemperature.setText(temperature+"\u00B0");
 
-        holder.tvDay.setText(record.getDay());
-        holder.tvDescription.setText(record.getDescription());
-        holder.tvTemperature.setText(record.getTemperature() + "\u00B0");
-
-
-
-        if (record.getIconurl().equals("01d")) {
+        if (weather.getIcon().equals("01d")) {
             holder.weatherIcon.setImageResource(WeatherIconMap.get("01d"));
         }
-        if (record.getIconurl().equals("02d")) {
+        if (weather.getIcon().equals("02d")) {
             holder.weatherIcon.setImageResource(WeatherIconMap.get("02d"));
         }
-        if (record.getIconurl().equals("03d")) {
+        if (weather.getIcon().equals("03d")) {
             holder.weatherIcon.setImageResource(WeatherIconMap.get("03d"));
         }
-        if (record.getIconurl().equals("04d")) {
+        if (weather.getIcon().equals("04d")) {
             holder.weatherIcon.setImageResource(WeatherIconMap.get("04d"));
         }
-        if (record.getIconurl().equals("04n")) {
+        if (weather.getIcon().equals("04n")) {
             holder.weatherIcon.setImageResource(WeatherIconMap.get("04n"));
         }
-        if (record.getIconurl().equals("50d"))
+        if (weather.getIcon().equals("50d"))
         {
             holder.weatherIcon.setImageResource(WeatherIconMap.get("50d"));
         }
-        if (record.getIconurl().equals("09d"))
+        if (weather.getIcon().equals("09d"))
         {
             holder.weatherIcon.setImageResource(WeatherIconMap.get("09d"));
         }
-        if (record.getIconurl().equals("10d"))
+        if (weather.getIcon().equals("10d"))
         {
             holder.weatherIcon.setImageResource(WeatherIconMap.get("10d"));
         }
-        if (record.getIconurl().equals("11d"))
+        if (weather.getIcon().equals("11d"))
         {
             holder.weatherIcon.setImageResource(WeatherIconMap.get("11d"));
         }
-        if (record.getIconurl().equals("13d"))
+        if (weather.getIcon().equals("13d"))
         {
             holder.weatherIcon.setImageResource(WeatherIconMap.get("13d"));
         }
@@ -109,8 +111,8 @@ public class WeatherDailyRecyclerAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public void updateList(List<WeatherDailyForecast> list){
-        weatherList = new ArrayList<>(list);
+    public void updateList(List<DailyObject> list){
+        weatherList = new ArrayList(list);
         notifyDataSetChanged();
         WeatherIconMap = new HashMap<>();
         WeatherIconMap.put("01d", R.drawable.ic_wi_day_sunny);

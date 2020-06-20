@@ -10,6 +10,7 @@ class NewsSharedViewModel(application: Application) : AndroidViewModel(applicati
     private val newsRepository = NewsRepository.getInstance(application).apply {
         getNewsFromApi(application)
     }
+
     val newsList = Transformations.map(newsRepository.newsList) {
         it.shuffled()
     }

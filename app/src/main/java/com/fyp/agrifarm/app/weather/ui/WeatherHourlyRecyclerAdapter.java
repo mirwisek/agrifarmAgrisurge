@@ -9,15 +9,18 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fyp.agrifarm.R;
-import com.fyp.agrifarm.app.weather.model.WeatherHourlyForecast;
+import com.fyp.agrifarm.app.weather.model.HourlyObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class WeatherHourlyRecyclerAdapter extends RecyclerView.Adapter {
 
     private Context context;
-    private List<WeatherHourlyForecast> weatherList;
+    private List<HourlyObject> weatherList;
+
 
     public WeatherHourlyRecyclerAdapter(Context context){
         this.context = context;
@@ -33,12 +36,13 @@ public class WeatherHourlyRecyclerAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
-        WeatherHourlyForecast record = weatherList.get(i);
-
+        HourlyObject record = weatherList.get(i);
         WeatherListViewHolder holder = (WeatherListViewHolder) viewHolder;
-
-        holder.tvTime.setText(record.getTime());
-        holder.tvTemperature.setText(record.getTemperature() + "\u00B0");
+        String hour = new SimpleDateFormat("h a").format(new Date(record.getTime() * 1000));
+        holder.tvTime.setText(hour);
+        String temperature = record.getTemperature().toString();
+        temperature = temperature.substring(0,2);
+        holder.tvTemperature.setText(temperature+ "\u00B0");
     }
 
     @Override
@@ -58,9 +62,10 @@ public class WeatherHourlyRecyclerAdapter extends RecyclerView.Adapter {
             tvTemperature = view.findViewById(R.id.tvWeatherHourlyTemp);
         }
     }
-    public void updateList(List<WeatherHourlyForecast> list){
-        weatherList = new ArrayList<>(list);
+    public void updateList(List<HourlyObject> list){
+        weatherList = new ArrayList(list);
         notifyDataSetChanged();
     }
+
 }
 
