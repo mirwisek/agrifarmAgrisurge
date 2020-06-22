@@ -5,6 +5,8 @@
     <color name="colorAccent">#0ADBCC</color>
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#FFFFFF</color>
+    <color name="weatherNight">#3b4787</color>
+    <color name="weatherDay">#3d6159</color>
     <color name="colorVideoBackground">#8C00A99D</color>
     <color name="colorHourlyForecast">#006837</color>
     <color name="colorSecondary">#FFC107</color>
@@ -29,4 +31,5 @@
     <color name="chip_07">#f15a24</color>
     <color name="chip_08">#004581</color>
     <color name="chip_09">#ed1c24</color>
+    <color name="weather_description_night">#b7958f</color>
 </resources>

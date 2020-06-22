@@ -49,7 +49,8 @@ class MainActivity : AppCompatActivity(),
         PermissionCallbacks,
         NavigationView.OnNavigationItemSelectedListener,
         VideoRecyclerAdapter.OnItemClickListener, OnFragmentInteractionListener,
-        PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
+        PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
+        SettingsFragment.OnPreferencesChangeListener {
 
     private val apiAvailability = GoogleApiAvailability.getInstance()
     private lateinit var videoViewModel: VideoSharedViewModel
@@ -301,7 +302,7 @@ class MainActivity : AppCompatActivity(),
         val args = pref!!.extras
         val fragment = supportFragmentManager.fragmentFactory.instantiate(
                 classLoader,
-                pref!!.fragment)
+                pref.fragment)
         fragment.arguments = args
         fragment.setTargetFragment(caller, 0)
         // Replace the existing Fragment with the new Fragment
@@ -309,6 +310,11 @@ class MainActivity : AppCompatActivity(),
                 .replace(R.id.fragmentHolder, fragment)
                 .addToBackStack(HomeFragment.TAG)
                 .commit()
+
         return true
+    }
+
+    override fun onWeatherChanged(newValue: String?) {
+        homeFragment?.onWeatherChanged(newValue)
     }
 }

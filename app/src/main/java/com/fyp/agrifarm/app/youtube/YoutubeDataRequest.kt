@@ -37,7 +37,6 @@ class YoutubeDataRequest private constructor() {
 
 
     fun setCredentials(credential: GoogleAccountCredential) {
-        log("Cred set to ${credential.selectedAccountName}")
         ourInstance.credentials = credential
     }
 

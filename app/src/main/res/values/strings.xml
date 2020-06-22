@@ -66,10 +66,6 @@
         <item>Fahrenheit</item>
         <item>Celsius</item>
     </string-array>
-    <string-array name="tselection">
-        <item>Fahrenheit</item>
-        <item>Celsius</item>
-    </string-array>
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>

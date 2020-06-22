@@ -1,7 +1,6 @@
 package com.fyp.agrifarm.app
 
 import android.Manifest
-import android.animation.Animator
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -15,7 +14,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.fyp.agrifarm.R
 import com.fyp.agrifarm.app.crops.CameraActivity
 import com.fyp.agrifarm.app.news.ui.NewsRecyclerAdapter
@@ -28,16 +26,18 @@ import com.fyp.agrifarm.app.prices.model.PriceItem
 import com.fyp.agrifarm.app.prices.ui.LocationListFragment
 import com.fyp.agrifarm.app.prices.ui.LocationListFragment.OnLocationItemClickListener
 import com.fyp.agrifarm.app.prices.ui.PricesRecyclerAdapter
-import com.fyp.agrifarm.app.weather.model.WeatherViewModel
+import com.fyp.agrifarm.app.weather.model.CELSIUS
+import com.fyp.agrifarm.app.weather.ui.WeatherSharedViewModel
 import com.fyp.agrifarm.app.youtube.VideoRecyclerAdapter
 import com.fyp.agrifarm.app.youtube.viewmodel.VideoSharedViewModel
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 const val KEY_LOCATION_SET = "userDistrict"
 const val KEY_SHARED_PREFS_NAME = "agriFarm"
@@ -47,7 +47,7 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
 
     private lateinit var pricesViewModel: PricesViewModel
     private lateinit var videoViewModel: VideoSharedViewModel
-    private lateinit var weatherViewModel: WeatherViewModel
+    private lateinit var weatherViewModel: WeatherSharedViewModel
     private lateinit var newsSharedViewModel: NewsSharedViewModel
     private lateinit var videoRecyclerAdapter: VideoRecyclerAdapter
     private lateinit var newsRecyclerAdapter: NewsRecyclerAdapter
@@ -71,32 +71,32 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
         fabTakeImage.shrink()
 
         pricesViewModel = ViewModelProvider(this).get(PricesViewModel::class.java)
-        newsSharedViewModel = ViewModelProvider(this).get(NewsSharedViewModel::class.java)
+//        newsSharedViewModel = ViewModelProvider(this).get(NewsSharedViewModel::class.java)
+//
+//        videoViewModel = ViewModelProvider(this).get(VideoSharedViewModel::class.java)
+        weatherViewModel = ViewModelProvider(this).get(WeatherSharedViewModel::class.java)
 
-        videoViewModel = ViewModelProvider(this).get(VideoSharedViewModel::class.java)
-        weatherViewModel = ViewModelProvider(this).get(WeatherViewModel::class.java)
-
-        newsSharedViewModel.newsList.observe(viewLifecycleOwner, androidx.lifecycle.Observer { list ->
-            newsRecyclerAdapter.changeDataSource(list)
-        })
+//        newsSharedViewModel.newsList.observe(viewLifecycleOwner, androidx.lifecycle.Observer { list ->
+//            newsRecyclerAdapter.changeDataSource(list)
+//        })
 
         // Listen when network request finish, remove progressbar
-        newsSharedViewModel.newsFetchComplete.observe(viewLifecycleOwner, Observer { isComplete ->
-            if(isComplete) {
-                progressNews.gone()
-                newsSharedViewModel.newsFetchComplete.removeObservers(this)
-            }
-        })
+//        newsSharedViewModel.newsFetchComplete.observe(viewLifecycleOwner, Observer { isComplete ->
+//            if (isComplete) {
+//                progressNews.gone()
+//                newsSharedViewModel.newsFetchComplete.removeObservers(this)
+//            }
+//        })
 
-        newsSharedViewModel.isOfflineResult.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            it?.let {  isOffline ->
-                tvHintNews.text = if(isOffline) "News - Offline Results" else "News"
-            }
-        })
-
-        videoViewModel.allVideos.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            videoRecyclerAdapter.updateList(it)
-        })
+//        newsSharedViewModel.isOfflineResult.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+//            it?.let { isOffline ->
+//                tvHintNews.text = if (isOffline) "News - Offline Results" else "News"
+//            }
+//        })
+//
+//        videoViewModel.allVideos.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+//            videoRecyclerAdapter.updateList(it)
+//        })
 
         fabTakeImage.setOnClickListener { startAnActivity(CameraActivity::class.java) }
 
@@ -176,7 +176,7 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
         })
 
 
-        Handler().postDelayed( {
+        Handler().postDelayed({
             fabTakeImage?.extend()
         }, 1500L)
 
@@ -184,31 +184,32 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
 
 
     private fun getWeatherInformation() {
-        var temperatue : String
-        weatherViewModel.init()
-        weatherViewModel.getCurrentWeather().observe(viewLifecycleOwner, Observer { weatherDailyForecast: CurrentWeatherObject ->
-            val sharedPref = PreferenceManager
-                    .getDefaultSharedPreferences(requireContext())
-            val WeatherPref = sharedPref
-                    .getString("weatherUnit", "-1")
-            if (WeatherPref == "Celsius") {
-                temperatue = weatherDailyForecast.temperature + "°C"
+        var temperature: String
+        weatherViewModel.updateWeather(null)
+        weatherViewModel.currentWeather.observe(viewLifecycleOwner, Observer {
+            val sharedPref = PreferenceManager.getDefaultSharedPreferences(requireContext())
+            val weatherPref = sharedPref.getString("weatherUnit", "-1")
+            temperature = if (weatherPref == CELSIUS) {
+                it.temperature + "°C"
             } else {
-                temperatue = weatherDailyForecast.temperature + "°F"
+                it.temperature + "°F"
             }
-            tvWeatherTemp.setText(temperatue)
-            tvWeatherDescription.setText(weatherDailyForecast.description)
-            tvWeatherDay.setText(weatherDailyForecast.day)
-            tvWeatherHumidity.setText(weatherDailyForecast.humidity.subSequence(0,2))
+            tvWeatherTemp.text = temperature
+
+            tvWeatherDescription.text = it.description
+
+            tvWeatherDay.text = it.day
+            tvWeatherHumidity.text = it.humidity
 
             // Wrapped with catch incase resource ID not found
+
             try {
-                val id = weatherDailyForecast.iconurl
-                ivWeatherIcon.setImageResource(weatherViewModel.weatherIconsMap.get(id)!!)
+                it.icon?.let {  ic ->
+                    ivWeatherIcon.setImageResource(ic)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
         })
     }
 
@@ -329,6 +330,13 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
 
     interface OnFragmentInteractionListener {
         fun onForecastClick(v: View?)
+    }
+
+    fun onWeatherChanged(newValue: String?) {
+        toastFrag("Preferences changed to " + newValue)
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        log("value received " + sharedPref.getString("weatherUnit", "-1"))
+        weatherViewModel.updateWeather(newValue)
     }
 
 }

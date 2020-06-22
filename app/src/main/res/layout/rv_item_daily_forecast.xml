@@ -1,50 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_horizontal"
-    android:layout_marginRight="25dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:paddingTop="10dp"
-    android:orientation="vertical">
-
-    <ImageView
-        android:id="@+id/ivWeatherDailyIcon"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginLeft="20dp"
-        android:src="@drawable/ic_w_partly_cloudy_grey"/>
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp">
 
     <TextView
         android:id="@+id/tvWeatherDailyDay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/ivWeatherDailyIcon"
+        android:textColor="@color/colorWhite"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         android:textSize="18sp"
         android:textAllCaps="false"
-        android:text="SUNDAY"/>
+        tools:text="SUNDAY"/>
 
-    <TextView
-        android:id="@+id/tvWeatherDailyDesc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tvWeatherDailyDay"
-        android:layout_toRightOf="@id/ivWeatherDailyIcon"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:text="PARTLY CLOUDY"
-        android:drawablePadding="20dp"
-        android:drawableBottom="@drawable/div_weather"/>
+    <ImageView
+        android:id="@+id/ivWeatherDailyIcon"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:scaleType="fitCenter"
+        android:tint="@color/colorWhite"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvWeatherDailyTemp"
+        app:layout_constraintBottom_toBottomOf="@id/tvWeatherDailyTemp"
+        android:src="@drawable/ic_w_partly_cloudy_grey" />
 
     <TextView
         android:id="@+id/tvWeatherDailyTemp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_marginEnd="20dp"
+        android:textColor="@color/colorWhite"
+        app:layout_constraintEnd_toStartOf="@id/ivWeatherDailyIcon"
+        app:layout_constraintTop_toTopOf="@id/tvWeatherDailyDay"
+        app:layout_constraintBottom_toBottomOf="@id/tvWeatherDailyDay"
         android:textStyle="bold"
-        android:text="30&#xb0;"
-        android:textSize="30sp"/>
+        tools:text="30&#xb0;"
+        android:textSize="24sp"/>
 
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

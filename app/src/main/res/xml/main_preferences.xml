@@ -1,43 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="Account Settings">
-        <Preference
-            android:key="delete"
-            android:title="Delete Account" />
-        <Preference
-            android:key="edit"
-            android:title="Edit Account" />
-        <ListPreference
-            android:title="Online Status"
-            android:key="onlinestatus"
-            android:entryValues="@array/statuselection"
-            android:entries="@array/onlineStatus"/>
+<!--    <PreferenceCategory android:title="Account Settings">-->
+<!--        <Preference-->
+<!--            android:key="delete"-->
+<!--            android:title="Delete Account" />-->
+<!--        <Preference-->
+<!--            android:key="edit"-->
+<!--            android:title="Edit Account" />-->
+<!--        <ListPreference-->
+<!--            android:title="Online Status"-->
+<!--            android:key="onlinestatus"-->
+<!--            android:entryValues="@array/statuselection"-->
+<!--            android:entries="@array/onlineStatus"/>-->
 
-    </PreferenceCategory>
+<!--    </PreferenceCategory>-->
 
-    <PreferenceCategory android:title="Prices Settings">
-        <MultiSelectListPreference
-            android:key="priceSelection"
-            android:entryValues="@array/pselection"
-            android:entries="@array/pricesettings"
-            android:title="Show Prices" />
-    </PreferenceCategory>
+<!--    <PreferenceCategory android:title="Prices Settings">-->
+<!--        <MultiSelectListPreference-->
+<!--            android:key="priceSelection"-->
+<!--            android:entryValues="@array/pselection"-->
+<!--            android:entries="@array/pricesettings"-->
+<!--            android:title="Show Prices" />-->
+<!--    </PreferenceCategory>-->
 
-    <PreferenceCategory android:title="General Settings">
-
-
-        <SwitchPreference
-            android:key="notifications"
-            android:title="Show Notifications" />
-
-    </PreferenceCategory>
     <PreferenceCategory android:title="Weather Settings">
         <ListPreference
-            android:title="Choose Temperature Unit"
+            android:title="Change Temperature Unit"
             android:key="weatherUnit"
             android:defaultValue="Celsius"
             android:entries="@array/temperatureUnit"
-            android:entryValues="@array/tselection"/>
+            android:entryValues="@array/temperatureUnit"/>
     </PreferenceCategory>
 
 </PreferenceScreen>
