@@ -84,14 +84,6 @@ class PricesViewModel(application: Application) : AndroidViewModel(application) 
                             val latestLocationIndex = locationResult.locations.size - 1
                             val latitude = locationResult.locations[latestLocationIndex].latitude
                             val longitude = locationResult.locations[latestLocationIndex].longitude
-
-                            FirebaseAuth.getInstance().uid?.let { id ->
-                                FirebaseFirestore.getInstance().collection("locs").document(id)
-                                        .set(hashMapOf(
-                                                "lat" to latitude,
-                                                "lon" to longitude
-                                        ))
-                            }
                             //posting lat and lon values in SharedPeference for WeatherViewModel
                             context.sharedPrefs.edit()
                                     .putString("lat", latitude.toString())
