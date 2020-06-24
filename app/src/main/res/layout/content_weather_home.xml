@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/ivWidgetBg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_weather_widget_shape"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/tvWeatherTemp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="15dp"
+        android:text="AF&#xb0;C"
+        android:textColor="@color/colorWhite"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/ivWidgetBg" />
+
+
+    <TextView
+        android:id="@+id/tvWeatherDay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvWeatherTemp"
+        android:text="Today"
+        android:textColor="@color/colorWhite"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@+id/tvWeatherTemp"
+        app:layout_constraintTop_toBottomOf="@id/tvWeatherTemp" />
+
+    <TextView
+        android:id="@+id/tvWeatherHumidity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvWeatherDay"
+        android:drawableStart="@drawable/ic_drop_resized"
+        android:drawablePadding="6dp"
+        android:text="AF%"
+        android:textColor="@color/colorWhite"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@id/tvWeatherTemp"
+        app:layout_constraintTop_toBottomOf="@id/tvWeatherDay" />
+
+
+    <ImageView
+        android:id="@+id/ivWeatherIcon"
+        android:layout_width="90dp"
+        android:layout_height="70dp"
+        android:layout_marginEnd="20dp"
+        android:src="@drawable/ic_w_partly_cloudy"
+        android:tint="@color/colorWhite"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvWeatherTemp" />
+
+    <TextView
+        android:id="@+id/tvWeatherDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Agrifarm Day"
+        android:textAllCaps="true"
+        android:textColor="@color/colorWhite"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/ivWeatherIcon"
+        app:layout_constraintStart_toStartOf="@+id/ivWeatherIcon"
+        app:layout_constraintTop_toBottomOf="@id/ivWeatherIcon" />
+
+    <TextView
+        android:id="@+id/tvWeatherForecast"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_arrow_next_resized"
+        android:paddingEnd="10dp"
+        android:paddingBottom="8dp"
+        android:text="Weather Forecast"
+        android:textColor="@color/colorWhite"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/ivWidgetBg"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

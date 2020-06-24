@@ -12,7 +12,7 @@ class NewsSharedViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     val newsList = Transformations.map(newsRepository.newsList) {
-        it.shuffled()
+        it
     }
 
     var isOfflineResult = Transformations.map(newsRepository.isOfflineResult) { it }

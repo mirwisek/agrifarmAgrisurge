@@ -11,8 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@mipmap/bg_weather_night" />
-
+        android:src="@mipmap/bg_weather_day" />
 
     <ImageView
         android:id="@+id/wfivWeatherIcon"
@@ -24,6 +23,7 @@
         app:layout_constraintEnd_toStartOf="@id/wfWeatherDescription"
         app:layout_constraintStart_toStartOf="@id/guideV"
         app:layout_constraintTop_toTopOf="@id/wfWeatherDescription" />
+
 
 
     <TextView

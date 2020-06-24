@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,11 +32,11 @@ import com.fyp.agrifarm.app.youtube.viewmodel.VideoSharedViewModel
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.android.synthetic.main.content_location.*
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.content_weather_home.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
 
 const val KEY_LOCATION_SET = "userDistrict"
 const val KEY_SHARED_PREFS_NAME = "agriFarm"
@@ -68,38 +67,46 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        fabTakeImage.shrink()
-
         pricesViewModel = ViewModelProvider(this).get(PricesViewModel::class.java)
-//        newsSharedViewModel = ViewModelProvider(this).get(NewsSharedViewModel::class.java)
+        newsSharedViewModel = ViewModelProvider(this).get(NewsSharedViewModel::class.java)
 //
-//        videoViewModel = ViewModelProvider(this).get(VideoSharedViewModel::class.java)
+        videoViewModel = ViewModelProvider(this).get(VideoSharedViewModel::class.java)
         weatherViewModel = ViewModelProvider(this).get(WeatherSharedViewModel::class.java)
 
-//        newsSharedViewModel.newsList.observe(viewLifecycleOwner, androidx.lifecycle.Observer { list ->
-//            newsRecyclerAdapter.changeDataSource(list)
-//        })
+        newsSharedViewModel.newsList.observe(viewLifecycleOwner, androidx.lifecycle.Observer { list ->
+            newsRecyclerAdapter.changeDataSource(list)
+        })
 
         // Listen when network request finish, remove progressbar
-//        newsSharedViewModel.newsFetchComplete.observe(viewLifecycleOwner, Observer { isComplete ->
-//            if (isComplete) {
-//                progressNews.gone()
-//                newsSharedViewModel.newsFetchComplete.removeObservers(this)
-//            }
-//        })
+        newsSharedViewModel.newsFetchComplete.observe(viewLifecycleOwner, Observer { isComplete ->
+            if (isComplete) {
+                progressNews.gone()
+                if(newsSharedViewModel.newsList.value?.size == 0)
+                    newsError.visible()
+                newsSharedViewModel.newsFetchComplete.removeObservers(this)
+            }
+        })
 
-//        newsSharedViewModel.isOfflineResult.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-//            it?.let { isOffline ->
-//                tvHintNews.text = if (isOffline) "News - Offline Results" else "News"
-//            }
-//        })
-//
-//        videoViewModel.allVideos.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-//            videoRecyclerAdapter.updateList(it)
-//        })
+        newsSharedViewModel.isOfflineResult.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            it?.let { isOffline ->
+                tvHintNews.text = if (isOffline) "News - Offline Results" else "News"
+            }
+        })
+
+        videoViewModel.allVideos.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            videoRecyclerAdapter.updateList(it)
+        })
 
         fabTakeImage.setOnClickListener { startAnActivity(CameraActivity::class.java) }
 
+
+        FirebaseAuth.getInstance().currentUser?.let { user ->
+            try {
+                user.displayName?.split(" ")?.get(0)?.let {
+                    titleToolbar.text = "Hi ${it}!"
+                }
+            } catch(e: java.lang.Exception) { }
+        }
 
         val priceList: MutableList<PriceItem> = ArrayList()
         priceList.add(PriceItem("Cherry", "97.22", PriceItem.CHERRY, PriceItem.ARROW_DOWN))
@@ -136,25 +143,31 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
             pricesViewModel.location.removeObservers(this)
         })
 
+        tvWeatherForecast.setOnClickListener { v: View? -> mListener?.onForecastClick(v) }
+
         // Observe the states and update UI accordingly
         // This patter packs the UI visibility triggers at one place otherwise they would be
         // disperesed all over the fragment
         pricesViewModel.currentState.observe(viewLifecycleOwner, androidx.lifecycle.Observer { state ->
             when (state!!) {
                 LoadState.UNSET -> {
-                    btnLocation.visible()
-                    rvPrices.invisible()
-                    progressPrices.gone()
+                    ivHomeLogo.gone()
+                    weatherContent.gone()
+                    layoutLocation.visible()
+//                    rvPrices.invisible()
+//                    progressPrices.gone()
                 }
                 LoadState.LOADING -> {
-                    progressPrices.visible()
+//                    progressPrices.visible()
                     btnLocation.invisible()
-                    rvPrices.invisible()
+//                    rvPrices.invisible()
                 }
                 LoadState.LOADED -> {
-                    btnLocation.gone()
-                    progressPrices.gone()
-                    rvPrices.visible()
+                    locationAnimation.cancelAnimation()
+                    ivHomeLogo.visible()
+                    layoutLocation.invisible()
+                    weatherContent.visible()
+//                    rvPrices.visible()
                 }
             }
         })
@@ -167,7 +180,6 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
             }
         }
 
-        tvWeatherForecast.setOnClickListener { v: View? -> mListener?.onForecastClick(v) }
 
         pricesViewModel.location.observe(viewLifecycleOwner, Observer {
             it?.let {
@@ -175,13 +187,7 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
             }
         })
 
-
-        Handler().postDelayed({
-            fabTakeImage?.extend()
-        }, 1500L)
-
     }
-
 
     private fun getWeatherInformation() {
         var temperature: String
@@ -218,8 +224,9 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
         enableGPS().addOnCompleteListener { task ->
             when {
                 task.isSuccessful -> {
-                    progressPrices.visible()
+//                    progressPrices.visible()
                     btnLocation.invisible()
+
                     pricesViewModel.fetchCurrentLocation()
                     pricesViewModel.locFetchFailureStatus.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                         it?.let { status ->

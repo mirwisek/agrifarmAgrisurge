@@ -1,35 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".app.MainActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:elevation="0dp"
-        android:theme="@style/AppTheme.NoActionBar">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/fui_transparent"
-            android:foreground="@color/fui_transparent"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+    <View
+        android:id="@+id/icDrawerBg"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        android:background="@drawable/circle"
+        android:alpha="0.9"
+        android:elevation="3dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    </com.google.android.material.appbar.AppBarLayout>
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/navigation_icon"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:scaleType="center"
+        android:elevation="4dp"
+        app:lottie_scale="0.3"
+        app:tint="@color/colorWhite"
+        app:lottie_rawRes="@raw/anim_ic_hamburger"
+        app:layout_constraintStart_toStartOf="@id/icDrawerBg"
+        app:layout_constraintEnd_toEndOf="@id/icDrawerBg"
+        app:layout_constraintTop_toTopOf="@id/icDrawerBg"
+        app:layout_constraintBottom_toBottomOf="@id/icDrawerBg"/>
 
 
     <FrameLayout
         android:id="@+id/fragmentHolder"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="?attr/actionBarSize" />
-
-    <include layout="@layout/progress_dialog" />
+        android:layout_height="match_parent"/>
 
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

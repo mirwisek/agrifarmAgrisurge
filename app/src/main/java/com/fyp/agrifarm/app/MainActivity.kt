@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
@@ -39,10 +40,14 @@ import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.youtube.YouTubeScopes
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.drawer_header.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import pub.devrel.easypermissions.EasyPermissions.PermissionCallbacks
+import java.lang.Exception
 import java.util.*
 
 class MainActivity : AppCompatActivity(),
@@ -75,21 +80,70 @@ class MainActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
         val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
-        val toggle = ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-        drawer.addDrawerListener(toggle)
-        toggle.syncState()
+
+
+        supportFragmentManager.addOnBackStackChangedListener {
+            if(supportFragmentManager.backStackEntryCount == 0){
+                icDrawerBg.visible()
+                navigation_icon.visible()
+            } else if(supportFragmentManager.backStackEntryCount > 0){
+                icDrawerBg.gone()
+                navigation_icon.gone()
+            }
+        }
+
+        var isBack = false
+        navigation_icon.speed = 3.5F
+        navigation_icon.setOnClickListener {
+            if(!isBack) {
+                navigation_icon.setMinAndMaxProgress(0F, 0.5F)
+                drawer.openDrawer(GravityCompat.START, true)
+            } else {
+                navigation_icon.setMinAndMaxProgress(0.5F, 1F)
+                drawer.closeDrawer(GravityCompat.START, true)
+            }
+            navigation_icon.playAnimation()
+            isBack = !isBack
+        }
+
+
+        drawer.addDrawerListener(object: DrawerLayout.DrawerListener {
+            override fun onDrawerStateChanged(newState: Int) {
+
+            }
+
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+
+                navigation_icon.progress = slideOffset
+            }
+
+            override fun onDrawerClosed(drawerView: View) {
+                navigation_icon.progress = 0F
+                isBack = false
+            }
+
+            override fun onDrawerOpened(drawerView: View) {
+                navigation_icon.progress = 0.5F
+                isBack = true
+            }
+
+        })
+
+//        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+//        setSupportActionBar(toolbar)
+//        val toggle = ActionBarDrawerToggle(
+//                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+//        drawer.addDrawerListener(toggle)
+//        toggle.syncState()
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(this)
         var headerView = navigationView.getHeaderView(0)
         if (headerView == null) {
             headerView = navigationView.inflateHeaderView(R.layout.drawer_header)
         }
-
-        // TODO: Add these to profile
+//
+//        // TODO: Add these to profile
         val tvUserFullName = headerView!!.findViewById<TextView>(R.id.tvDrawerName)
         val tvUserOccupation = headerView.findViewById<TextView>(R.id.tvDrawerOccupation)
         val uProfilePhoto = headerView.findViewById<ImageView>(R.id.ivDrawerProfile)

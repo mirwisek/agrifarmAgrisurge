@@ -128,7 +128,6 @@ class WeatherRepository private constructor() {
             val title = weather.title
             val temp = String.format(Locale.US, "%.0f", res.temp.day)
             val resIcon = IconMapsUtil.mapIcon(weather.icon)
-            log("DAY:: ")
             mList.add(DailyWeatherItem(res.dateTime, temp, title, resIcon))
         }
         dailyList.postValue(mList)

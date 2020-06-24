@@ -14,9 +14,9 @@
         android:id="@+id/tvWeatherHourlyTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="15sp"
+        android:text="1 PM"
         android:textColor="@color/colorWhite"
-        android:text="1 PM"/>
+        android:textSize="15sp" />
 
     <ImageView
         android:id="@+id/ic_hourly"

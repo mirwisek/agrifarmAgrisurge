@@ -10,7 +10,7 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 
 interface ApiRequest {
-    @GET("news/fetch")
+    @GET("news/fetch?limit=50")
     fun getNews(): Call<List<NewsEntity>>
 
     @Multipart

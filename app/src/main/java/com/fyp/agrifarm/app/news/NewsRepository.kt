@@ -55,7 +55,6 @@ class NewsRepository : CoroutineScope {
             override fun onFailure(call: Call<List<NewsEntity>>, t: Throwable) {
 
                 log("ERROR <RETROFIT>:: ${t.message}")
-                app.toast("Error fetching news")
                 newsFetchComplete.postValue(true)
             }
 
@@ -63,7 +62,7 @@ class NewsRepository : CoroutineScope {
                 if(response.isSuccessful) {
                     response.body()?.let {  list ->
                         scope.launch {
-                            newsDao.insert(*list.toTypedArray())
+                            newsDao.insert(*list.shuffled().toTypedArray())
                             newsList.postValue(list)
                         }
                     }
@@ -80,7 +79,6 @@ class NewsRepository : CoroutineScope {
                         }
                         else -> {
                             log("Unsucessful <RETROFIT>:: ${response.errorBody()?.string()}")
-                            app.toast("Couldn't retrieve latest news")
                         }
                     }
                     loadDbCachedNews()

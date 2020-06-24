@@ -47,21 +47,23 @@ class NewsDetailsFragment : Fragment() {
         webView.settings.displayZoomControls = true
         webView.settings.setSupportMultipleWindows(true)
 
+        // TODO Detach listener upon back pressed
         webView.webChromeClient = object: WebChromeClient() {
             override fun onProgressChanged(view: WebView?, newProgress: Int) {
                 if (newProgress < 100 && webProgressBar?.visibility == View.GONE) {
-                    loading.visible()
-                    webProgressBar.visible()
+                    loading?.visible()
+                    webProgressBar?.visible()
                 }
 
-                webProgressBar.progress = newProgress
+                webProgressBar?.progress = newProgress
                 if (newProgress == 100) {
-                    loading.gone()
-                    webProgressBar.gone()
+                    loading?.gone()
+                    webProgressBar?.gone()
                 }
             }
 
         }
+
 
         webView.webViewClient = object: WebViewClient () {
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {

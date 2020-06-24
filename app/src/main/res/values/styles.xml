@@ -7,10 +7,8 @@
 
 
    <style name="AppTheme.NoActionBar" parent="AppTheme">
-       <item name="colorPrimary">@color/fui_transparent</item>
        <item name="windowActionBar">false</item>
        <item name="windowNoTitle">true</item>
-       <item name="android:windowFullscreen">true</item>
        <item name="windowActionBarOverlay">true</item>
        <item name="android:windowContentOverlay">@null</item>
    </style>
@@ -75,6 +73,11 @@
     </style>
 
     <style name="BottomSheetDialogTheme" parent="BaseBottomSheetDialog" />
+
+    <style name="toolbarTitle">
+        <item name="fontFamily">@font/lobster</item>
+        <item name="android:textSize">24sp</item>
+    </style>
 
 
 </resources>
