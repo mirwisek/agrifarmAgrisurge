@@ -17,13 +17,15 @@ class DetailsActivity : AppCompatActivity() {
         val intent = intent
         when (intent.getStringExtra(MODE)) {
             MODE_NEWS -> {
-                val newsId = intent.getStringExtra(KEY_ID)
-                val newsSharedViewModel = ViewModelProvider(this).get(NewsSharedViewModel::class.java)
-                newsSharedViewModel.selectNews(newsId)
+                intent.getStringExtra(KEY_ID)?.let { newsId ->
+                    val newsSharedViewModel = ViewModelProvider(this).get(NewsSharedViewModel::class.java)
 
-                var fragment = fm.findFragmentByTag(NewsDetailsFragment.TAG)
-                fragment = fragment ?: NewsDetailsFragment()
-                fragTransaction(fragment).commit()
+                    newsSharedViewModel.selectNews(newsId)
+
+                    var fragment = fm.findFragmentByTag(NewsDetailsFragment.TAG)
+                    fragment = fragment ?: NewsDetailsFragment()
+                    fragTransaction(fragment).commit()
+                }
             }
         }
     }

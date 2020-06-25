@@ -3,6 +3,9 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: "androidx.navigation.safeargs"
+apply plugin: 'com.google.firebase.crashlytics'
+// Apply the Performance Monitoring plugin
+apply plugin: 'com.google.firebase.firebase-perf'
 
 googleServices { disableVersionCheck = true }
 
@@ -20,8 +23,8 @@ android {
         applicationId "com.fyp.agrifarm"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 5
-        versionName "1.0.4"
+        versionCode 7
+        versionName "1.0.5"
         signingConfig signingConfigs.release
     }
     buildTypes {
@@ -151,6 +154,12 @@ dependencies {
     implementation 'com.android.support:customtabs:23.3.0'
 
     implementation "com.airbnb.android:lottie:3.4.1"
+
+    // Recommended: Add the Firebase SDK for Google Analytics.
     implementation 'com.google.firebase:firebase-analytics-ktx:17.4.3'
+    implementation 'com.google.firebase:firebase-crashlytics:17.1.0'
+    implementation 'com.google.firebase:firebase-perf:19.0.7'
+
+
 
 }
