@@ -102,11 +102,12 @@ class PricesViewModel(application: Application) : AndroidViewModel(application) 
             try {
                 val geocoder = Geocoder(context, Locale.getDefault())
                 val firstAddress = geocoder.getFromLocation(latitude, longitude, 1)[0]
-                val area = firstAddress.subAdminArea
+                val area: String? = firstAddress.subAdminArea
+
 
                 // Run asynchronously and await for the result to publish
                 val list = viewModelScope.async(Dispatchers.IO) {
-                    AssetUtils.findAddress(context.resources, area)
+                    AssetUtils.findAddress(context.resources, area.toString())
                 }
 
                 val loc = list.await() ?: throw LocationFailureException("Area couldn't be decoded")

@@ -163,7 +163,7 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
 //                    rvPrices.invisible()
                 }
                 LoadState.LOADED -> {
-                    locationAnimation.cancelAnimation()
+                    locationAnimation.clearAnimation()
                     ivHomeLogo.visible()
                     layoutLocation.invisible()
                     weatherContent.visible()
@@ -194,7 +194,7 @@ class HomeFragment : Fragment(), OnLocationItemClickListener {
         weatherViewModel.updateWeather(null)
         weatherViewModel.currentWeather.observe(viewLifecycleOwner, Observer {
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(requireContext())
-            val weatherPref = sharedPref.getString("weatherUnit", "-1")
+            val weatherPref = sharedPref.getString("weatherUnit", "Celsius")
             temperature = if (weatherPref == CELSIUS) {
                 it.temperature + "°C"
             } else {

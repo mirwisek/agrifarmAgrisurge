@@ -61,6 +61,6 @@ data class ExtendedVideo (
     fun getFormattedPublishDate(): String {
 
         val published = Date(publishedDate.value)
-        return SimpleDateFormat("dd/MM/YYYY", Locale.US).format(published)
+        return SimpleDateFormat("dd/MM/yyyy", Locale.US).format(published)
     }
 }

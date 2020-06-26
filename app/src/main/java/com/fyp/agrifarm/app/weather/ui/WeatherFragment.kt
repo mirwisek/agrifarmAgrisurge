@@ -77,7 +77,7 @@ class WeatherFragment : Fragment() {
 
         weatherModel.currentWeather.observe(viewLifecycleOwner, Observer {
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(requireContext())
-            val weatherPref = sharedPref.getString("weatherUnit", "-1")
+            val weatherPref = sharedPref.getString("weatherUnit", "Celsius")
             val temperature = if (weatherPref == CELSIUS) {
                 it.temperature + "°C"
             } else {
