@@ -45,6 +45,11 @@ android {
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
     }
+
+    // Don't compress tfLite model
+    aaptOptions {
+        noCompress "tflite"  // Your model's file extension: "tflite", "lite", etc.
+    }
 }
 
 dependencies {
@@ -160,6 +165,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics:17.1.0'
     implementation 'com.google.firebase:firebase-perf:19.0.7'
 
+    // TFLite Object Detection
+    // Object detection and tracking feature with custom classifier
+    implementation 'com.google.mlkit:object-detection-custom:16.2.1'
 
 
 }

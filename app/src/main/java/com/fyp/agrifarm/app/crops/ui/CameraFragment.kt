@@ -47,6 +47,11 @@ import com.fyp.agrifarm.app.crops.utils.ANIMATION_FAST_MILLIS
 import com.fyp.agrifarm.app.crops.utils.ANIMATION_SLOW_MILLIS
 import com.fyp.agrifarm.app.crops.utils.simulateClick
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.mlkit.common.model.LocalModel
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.objects.ObjectDetection
+import com.google.mlkit.vision.objects.ObjectDetector
+import com.google.mlkit.vision.objects.custom.CustomObjectDetectorOptions
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.camera_ui_container.*
@@ -75,7 +80,10 @@ class CameraFragment : Fragment() {
     private lateinit var displayManager: DisplayManager
     private lateinit var mainExecutor: Executor
 
-    private val RESOLUTION = Size(720,1280)
+    private val RESOLUTION = Size(720, 1280)
+
+    private lateinit var imageAnalysis: ImageAnalysis
+    private lateinit var objectDetector: ObjectDetector
 
 
     private lateinit var photoFile: File
@@ -147,19 +155,86 @@ class CameraFragment : Fragment() {
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
-            savedInstanceState: Bundle?): View? =
-            inflater.inflate(R.layout.fragment_camera, container, false)
+            savedInstanceState: Bundle?
+    ): View {
+
+        val root = inflater.inflate(R.layout.fragment_camera, container,false)
+//                        disease_classifier . tflite
+
+        val localModel =
+                LocalModel.Builder()
+                        .setAssetFilePath("disease_classifier.tflite")
+                        // or .setAbsoluteFilePath(absolute file path to tflite model)
+                        .build()
+
+//        val customObjectDetectorOptions = CustomObjectDetectorOptions.Builder(localModel)
+//                .setDetectorMode(CustomObjectDetectorOptions.STREAM_MODE)
+//                .enableClassification()
+//                .setClassificationConfidenceThreshold(0.5f)
+//                .setMaxPerObjectLabelCount(3)
+//                .build()
+
+        val customObjectDetectorOptions =
+                CustomObjectDetectorOptions.Builder(localModel)
+                        .setDetectorMode(CustomObjectDetectorOptions.SINGLE_IMAGE_MODE)
+                        .enableMultipleObjects()
+                        .enableClassification()
+                        .setClassificationConfidenceThreshold(0.5f)
+                        .setMaxPerObjectLabelCount(3)
+                        .build()
+
+        objectDetector =
+                ObjectDetection.getClient(customObjectDetectorOptions)
+
+        return root
+    }
 
 
-
-    private val imageCroppedAndSavedListener = object : ImageCapture.OnImageCapturedCallback() {
+    private val imageCroppedAndSavedListener =
+            object : ImageCapture.OnImageCapturedCallback() {
 
         @SuppressLint("UnsafeExperimentalUsageError")
         override fun onCaptureSuccess(imageProxy: ImageProxy) {
             try {
+
+                // ==================== MODEL WORK =========================
+
+//                val mediaImage = imageProxy.image
+//                if (mediaImage != null) {
+//                    val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+//                    // Pass image to an ML Kit Vision API
+//                    // ...
+//
+//
+//                } else
+//                    log("Image is null")
+
+
+                // ============================================================
+
                 val bitmap = CameraUtils.jpegImageToBitmap(imageProxy.image!!)
 
                 val croppedBitmap = CameraUtils.cropCenter(bitmap)
+
+                // IF in future it throws bounds exception, here is a fix
+                // https://stackoverflow.com/questions/62988684/android-ml-kit-not-able-to-label-image
+
+//                val newBitmap = croppedBitmap.copy(Bitmap.Config.ARGB_8888, croppedBitmap.isMutable())
+//                val image = InputImage.fromBitmap(newBitmap, 0)
+
+                val image = InputImage.fromBitmap(croppedBitmap, imageProxy.imageInfo.rotationDegrees)
+                objectDetector.process(image)
+                        .addOnFailureListener {
+                            log("[Custom Model] = Failed ${it.message}")
+                            it.printStackTrace()
+                        }.addOnSuccessListener {
+                            log("[Custom Model] = Results [${it.size}]:")
+                            it.forEach {  item ->
+                                item.labels.forEach { label ->
+                                    log("Labels[${label.index}] ${label.text} c=${label.confidence}")
+                                }
+                            }
+                        }
 
                 // TODO: Urgent Image will crop twice on thrid retry it will throw exception
 
@@ -293,7 +368,7 @@ class CameraFragment : Fragment() {
     }
 
     /** Declare and bind preview, capture and analysis use cases */
-    @SuppressLint("RestrictedApi")
+    @SuppressLint("RestrictedApi", "UnsafeExperimentalUsageError")
     private fun bindCameraUseCases() {
 
         // Get screen metrics used to setup camera for full screen resolution
@@ -340,6 +415,37 @@ class CameraFragment : Fragment() {
                     // during the lifecycle of this use case
                     .setTargetRotation(rotation)
                     .build()
+
+//            imageAnalysis = ImageAnalysis.Builder()
+//                    .setTargetAspectRatio(screenAspectRatio)
+////                    .setImageQueueDepth(1000)
+//                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+//                    .build()
+//
+//
+//            val imageAnalyzer = ImageAnalysis.Analyzer { imageProxy ->
+//                val mediaImage = imageProxy.image
+//                if (mediaImage != null) {
+//                    val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+//                    // Pass image to an ML Kit Vision API
+//                    // ...
+//                    objectDetector.process(image)
+//                            .addOnFailureListener {
+//                                log("[Custom Model] = Failed ${it.message}")
+//                                it.printStackTrace()
+//                            }.addOnSuccessListener {
+//                                log("[Custom Model] = Results [${it.size}]:")
+//                                it.forEach {  item ->
+//                                    item.labels.forEach { label ->
+//                                        log("Labels[${label.index}] ${label.text} c=${label.confidence}")
+//                                    }
+//                                }
+//                            }
+//                } else
+//                    log("Image is null")
+//            }
+//
+//            imageAnalysis.setAnalyzer(mainExecutor, imageAnalyzer)
 
             // Must unbind the use-cases before rebinding them.
             cameraProvider.unbindAll()
@@ -464,11 +570,10 @@ class CameraFragment : Fragment() {
     }
 
 
-
-
     companion object {
 
         private const val TAG = "CameraFragment"
+
         // No more needed, this will just prolong file name,
         // instead of uid_timestamp as file name, we'll use uid (directory in fb storage) > timestamp
 //        val user = FirebaseAuth.getInstance().currentUser?.uid.toString()

@@ -73,21 +73,25 @@ class YoutubeDataRequest private constructor() {
                 .setId(ids.toString())
                 .execute()
         for (video in videos.items) {
-            val extendedVideo = ExtendedVideo(
-                    video.id,
-                    video.snippet.title,
-                    video.snippet.thumbnails.medium.url,
-                    video.snippet.channelTitle,
-                    video.contentDetails.duration,
-                    video.snippet.publishedAt,
-                    video.statistics.likeCount.toLong(),
-                    video.statistics.dislikeCount.toLong(),
-                    video.statistics.commentCount.toLong(),
-                    video.statistics.viewCount.toLong()
-            )
-            // Change from "PT##M##S" to "##:##"
-            extendedVideo.reformatDuration()
-            videosList.add(extendedVideo)
+            try {
+                val extendedVideo = ExtendedVideo(
+                        video.id,
+                        video.snippet.title,
+                        video.snippet.thumbnails.medium.url,
+                        video.snippet.channelTitle,
+                        video.contentDetails.duration,
+                        video.snippet.publishedAt,
+                        video.statistics.likeCount.toLong(),
+                        video.statistics.dislikeCount.toLong(),
+                        video.statistics.commentCount.toLong(),
+                        video.statistics.viewCount.toLong()
+                )
+                // Change from "PT##M##S" to "##:##"
+                extendedVideo.reformatDuration()
+                videosList.add(extendedVideo)
+            } catch (e: Exception) {
+                log("Skipped video NPE ${video.id}")
+            }
         }
         return videosList
     }
