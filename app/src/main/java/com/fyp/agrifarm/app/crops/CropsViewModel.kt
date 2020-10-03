@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fyp.agrifarm.app.crops.utils.Recognition
 import com.fyp.agrifarm.app.log
 import com.fyp.agrifarm.app.prices.model.LoadState
 import com.google.api.client.json.JsonFactory
@@ -29,6 +30,11 @@ class CropsViewModel : ViewModel() {
 
     fun getModelOutput(): LiveData<String> {
         return modelOutput
+    }
+    val modelOutputTfLite: MutableLiveData<String> = MutableLiveData<String>()
+
+    fun getTfLiteModelOutput(): LiveData<String> {
+        return modelOutputTfLite
     }
 
 }

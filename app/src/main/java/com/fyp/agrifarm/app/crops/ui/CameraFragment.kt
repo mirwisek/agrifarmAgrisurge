@@ -8,7 +8,6 @@ import android.content.IntentFilter
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.ImageFormat
 import android.graphics.drawable.ColorDrawable
 import android.hardware.display.DisplayManager
 import android.media.MediaScannerConnection
@@ -16,7 +15,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
-import android.util.Rational
 import android.util.Size
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -27,7 +25,6 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.camera.core.*
-import androidx.camera.core.impl.utils.CameraOrientationUtil
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -36,29 +33,27 @@ import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.fyp.agrifarm.R
-import com.fyp.agrifarm.app.*
 import com.fyp.agrifarm.app.crops.*
 import com.fyp.agrifarm.app.crops.utils.ANIMATION_FAST_MILLIS
 import com.fyp.agrifarm.app.crops.utils.ANIMATION_SLOW_MILLIS
+import com.fyp.agrifarm.app.crops.utils.Recognition
 import com.fyp.agrifarm.app.crops.utils.simulateClick
+import com.fyp.agrifarm.app.gone
+import com.fyp.agrifarm.app.visible
+import com.fyp.agrifarm.ml.ImageDetectionmodel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.mlkit.common.model.LocalModel
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.objects.ObjectDetection
 import com.google.mlkit.vision.objects.ObjectDetector
-import com.google.mlkit.vision.objects.custom.CustomObjectDetectorOptions
-import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.camera_ui_container.*
 import kotlinx.android.synthetic.main.camera_ui_container.view.*
+import org.tensorflow.lite.support.image.TensorImage
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executor
@@ -79,6 +74,7 @@ class CameraFragment : Fragment() {
     private lateinit var broadcastManager: LocalBroadcastManager
     private lateinit var displayManager: DisplayManager
     private lateinit var mainExecutor: Executor
+    private lateinit var cropViewModel: CropsViewModel
 
     private val RESOLUTION = Size(720, 1280)
 
@@ -158,14 +154,14 @@ class CameraFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View {
 
-        val root = inflater.inflate(R.layout.fragment_camera, container,false)
+        val root = inflater.inflate(R.layout.fragment_camera, container, false)
 //                        disease_classifier . tflite
 
-        val localModel =
-                LocalModel.Builder()
-                        .setAssetFilePath("disease_classifier.tflite")
-                        // or .setAbsoluteFilePath(absolute file path to tflite model)
-                        .build()
+//        val localModel =
+//                LocalModel.Builder()
+//                        .setAssetFilePath("disease_classifier.tflite")
+//                        // or .setAbsoluteFilePath(absolute file path to tflite model)
+//                        .build()
 
 //        val customObjectDetectorOptions = CustomObjectDetectorOptions.Builder(localModel)
 //                .setDetectorMode(CustomObjectDetectorOptions.STREAM_MODE)
@@ -174,17 +170,17 @@ class CameraFragment : Fragment() {
 //                .setMaxPerObjectLabelCount(3)
 //                .build()
 
-        val customObjectDetectorOptions =
-                CustomObjectDetectorOptions.Builder(localModel)
-                        .setDetectorMode(CustomObjectDetectorOptions.SINGLE_IMAGE_MODE)
-                        .enableMultipleObjects()
-                        .enableClassification()
-                        .setClassificationConfidenceThreshold(0.5f)
-                        .setMaxPerObjectLabelCount(3)
-                        .build()
-
-        objectDetector =
-                ObjectDetection.getClient(customObjectDetectorOptions)
+//        val customObjectDetectorOptions =
+//                CustomObjectDetectorOptions.Builder(localModel)
+//                        .setDetectorMode(CustomObjectDetectorOptions.SINGLE_IMAGE_MODE)
+//                        .enableMultipleObjects()
+//                        .enableClassification()
+//                        .setClassificationConfidenceThreshold(0.5f)
+//                        .setMaxPerObjectLabelCount(3)
+//                        .build()
+//
+//        objectDetector =
+//                ObjectDetection.getClient(customObjectDetectorOptions)
 
         return root
     }
@@ -196,6 +192,7 @@ class CameraFragment : Fragment() {
         @SuppressLint("UnsafeExperimentalUsageError")
         override fun onCaptureSuccess(imageProxy: ImageProxy) {
             try {
+                val imageDetectionModel = ImageDetectionmodel.newInstance(requireContext())
 
                 // ==================== MODEL WORK =========================
 
@@ -216,25 +213,46 @@ class CameraFragment : Fragment() {
 
                 val croppedBitmap = CameraUtils.cropCenter(bitmap)
 
+                val tfImage : TensorImage = TensorImage.fromBitmap(croppedBitmap)
+
+                val outputs = imageDetectionModel.process(tfImage).probabilityAsCategoryList
+                        .apply {
+                            sortByDescending { it.score }
+                }.take(1)
+
+                val items = arrayListOf<Recognition>()
+
+                for (output in outputs)
+                {
+                    items.add(Recognition(output.label, output.score))
+                }
+                cropViewModel = ViewModelProvider(requireActivity()).get(CropsViewModel::class.java)
+                cropViewModel.modelOutputTfLite.postValue(items[0].label)
+
+
+                Log.d("ModelCheckWala", "onCaptureSuccess: $items")
+
+
                 // IF in future it throws bounds exception, here is a fix
                 // https://stackoverflow.com/questions/62988684/android-ml-kit-not-able-to-label-image
 
 //                val newBitmap = croppedBitmap.copy(Bitmap.Config.ARGB_8888, croppedBitmap.isMutable())
 //                val image = InputImage.fromBitmap(newBitmap, 0)
 
-                val image = InputImage.fromBitmap(croppedBitmap, imageProxy.imageInfo.rotationDegrees)
-                objectDetector.process(image)
-                        .addOnFailureListener {
-                            log("[Custom Model] = Failed ${it.message}")
-                            it.printStackTrace()
-                        }.addOnSuccessListener {
-                            log("[Custom Model] = Results [${it.size}]:")
-                            it.forEach {  item ->
-                                item.labels.forEach { label ->
-                                    log("Labels[${label.index}] ${label.text} c=${label.confidence}")
-                                }
-                            }
-                        }
+//                val image = InputImage.fromBitmap(croppedBitmap, imageProxy.imageInfo.rotationDegrees)
+//
+//                objectDetector.process(image)
+//                        .addOnFailureListener {
+//                            log("[Custom Model] = Failed ${it.message}")
+//                            it.printStackTrace()
+//                        }.addOnSuccessListener {
+//                            log("[Custom Model] = Results [${it.size}]:")
+//                            it.forEach {  item ->
+//                                item.labels.forEach { label ->
+//                                    log("Labels[${label.index}] ${label.text} c=${label.confidence}")
+//                                }
+//                            }
+//                        }
 
                 // TODO: Urgent Image will crop twice on thrid retry it will throw exception
 
@@ -254,6 +272,7 @@ class CameraFragment : Fragment() {
                 // but otherwise other apps will not be able to access our images unless we
                 // scan them using [MediaScannerConnection]
                 // To get extension
+
                 val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
                         context?.contentResolver?.getType(photoFile.toUri()))
                 MediaScannerConnection.scanFile(
@@ -270,6 +289,7 @@ class CameraFragment : Fragment() {
         }
 
     }
+
 
     /** Define callback that will be triggered after a photo has been taken and saved to disk */
 //    private val imageSavedListener = object : ImageCapture.OnImageSavedCallback {

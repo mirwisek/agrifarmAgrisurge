@@ -9,6 +9,7 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.fyp.agrifarm.R;
+import com.fyp.agrifarm.app.crops.utils.Recognition;
 
 import java.util.Locale;
 

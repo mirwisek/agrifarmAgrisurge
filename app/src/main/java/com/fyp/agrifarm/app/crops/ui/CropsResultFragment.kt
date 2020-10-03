@@ -2,12 +2,14 @@ package com.fyp.agrifarm.app.crops.ui
 
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -47,7 +49,7 @@ class CropsResultFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        cropViewModel = ViewModelProvider(this).get(CropsViewModel::class.java)
+        cropViewModel = ViewModelProvider(requireActivity()).get(CropsViewModel::class.java)
 
         progress = view.findViewById(R.id.progressCropDiagnosis)
         labelFeedback = view.findViewById(R.id.tvCropFeedback)
@@ -64,34 +66,46 @@ class CropsResultFragment : Fragment() {
             val args = it ?: return
             val path = args.getString(KEY_PHOTO_PATH)
             val file = File(path!!)
-            Picasso.get().load(file).into(imageView, object: Callback {
+            Picasso.get().load(file).into(imageView, object : Callback {
 
                 override fun onSuccess() {
 
-                    sendPredictionRequest(file)
-
-                    cropViewModel.currentState.observe(viewLifecycleOwner, Observer { model ->
-                        model?.let {  state ->
-                            when(state) {
-                                ModelResultState.ERROR -> {
-                                    progress.gone()
-                                    labelFeedback.text = "Sorry couldn't process your request (Server Error)"
-                                }
-                                ModelResultState.SUCCESS -> {
-                                    cropViewModel.getModelOutput().observe(viewLifecycleOwner, Observer { out ->
-                                        out?.let { output ->
-                                            progress.visibility = View.GONE
-                                            labelFeedback.text = output
-
-                                            modelResultBottomSheet = ModelResultBottomSheet(output)
-                                            modelResultBottomSheet?.show(parentFragmentManager, modelResultBottomSheet?.tag)
-                                            cropDiseaseName.text = output
-                                            cardResult.visible()
-                                        }
-                                    })
-                                }
-                                else -> { }
-                            }
+//                    sendPredictionRequest(file)
+//
+//                    cropViewModel.currentState.observe(viewLifecycleOwner, Observer { model ->
+//                        model?.let {  state ->
+//                            when(state) {
+//                                ModelResultState.ERROR -> {
+//                                    progress.gone()
+//                                    labelFeedback.text = "Sorry couldn't process your request (Server Error)"
+//                                }
+//                                ModelResultState.SUCCESS -> {
+//                                    cropViewModel.getModelOutput().observe(viewLifecycleOwner, Observer { out ->
+//                                        out?.let { output ->
+//                                            progress.visibility = View.GONE
+//                                            labelFeedback.text = output
+//
+//                                            modelResultBottomSheet = ModelResultBottomSheet(output)
+//                                            modelResultBottomSheet?.show(parentFragmentManager, modelResultBottomSheet?.tag)
+//                                            cropDiseaseName.text = output
+//                                            cardResult.visible()
+//                                        }
+//                                    })
+//                                }
+//                                else -> { }
+//                            }
+//                        }
+//                    })
+                    cropViewModel.getTfLiteModelOutput().observe(viewLifecycleOwner, Observer { out ->
+                        out?.let { output ->
+                            progress.visibility = View.GONE
+                            var result = output.replace("_",  " ")
+                            result = result.replace("\\s+".toRegex() ," ")
+                            labelFeedback.text = result
+                            modelResultBottomSheet = ModelResultBottomSheet(result)
+                            modelResultBottomSheet?.show(parentFragmentManager, modelResultBottomSheet?.tag)
+                            cropDiseaseName.text = result
+                            cardResult.visible()
                         }
                     })
 
@@ -99,7 +113,7 @@ class CropsResultFragment : Fragment() {
                     Handler().postDelayed({
                         labelFeedback.visibility = View.VISIBLE
                         Handler().postDelayed({
-                            progress.visibility = View.VISIBLE
+                            progress.visibility = View.GONE
                         }, 300)
                     }, 800)
                 }
@@ -113,38 +127,38 @@ class CropsResultFragment : Fragment() {
 
     }
 
-
-    private fun sendPredictionRequest(image: File) {
-
-        ModelRequest.instance.predict(image, object : retrofit2.Callback<ModelResponse> {
-
-            override fun onFailure(call: Call<ModelResponse>, t: Throwable) {
-                log("Unsucessful <RETROFIT>:: ${t.message}")
-                cropViewModel.currentState.postValue(ModelResultState.ERROR)
-                t.printStackTrace()
-                snackbarFallback("[Error] Couldn't find disease, please try again!")
-            }
-
-            override fun onResponse(call: Call<ModelResponse>, response: Response<ModelResponse>) {
-                if (response.isSuccessful) {
-                    response.body()?.let { list ->
-
-                        val sortedList = list.output.sortedByDescending { x -> x.probability }
-
-//                        sortedList.forEach {  log("SORT:: ${it.label} and ${it.probability}") }
-                        cropViewModel.modelOutput.postValue(sortedList[0].label)
-                        cropViewModel.currentState.postValue(ModelResultState.SUCCESS)
-                    }
-                } else {
-                    cropViewModel.currentState.postValue(ModelResultState.ERROR)
-                    snackbarFallback("Couldn't find disease, please try again!")
-                    val err = response.errorBody()?.string()
-                    log("Unsucessful <RETROFIT>:: $err")
-                }
-
-            }
-        })
-    }
+//
+//    private fun sendPredictionRequest(image: File) {
+//
+//        ModelRequest.instance.predict(image, object : retrofit2.Callback<ModelResponse> {
+//
+//            override fun onFailure(call: Call<ModelResponse>, t: Throwable) {
+//                log("Unsucessful <RETROFIT>:: ${t.message}")
+//                cropViewModel.currentState.postValue(ModelResultState.ERROR)
+//                t.printStackTrace()
+//                snackbarFallback("[Error] Couldn't find disease, please try again!")
+//            }
+//
+//            override fun onResponse(call: Call<ModelResponse>, response: Response<ModelResponse>) {
+//                if (response.isSuccessful) {
+//                    response.body()?.let { list ->
+//
+//                        val sortedList = list.output.sortedByDescending { x -> x.probability }
+//
+////                        sortedList.forEach {  log("SORT:: ${it.label} and ${it.probability}") }
+//                        cropViewModel.modelOutput.postValue(sortedList[0].label)
+//                        cropViewModel.currentState.postValue(ModelResultState.SUCCESS)
+//                    }
+//                } else {
+//                    cropViewModel.currentState.postValue(ModelResultState.ERROR)
+//                    snackbarFallback("Couldn't find disease, please try again!")
+//                    val err = response.errorBody()?.string()
+//                    log("Unsucessful <RETROFIT>:: $err")
+//                }
+//
+//            }
+//        })
+//    }
 
     companion object {
         const val KEY_PHOTO_PATH = "leafPhoto"
