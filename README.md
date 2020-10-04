@@ -1,4 +1,4 @@
-![Alt text](https://github.com/mirwisek/agrifarmAgrisurge/blob/master/images/agrisurge_logo.png?raw=true "AgriSurge Logo")
+![Alt text](https://github.com/mirwisek/agrifarmAgrisurge/master/images/agrisurge_logo.png?raw=true "AgriSurge Logo")
 ## Compile Instructions
 
 To compile the code, the (4.2 Canary 8) version of  Android Studio is required.
