@@ -1,3 +1,6 @@
+## Compile Instructions
+
+To compile the code, the (4.2 Canary 8) version of  Android Studio is required.
 
 ## Tell us about you
 
