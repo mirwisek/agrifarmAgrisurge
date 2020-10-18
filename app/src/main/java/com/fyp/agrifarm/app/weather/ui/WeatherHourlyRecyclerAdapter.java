@@ -44,7 +44,19 @@ public class WeatherHourlyRecyclerAdapter extends RecyclerView.Adapter {
         String hour = new SimpleDateFormat("h a").format(new Date(record.getTime() * 1000));
         holder.tvTime.setText(hour);
         String temperature = record.getTemperature();
-        temperature = temperature.substring(0,2);
+        if (temperature.length() > 3)
+        {
+            temperature = temperature.substring(0,2);
+        }
+        else if (temperature.length()==2)
+        {
+
+
+        }
+        else {
+            Log.d("HANJI", "onBindViewHolder: " + record.getTemperature());
+            temperature = temperature.substring(0, 1);
+        }
         holder.tvTemperature.setText(temperature+ "\u00B0");
 
 
